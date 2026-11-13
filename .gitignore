@@ -85,3 +85,6 @@ Desktop.ini
 /data/evaluation/jurisprudencia/referencias_teste_final.parquet
 /data/evaluation/jurisprudencia/curadoria_teste_final_iniciada.json
 /data/evaluation/jurisprudencia/curadoria_teste_final/
+
+# Cópia local da jurisprudência
+/data/raw/jurisprudencia/
