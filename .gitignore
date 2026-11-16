@@ -61,6 +61,9 @@ Desktop.ini
 # Cópia integral dos artefatos da base completa, preservada na migração para a base reduzida
 /data/arquivo_base_completa/
 
+# Notebooks arquivados antes da integração (saídas da base completa); mantidos apenas localmente
+/notebooks/02_jurisprudencia/historico/
+
 # Perguntas e evidências locais de jurisprudência; publicar apenas esquema/documentação.
 /data/evaluation/jurisprudencia/perguntas_suporte.jsonl
 /data/evaluation/jurisprudencia/candidatas_legislacao/

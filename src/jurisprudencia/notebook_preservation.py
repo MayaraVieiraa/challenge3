@@ -15,9 +15,11 @@ def sha(data):return hashlib.sha256(data).hexdigest()
 def snapshot(root):
     """Copia os cinco arquivos byte a byte, sem reserializar ou executar células."""
     root=Path(root).resolve();directory=root/'notebooks/02_jurisprudencia'
-    from .notebook_integration import source_path
+    from .notebook_integration import source_path,PREFIXES
     paths={name:source_path(root,name) for name in NAMES}
-    originals={name:paths[name].read_bytes() for name in NAMES}
+    # Notebooks arquivados no histórico de integração são opcionais (não versionados no repositório).
+    paths={name:p for name,p in paths.items() if name not in PREFIXES or p.exists()}
+    originals={name:paths[name].read_bytes() for name in paths}
     aggregate=sha(''.join(name+sha(data) for name,data in originals.items()).encode())
     stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     target=root/'reports/jurisprudencia/versoes_notebooks'/(stamp+'_'+aggregate[:12])
