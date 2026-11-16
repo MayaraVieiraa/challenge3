@@ -1,0 +1,6 @@
+# Ambiente mínimo da auditoria, independente dos modelos do RAG.
+pandas
+numpy
+matplotlib
+pyarrow==26.0.1
+ijson==3.6.0

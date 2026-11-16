@@ -1,0 +1,13 @@
+# Notebooks de jurisprudência
+
+1. [Auditoria](01_auditoria_jurisprudencia.ipynb): inventário, esquemas e diagnóstico das fontes.
+2. [Análise exploratória dos dados](02_eda_jurisprudencia.ipynb): cobertura, distribuição, texto e alertas.
+3. [Limpeza, estruturação e verificação automática](03_limpeza_estruturacao_jurisprudencia.ipynb): normalização, proteção de CPFs, PLN, [fontes e proveniência](03_limpeza_estruturacao_jurisprudencia.ipynb#fontes-proveniencia), [verificações automáticas](03_limpeza_estruturacao_jurisprudencia.ipynb#verificacao-automatica), relações e validação final.
+4. [Chunking e suporte decisório](04_experimentos_chunking_jurisprudencia.ipynb): três bases e três híbridas, suporte contínuo por intervalos, budgets iguais, testes de integridade, bootstrap pareado, diagnóstico de falhas e separação prospectiva entre ajuste e teste final. Consulte o [protocolo avançado](../../docs/avaliacao_chunking_avancada.md).
+
+
+5. [Chunking definitivo](05_chunking_definitivo_jurisprudencia.ipynb): aplicação da janela de 500 tokens com 100 de sobreposição ao recorte consolidado do notebook 03, em lotes retomáveis, com vínculos documentais, verificação de integridade e manifesto versionado. O painel distingue progresso parcial de corpus integral validado; embeddings e pgvector são etapas seguintes.
+
+6. [Embeddings e indexação](06_embeddings_indexacao_jurisprudencia.ipynb): compatibilidade do backbone BGE-M3 com legislação, geração em lotes com cache e retomada, validação dos vínculos vetor/chunk e coleção própria no pgvector. A execução integral exige a conclusão validada do 05 e a definição do recurso computacional.
+
+As células Markdown atuais são a referência editorial. Atualizações de código e resultados devem preservar seus textos, títulos e organização, conforme [AGENTS.md](AGENTS.md).

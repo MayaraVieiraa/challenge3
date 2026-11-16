@@ -44,3 +44,32 @@ __pycache__/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Índices locais de fingerprints da auditoria de jurisprudência
+/tmp/jurisprudencia_auditoria/
+
+# Índice temporário da estruturação de jurisprudência
+/tmp/jurisprudencia_estrutura/
+
+# Cópias de recuperação de jurisprudência; manter apenas manifestos no Git
+/data/raw/jurisprudencia/recuperacao/
+
+# Base reduzida de jurisprudência (opção D) e mapa de IDs; contêm dados de origem
+/data/raw/jurisprudencia/base_reduzida/
+/reports/jurisprudencia/base_reduzida/mapa_registro_id.parquet
+
+# Cópia integral dos artefatos da base completa, preservada na migração para a base reduzida
+/data/arquivo_base_completa/
+
+# Perguntas e evidências locais de jurisprudência; publicar apenas esquema/documentação.
+/data/evaluation/jurisprudencia/perguntas_suporte.jsonl
+/data/evaluation/jurisprudencia/candidatas_legislacao/
+/data/evaluation/jurisprudencia/conjuntos/
+/data/evaluation/jurisprudencia/perguntas_ativas.json
+/data/evaluation/jurisprudencia/protocolo_congelado.json
+/data/evaluation/jurisprudencia/teste_final_iniciado.json
+/data/evaluation/jurisprudencia/curadoria_ajuste/
+/data/evaluation/jurisprudencia/perguntas_suporte_teste_final.jsonl
+/data/evaluation/jurisprudencia/referencias_teste_final.parquet
+/data/evaluation/jurisprudencia/curadoria_teste_final_iniciada.json
+/data/evaluation/jurisprudencia/curadoria_teste_final/
