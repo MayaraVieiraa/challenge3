@@ -224,3 +224,75 @@ As fontes de dados e os modelos utilizados possuem condições próprias de uso,
 - [Arquitetura e base de conhecimento](docs/semana2_base_conhecimento_e_rag.md)
 
 Os notebooks 06, 07 e 08 utilizam os módulos de `src/rag/` e `src/storage/`. A configuração congelada e os resultados selecionados ficam em `reports/legislacao/`. Consulte as instruções de reprodução antes de executar a avaliação.
+
+## Jurisprudência: notebooks 01 a 04
+
+Os notebooks de `notebooks/02_jurisprudencia/` usam a **base reduzida** de jurisprudência trabalhista: 179.812 registros do TST, dos TRTs 10, 13 e 17 e do STF (somente decisões com sinais de tema trabalhista). A base mantém um documento por processo e limita o TST a 100.000 decisões, por amostragem estratificada por ano e órgão julgador.
+
+| Notebook | Conteúdo |
+|---|---|
+| `01_auditoria_jurisprudencia` | Inventário dos arquivos de entrada, esquemas, tribunais, qualidade e duplicatas |
+| `02_eda_jurisprudencia` | Análise exploratória: composição, tamanhos de texto, datas e completude |
+| `03_limpeza_estruturacao_jurisprudencia` | Estruturação, mascaramento de CPFs, PLN leve, proveniência e verificação automática |
+| `04_experimentos_chunking_jurisprudencia` | Comparação das estratégias de chunking. Escolhidos: janela fixa de 500 tokens com 100 de sobreposição e BGE-M3 |
+
+### O que é possível fazer a partir do clone
+
+**1. Ler os resultados.** Os notebooks estão salvos com todas as saídas, tabelas e gráficos. Basta abri-los no GitHub, no Jupyter ou no VS Code, sem instalar nada.
+
+**2. Preparar o ambiente e rodar os testes.** Testado com Python 3.14.
+
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate    Linux/macOS: source .venv/bin/activate
+pip install -r requirements-chunking-jurisprudencia.txt
+python -m unittest discover -s tests -p "test_jurisprudencia_chunking_avancado.py"
+```
+
+Os testes usados pelo notebook 04 são `test_avaliacao_complementar.py`, `test_contexto_centrado.py`, `test_finalistas_teste_reservado.py`, `test_jurisprudencia_chunking_avancado.py` e `test_jurisprudencia_piloto_bge.py`.
+
+**3. Usar a base reduzida.** A base fica no dataset **privado** `laaaii/lex_ai`, no Hugging Face. O acesso é concedido pelos responsáveis pelo repositório. O dataset contém:
+
+- `data/parquet/`: 19 arquivos Parquet, a versão usada pelo pipeline;
+- `data/jsonl/`: a mesma base num único JSONL;
+- `manifestos/`: contagens e hashes para conferência.
+
+```bash
+pip install huggingface_hub
+hf auth login
+```
+
+```python
+import pandas as pd
+df = pd.read_parquet("hf://datasets/laaaii/lex_ai/data/parquet/f01.parquet")
+```
+
+> **Atenção:** os CPFs estão mascarados, mas a base **não está anonimizada**: nomes de partes e outros dados pessoais podem permanecer. Não redistribua nem publique os dados. As licenças declaradas pelas fontes são CC BY 4.0 (celsowm e RepoJus) e MIT (TRT-13). A origem do arquivo JSON do TST não foi confirmada.
+
+**4. Reexecutar as células.** As células conferem os hashes dos dados processados e dos relatórios gerados pelo pipeline. Esses arquivos não são versionados (`data/` e `reports/jurisprudencia/`), então é preciso gerá-los primeiro.
+
+- **Notebooks 01 a 03.** É preciso receber dos responsáveis três entradas que não estão no repositório nem no dataset:
+  - os 20 arquivos de entrada da base reduzida, em `data/raw/jurisprudencia/base_reduzida/`;
+  - a declaração das origens, em `data/raw/jurisprudencia/origens_declaradas.json`;
+  - a rastreabilidade das fontes, em `reports/jurisprudencia/origens_huggingface/`.
+
+  Depois, execute:
+
+  ```bash
+  python scripts/rodar_pipeline_base_reduzida.py
+  python scripts/run_auditoria_jurisprudencia.py
+  python scripts/run_preparacao_jurisprudencia.py --etapa eda
+  python scripts/run_preparacao_jurisprudencia.py --etapa estrutura
+  ```
+
+  No Windows, a renomeação dos CSVs grandes pode ser bloqueada pela sincronização ou pelo antivírus. Nesse caso, o pipeline imprime `FINALIZAR_FORA_DO_PROCESSO` com o script a executar. Execute esse script e retome com `--desde <próxima etapa>`.
+
+- **Notebook 04.** Depende também dos gabaritos de avaliação (`data/evaluation/jurisprudencia/`) e dos artefatos dos experimentos, que existem apenas no ambiente de origem. Por isso, ele não pode ser reexecutado só com o clone.
+
+- **Modelo.** O notebook 04 e o chunking usam o tokenizador do BGE-M3 a partir do cache local:
+
+  ```bash
+  hf download BAAI/bge-m3 --revision 5617a9f61b028005a4858fdac845db406aefb181
+  ```
+
+Mais detalhes em [notebooks/02_jurisprudencia/README.md](notebooks/02_jurisprudencia/README.md), [auditoria](docs/auditoria_jurisprudencia.md), [proteção de CPFs](docs/protecao_cpf_jurisprudencia.md), [PLN leve](docs/pln_leve_jurisprudencia.md) e [avaliação do chunking](docs/avaliacao_chunking_avancada.md).
