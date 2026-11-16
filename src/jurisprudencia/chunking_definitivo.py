@@ -124,6 +124,16 @@ def prepare(root):
     table=pq.read_table(index_path);all_meta=table.to_pylist()
     metadata={m['registro_id']:m for m in all_meta if m['candidato_consolidado']}
     if len(metadata)!=auto['candidatos_consolidados'] or len(all_meta)!=auto['registros']:raise ValueError('Contagem de candidatos divergente.')
+    # Recorte de indexação (amostra estratificada com os documentos dos experimentos), quando definido.
+    cut_path=root/'reports/jurisprudencia/base_reduzida/recorte_indexacao.json';cut=None
+    if cut_path.exists():
+        chosen=json.loads(cut_path.read_text(encoding='utf-8'))
+        if chosen['indice_sha256']!=auto['indice_sha256']:raise ValueError('Recorte de indexação feito sobre outro índice.')
+        ids=set(chosen['registro_ids'])
+        if len(ids)!=chosen['documentos'] or not ids<=set(metadata):raise ValueError('Recorte de indexação fora dos candidatos.')
+        metadata={k:v for k,v in metadata.items() if k in ids}
+        cut=dict(arquivo=str(cut_path.relative_to(root)),sha256=audit.hash_file(cut_path),documentos=len(ids),
+                 candidatos_consolidados=auto['candidatos_consolidados'],criterios=chosen['criterios'])
     counts=Counter(m['arquivo_id'] for m in metadata.values())
     sources=[s for s in pln['arquivos'] if s['arquivo_id'] in counts]
     tokenizer=AutoTokenizer.from_pretrained(piloto_bge.MODEL,revision=piloto_bge.REVISION,local_files_only=True,use_fast=True)
@@ -136,7 +146,9 @@ def prepare(root):
         tokenizador_sha256=base.sha(tokenizer.backend_tokenizer.to_str()),
         corpus_entrada=auto['registros'],documentos_esperados=len(metadata),
         caracteres_esperados=sum(m['texto_caracteres'] for m in metadata.values()),
-        criterio='candidato_consolidado do índice automático do notebook 03; sem nova triagem por pergunta ou score',
+        criterio='candidato_consolidado do índice automático do notebook 03; sem nova triagem por pergunta ou score'
+            +('; restrito ao recorte de indexação estratificado' if cut else ''),
+        recorte_indexacao=cut,
         campos='Apenas texto_principal_campo de cada documento. Ementa e inteiro teor não são concatenados.',
         particoes='Preservadas como metadados; chunking não é treino nem nova avaliação e não redefine os splits.',
         deduplicacao='Representantes consolidados do notebook 03. Chunks idênticos não são apagados: seus vínculos de origem são preservados.',

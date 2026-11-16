@@ -235,6 +235,7 @@ Os notebooks de `notebooks/02_jurisprudencia/` usam a **base reduzida** de juris
 | `02_eda_jurisprudencia` | Análise exploratória: composição, tamanhos de texto, datas e completude |
 | `03_limpeza_estruturacao_jurisprudencia` | Estruturação, mascaramento de CPFs, PLN leve, proveniência e verificação automática |
 | `04_experimentos_chunking_jurisprudencia` | Comparação das estratégias de chunking. Escolhidos: janela fixa de 500 tokens com 100 de sobreposição e BGE-M3 |
+| `05_chunking_definitivo_jurisprudencia` | Chunking definitivo de um recorte de indexação de 20.000 documentos (303.257 chunks) |
 
 ### O que é possível fazer a partir do clone
 
@@ -294,5 +295,19 @@ df = pd.read_parquet("hf://datasets/laaaii/lex_ai/data/parquet/f01.parquet")
   ```bash
   hf download BAAI/bge-m3 --revision 5617a9f61b028005a4858fdac845db406aefb181
   ```
+
+### Notebook 05 e índice de busca
+
+O notebook `05_chunking_definitivo_jurisprudencia` aplica a estratégia escolhida no 04 (janela fixa de 500 tokens com 100 de sobreposição, tokenizador do BGE-M3) a um **recorte de indexação de 20.000 documentos**, e não aos 169.821 candidatos da base.
+
+| | Base (notebooks 01 a 04) | Índice de busca (notebook 05 em diante) |
+|---|---|---|
+| Documentos | 179.812 registros, 169.821 candidatos ao RAG | 20.000 documentos (cerca de 12% dos candidatos) |
+| Chunks e embeddings | — | 303.257 chunks |
+
+- **Seleção:** os 187 documentos usados nos experimentos do notebook 04 e na avaliação entram obrigatoriamente. Os demais vêm de uma amostra estratificada proporcional por tribunal, ano e órgão julgador, com seed fixa. Composição: TST 11.749, TRT-17 3.226, TRT-10 2.795, TRT-13 1.403 e STF 827.
+- **Motivo:** indexar todos os candidatos exigiria cerca de 2,57 milhões de chunks e cerca de 19 h de GPU. O recorte cabe numa sessão de cerca de 2,3 h e torna o projeto reprodutível.
+- **Rastreabilidade:** cada chunk e cada embedding guarda o `registro_id` do documento de origem, o mesmo da base. O recorte é gerado por `scripts/criar_recorte_indexacao_jurisprudencia.py`, e o hash do arquivo fica registrado na configuração do chunking.
+- **Limitação:** a busca só recupera decisões que estão no recorte. O índice pode ser ampliado depois, vetorizando apenas os documentos novos.
 
 Mais detalhes em [notebooks/02_jurisprudencia/README.md](notebooks/02_jurisprudencia/README.md), [auditoria](docs/auditoria_jurisprudencia.md), [proteção de CPFs](docs/protecao_cpf_jurisprudencia.md), [PLN leve](docs/pln_leve_jurisprudencia.md) e [avaliação do chunking](docs/avaliacao_chunking_avancada.md).

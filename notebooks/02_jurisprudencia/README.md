@@ -6,7 +6,7 @@
 4. [Chunking e suporte decisório](04_experimentos_chunking_jurisprudencia.ipynb): três bases e três híbridas, suporte contínuo por intervalos, budgets iguais, testes de integridade, bootstrap pareado, diagnóstico de falhas e separação prospectiva entre ajuste e teste final. Consulte o [protocolo avançado](../../docs/avaliacao_chunking_avancada.md).
 
 
-5. [Chunking definitivo](05_chunking_definitivo_jurisprudencia.ipynb): aplicação da janela de 500 tokens com 100 de sobreposição ao recorte consolidado do notebook 03, em lotes retomáveis, com vínculos documentais, verificação de integridade e manifesto versionado. O painel distingue progresso parcial de corpus integral validado; embeddings e pgvector são etapas seguintes.
+5. [Chunking definitivo](05_chunking_definitivo_jurisprudencia.ipynb): aplicação da janela de 500 tokens com 100 de sobreposição a um recorte de indexação de 20.000 documentos dos candidatos consolidados do notebook 03 (amostra estratificada que inclui os 187 documentos dos experimentos; 303.257 chunks), em lotes retomáveis, com vínculos documentais, verificação de integridade e manifesto versionado. O painel distingue progresso parcial de corpus integral validado; embeddings e pgvector são etapas seguintes.
 
 6. [Embeddings e indexação](06_embeddings_indexacao_jurisprudencia.ipynb): compatibilidade do backbone BGE-M3 com legislação, geração em lotes com cache e retomada, validação dos vínculos vetor/chunk e coleção própria no pgvector. A execução integral exige a conclusão validada do 05 e a definição do recurso computacional.
 
