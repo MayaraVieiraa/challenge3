@@ -64,6 +64,10 @@ Desktop.ini
 # Notebooks arquivados antes da integração (saídas da base completa); mantidos apenas localmente
 /notebooks/02_jurisprudencia/historico/
 
+# Pacotes de chunks e resultados de embeddings do Kaggle; contêm texto não anonimizado
+/output/kaggle/pacotes/
+/output/kaggle/resultados/
+
 # Perguntas e evidências locais de jurisprudência; publicar apenas esquema/documentação.
 /data/evaluation/jurisprudencia/perguntas_suporte.jsonl
 /data/evaluation/jurisprudencia/candidatas_legislacao/
