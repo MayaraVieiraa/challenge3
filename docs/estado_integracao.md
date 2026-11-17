@@ -8,9 +8,9 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
 |---|---|---|
 | Recuperação conjunta | `notebooks/03_integracao/01_recuperacao_conjunta.ipynb`, `src/integracao/recuperacao.py` | concluída |
 | Guardrails de entrada e saída | `notebooks/03_integracao/02_guardrails.ipynb`, `src/integracao/guardrails.py` | concluída |
-| Geração (Qwen3 8B no Kaggle) | `src/integracao/geracao.py`, `scripts/*geracao*`, `scripts/kaggle_gerar_respostas.py` | em execução no Kaggle |
-| Juiz (Gemma 3 12B no Kaggle) | `src/integracao/juiz.py`, `scripts/*juiz*` | código pronto, ainda não executado |
-| Notebooks 03 (geração) e 04 (avaliação) | — | a fazer |
+| Geração (Qwen3 8B no Kaggle) | `notebooks/03_integracao/03_geracao.ipynb`, `src/integracao/geracao.py` | concluída |
+| Juiz (Gemma 3 12B no Kaggle) | `notebooks/03_integracao/04_avaliacao.ipynb`, `src/integracao/juiz.py` | concluída |
+| Notebooks 03 (geração) e 04 (avaliação) | `notebooks/03_integracao/` | concluídos |
 
 ## Resultados e decisões
 
@@ -52,31 +52,24 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
   - 26 recebem resposta fixa, sem LLM: institucional, consulta individual, fora do escopo e outra jurisdição.
 - **Prompt de sistema:** `SYSTEM_PROMPT_LEGAL` do grupo, sem alteração (`src/integracao/prompt_juridico.py`).
 
-### Juiz
+### Juiz e Avaliação Final
 
-- **Modelo:** Gemma 3 12B no Kaggle. É gratuito e de outra família que o gerador.
-- **Calibração:** antes de valer, o juiz é comparado com as 9 decisões da revisora, sem ver essas decisões.
-- **Referências:** resposta-ouro da curadoria, ou pontos esperados e limites dos conjuntos aprovados.
-- **Alternativa paga:** a classe `Juiz` chama a DeepSeek pela API, com a variável de ambiente `DEEPSEEK_API_KEY`.
+- **Modelo:** Gemma 3 12B no Kaggle (Ollama 0.40.16, GPU T4).
+- **Calibração:** 6 de 9 concordâncias com a revisora humana nas perguntas de calibração cega.
+- **Resultado das 111 respostas geradas:**
+  - 70,3% aprovadas (78 de 111), 29,7% reprovadas (33 de 111).
+  - Notas médias (0 a 2): Clareza 2,00, Fidelidade 1,56, Comportamento 1,21, Correção 1,14.
+  - Alucinações: 80,5% das afirmações apoiadas nas fontes; 19,5% sem apoio direto.
+  - **Pertinência da jurisprudência:** 93,0% das 201 decisões entregues foram julgadas pertinentes pelo juiz.
+- **Notebooks concluídos:**
+  - `notebooks/03_integracao/03_geracao.ipynb`
+  - `notebooks/03_integracao/04_avaliacao.ipynb`
 
-## Próximos comandos
+## Comandos executados
 
-```powershell
-# 1. Quando o kernel de geração terminar (status: kaggle kernels status laisapaiva93/lexia-geracao-qwen3)
-.venv\Scripts\python.exe scripts\importar_geracao_kaggle.py
-# Plano B, sem Kaggle: geração na GPU local com Q4
-#   .venv\Scripts\python.exe scripts\gerar_respostas_local.py
-#   .venv\Scripts\python.exe scripts\importar_geracao_kaggle.py --sem-download --local
-
-# 2. Juiz
-.venv\Scripts\python.exe scripts\preparar_juiz_kaggle.py
-kaggle datasets create -p (Resolve-Path output\kaggle\juiz\dataset).Path
-kaggle kernels push -p (Resolve-Path output\kaggle\juiz\kernel).Path
-# Quando terminar:
-.venv\Scripts\python.exe scripts\importar_juiz_kaggle.py
-```
-
-O passo 3 é criar os notebooks `03_geracao` e `04_avaliacao` a partir de `reports/integracao/geracao/` e `reports/integracao/juiz/`.
+1. Geração importada e validada via `scripts/importar_geracao_kaggle.py`.
+2. Julgamento importado e cruzado via `scripts/importar_juiz_kaggle.py`.
+3. Notebooks 03 e 04 gerados e executados via `scripts/executar_notebook_integracao.py`.
 
 Use caminhos absolutos no `kaggle datasets create` e no `kaggle kernels push`. Com caminho relativo, o upload falha no Windows.
 
