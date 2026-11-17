@@ -8,6 +8,6 @@
 
 5. [Chunking definitivo](05_chunking_definitivo_jurisprudencia.ipynb): aplicação da janela de 500 tokens com 100 de sobreposição a um recorte de indexação de 20.000 documentos dos candidatos consolidados do notebook 03 (amostra estratificada que inclui os 187 documentos dos experimentos; 303.257 chunks), em lotes retomáveis, com vínculos documentais, verificação de integridade e manifesto versionado. O painel distingue progresso parcial de corpus integral validado; embeddings e pgvector são etapas seguintes.
 
-6. [Embeddings e indexação](06_embeddings_indexacao_jurisprudencia.ipynb): compatibilidade do backbone BGE-M3 com legislação, geração em lotes com cache e retomada, validação dos vínculos vetor/chunk e coleção própria no pgvector. A execução integral exige a conclusão validada do 05 e a definição do recurso computacional.
+6. [Embeddings e indexação](06_embeddings_indexacao_jurisprudencia.ipynb): vetores BGE-M3 dos 303.257 chunks do recorte de indexação, calculados na GPU do Kaggle em FP16 e gravados em float32, conferidos por hash, norma e mapeamento e importados localmente. A coleção fica no pgvector, no schema `lex_jurisprudencia`, no mesmo banco da legislação, sem alterar as tabelas dela.
 
 As células Markdown atuais são a referência editorial. Atualizações de código e resultados devem preservar seus textos, títulos e organização, conforme [AGENTS.md](AGENTS.md).

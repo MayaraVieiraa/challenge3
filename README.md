@@ -236,6 +236,7 @@ Os notebooks de `notebooks/02_jurisprudencia/` usam a **base reduzida** de juris
 | `03_limpeza_estruturacao_jurisprudencia` | Estruturação, mascaramento de CPFs, PLN leve, proveniência e verificação automática |
 | `04_experimentos_chunking_jurisprudencia` | Comparação das estratégias de chunking. Escolhidos: janela fixa de 500 tokens com 100 de sobreposição e BGE-M3 |
 | `05_chunking_definitivo_jurisprudencia` | Chunking definitivo de um recorte de indexação de 20.000 documentos (303.257 chunks) |
+| `06_embeddings_indexacao_jurisprudencia` | Embeddings BGE-M3 do recorte (Kaggle, FP16) e coleção `lex_jurisprudencia` no pgvector |
 
 ### O que é possível fazer a partir do clone
 
@@ -308,6 +309,7 @@ O notebook `05_chunking_definitivo_jurisprudencia` aplica a estratégia escolhid
 - **Seleção:** os 187 documentos usados nos experimentos do notebook 04 e na avaliação entram obrigatoriamente. Os demais vêm de uma amostra estratificada proporcional por tribunal, ano e órgão julgador, com seed fixa. Composição: TST 11.749, TRT-17 3.226, TRT-10 2.795, TRT-13 1.403 e STF 827.
 - **Motivo:** indexar todos os candidatos exigiria cerca de 2,57 milhões de chunks e cerca de 19 h de GPU. O recorte cabe numa sessão de cerca de 2,3 h e torna o projeto reprodutível.
 - **Rastreabilidade:** cada chunk e cada embedding guarda o `registro_id` do documento de origem, o mesmo da base. O recorte é gerado por `scripts/criar_recorte_indexacao_jurisprudencia.py`, e o hash do arquivo fica registrado na configuração do chunking.
+- **Embeddings (notebook 06):** os 303.257 chunks foram vetorizados com o BGE-M3 na GPU T4 do Kaggle, em FP16 (autocast), e gravados em float32. Cada parte foi conferida contra uma amostra em float32 (cosseno mínimo de 0,999813). Os vetores estão no schema `lex_jurisprudencia` do mesmo banco PostgreSQL/pgvector da legislação. Scripts: `exportar_pacotes_kaggle_jurisprudencia.py`, `importar_embeddings_kaggle_jurisprudencia.py` e o notebook portátil `output/kaggle/06_embeddings_gpu_kaggle.ipynb`.
 - **Limitação:** a busca só recupera decisões que estão no recorte. O índice pode ser ampliado depois, vetorizando apenas os documentos novos.
 
 Mais detalhes em [notebooks/02_jurisprudencia/README.md](notebooks/02_jurisprudencia/README.md), [auditoria](docs/auditoria_jurisprudencia.md), [proteção de CPFs](docs/protecao_cpf_jurisprudencia.md), [PLN leve](docs/pln_leve_jurisprudencia.md) e [avaliação do chunking](docs/avaliacao_chunking_avancada.md).
