@@ -69,6 +69,14 @@ class TestSaida(unittest.TestCase):
         self.assertIn(g.AVISO_LEGAL, r.resposta_final)
         self.assertNotIn('fulano@exemplo.com', r.resposta_final)
 
+    def test_processo_da_fonte_nao_e_mascarado(self):
+        fontes = [dict(texto='Ementa: horas extras devidas.', processo='0001455-66.2024.5.13.0003')]
+        r = g.verificar_saida('O TRT-13 (processo 0001455-66.2024.5.13.0003) reconheceu as horas extras [Fonte 1]. '
+                              'Outro caso, 0009999-11.2023.5.02.0001, não foi entregue.', fontes)
+        self.assertIn('0001455-66.2024.5.13.0003', r.resposta_final)
+        self.assertNotIn('0009999-11.2023.5.02.0001', r.resposta_final)
+        self.assertIn('[PROCESSO]', r.resposta_final)
+
     def test_consulta_individual_exige_ressalva(self):
         entrada = g.verificar_entrada('Qual foi o fundamento da sentença do meu processo?')
         sem = g.verificar_saida('O fundamento foi o art. 203 do CPC, que define sentença [Fonte 1].', self.fontes, entrada)

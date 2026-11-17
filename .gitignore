@@ -69,6 +69,9 @@ Desktop.ini
 /output/kaggle/pacotes_base_169k/
 /output/kaggle/resultados/
 /output/kaggle/kernel_sessao*/
+# Pedidos e respostas da geração no Kaggle; contêm trechos de decisões e perguntas protegidas
+/output/kaggle/geracao/
+/output/kaggle/juiz/
 
 # Perguntas e evidências locais de jurisprudência; publicar apenas esquema/documentação.
 /data/evaluation/jurisprudencia/perguntas_suporte.jsonl

@@ -56,13 +56,31 @@ TELEFONE = re.compile(r'(?<!\d)(?:\(?\d{2}\)?\s?)?9?\d{4}-?\d{4}(?!\d)')
 PROCESSO_CNJ = re.compile(r'(?<!\d)\d{7}-?\d{2}\.?\d{4}\.?\d\.?\d{2}\.?\d{4}(?!\d)')
 
 
-def mascarar(texto):
+def _digitos(valor):
+    return re.sub(r'\D', '', str(valor or ''))
+
+
+def mascarar(texto, processos_preservados=()):
+    """Mascara dados pessoais. `processos_preservados`: números CNJ (só dígitos) das decisões entregues como fonte,
+    que são públicas e devem continuar identificáveis na resposta."""
     achados = []
+    preservados = {_digitos(p) for p in processos_preservados if p}
     for nome, padrao, marca in (('processo', PROCESSO_CNJ, '[PROCESSO]'), ('cnpj', CNPJ, '[CNPJ]'), ('cpf', CPF, '[CPF]'),
                                 ('email', EMAIL, '[EMAIL]'), ('telefone', TELEFONE, '[TELEFONE]')):
-        if padrao.search(texto):
-            achados.append(nome)
-            texto = padrao.sub(marca, texto)
+        protegidos = []
+
+        def trocar(m):
+            if nome == 'processo' and _digitos(m.group(0)) in preservados:
+                protegidos.append(m.group(0))
+                return f'\x00{len(protegidos) - 1}\x00'
+            if nome not in achados:
+                achados.append(nome)
+            return marca
+        texto = padrao.sub(trocar, texto)
+        # Números de processo preservados ficam fora das buscas seguintes (o telefone casaria com parte deles).
+        if nome == 'processo':
+            reservados = protegidos
+    texto = re.sub(r'\x00(\d+)\x00', lambda m: reservados[int(m.group(1))], texto)
     return texto, achados
 
 
@@ -205,7 +223,8 @@ class ResultadoSaida:
 def verificar_saida(resposta, fontes, entrada=None):
     """fontes: lista na ordem das [Fonte N], cada uma com 'texto' e, na legislação, 'artigo_ref'."""
     alertas, texto = [], resposta or ''
-    final, pii = mascarar(texto)
+    processos_fontes = [f.get('processo') for f in fontes] + PROCESSO_CNJ.findall(' '.join(f.get('texto', '') or '' for f in fontes))
+    final, pii = mascarar(texto, processos_fontes)
     if pii:
         alertas.append(dict(codigo='dados_pessoais_saida', detalhe=', '.join(pii)))
     lista_frases = frases(texto)
