@@ -4,7 +4,8 @@ Saídas:
   output/kaggle/juiz/julgamentos.jsonl            julgamentos completos (fora do Git)
   reports/integracao/juiz/calibracao.csv          juiz × revisora nas 9 respostas com decisão humana
   reports/integracao/juiz/julgamentos.csv         notas e veredito por resposta gerada, com o resultado dos guardrails
-Uso: python scripts/importar_juiz_kaggle.py [--sem-download]
+  reports/integracao/juiz/julgamentos_llama.csv   (com --llama) notas e veredito das respostas da LLM B
+Uso: python scripts/importar_juiz_kaggle.py [--sem-download] [--llama] [--27b]  (--27b: juiz Gemma 3 27B, arquivos com sufixo _27b)
 """
 from pathlib import Path
 import glob
@@ -25,6 +26,13 @@ RELATORIOS = ROOT / 'reports/integracao/juiz'
 
 
 def main():
+    global KERNEL, BASE
+    llama = '--llama' in sys.argv   # julgamentos das respostas da LLM B (preparar_juiz_kaggle.py --llama)
+    sufixo = '_27b' if '--27b' in sys.argv else ''   # juiz Gemma 3 27B (preparar_juiz_kaggle.py --27b)
+    if sufixo:
+        KERNEL, BASE = KERNEL + '-27b', BASE.with_name(BASE.name + sufixo)
+    if llama:
+        KERNEL, BASE = KERNEL + '-llama', BASE.with_name(BASE.name + '_llama')
     resultados = BASE / 'resultados'
     resultados.mkdir(parents=True, exist_ok=True)
     if '--sem-download' not in sys.argv:
@@ -53,12 +61,18 @@ def main():
 
     RELATORIOS.mkdir(parents=True, exist_ok=True)
     colunas = ['fidelidade', 'correcao', 'comportamento', 'clareza']
-    tabela = pd.DataFrame([{k: j.get(k) for k in ['julgamento_id', 'grupo', 'valido', 'erro', 'veredito', 'segundos', *colunas]}
+    tabela = pd.DataFrame([{k: j.get(k) for k in ['julgamento_id', 'grupo', 'valido', 'erro', 'veredito', 'veredito_regra', 'segundos', *colunas]}
                            | dict(afirmacoes=len(j.get('afirmacoes') or []),
                                   sem_apoio=sum(a.get('suporte') in ('sem_apoio', 'contradita') for a in j.get('afirmacoes') or []),
                                   jurisprudencia_entregue=len(j.get('jurisprudencia_pertinente') or []),
                                   jurisprudencia_pertinente=sum(bool(x.get('pertinente')) for x in j.get('jurisprudencia_pertinente') or []))
                            for j in julgamentos])
+    if llama:
+        tabela.to_csv(RELATORIOS / f'julgamentos{sufixo}_llama.csv', index=False, encoding='utf-8')
+        print('válidos:', tabela.valido.sum(), 'de', len(tabela))
+        print('modelo:', tabela.veredito.value_counts(dropna=False).to_dict(), '| regra:', tabela.veredito_regra.value_counts(dropna=False).to_dict())
+        print(tabela[colunas].mean().round(2).to_dict())
+        return
     humano = {}
     arquivo = glob.glob(str(ROOT / 'data/evaluation/legislacao/feedback_pos_teste/*/respostas_reais_e_feedback.jsonl'))[0]
     for l in Path(arquivo).read_text(encoding='utf-8').splitlines():
@@ -66,8 +80,8 @@ def main():
             r = json.loads(l)
             humano[f'calib_{r["query_id"]}'] = r['decisao_sobre_resposta_original']
     calib = tabela[tabela.grupo == 'calibracao'].assign(humano=lambda d: d.julgamento_id.map(humano))
-    calib = calib.assign(concorda=calib.veredito == calib.humano)
-    calib.to_csv(RELATORIOS / 'calibracao.csv', index=False, encoding='utf-8')
+    calib = calib.assign(concorda=calib.veredito == calib.humano, concorda_regra=calib.veredito_regra == calib.humano)
+    calib.to_csv(RELATORIOS / f'calibracao{sufixo}.csv', index=False, encoding='utf-8')
     geradas = tabela[tabela.grupo == 'geracao'].copy()
     revisao = ROOT / 'reports/integracao/geracao/revisao_saida.csv'
     if revisao.exists():
@@ -75,11 +89,17 @@ def main():
         ids = geradas.julgamento_id.str.removeprefix('ger_')
         geradas['guardrail'] = ids.map(guard['aprovada']).map({True: 'aprovada', False: 'reprovada'})
         geradas['acao'] = ids.map(guard['acao'])
-    geradas.to_csv(RELATORIOS / 'julgamentos.csv', index=False, encoding='utf-8')
+    geradas.to_csv(RELATORIOS / f'julgamentos{sufixo}.csv', index=False, encoding='utf-8')
     print('válidos:', tabela.valido.sum(), 'de', len(tabela))
-    print('calibração (juiz × revisora):', int(calib.concorda.sum()), 'de', len(calib))
-    print(calib[['julgamento_id', 'humano', 'veredito', *colunas]].to_string(index=False))
-    print(geradas.veredito.value_counts(dropna=False).to_dict())
+    reprovadas = calib[calib.humano == 'reprovada']
+    print('calibração (juiz × revisora): modelo', int(calib.concorda.sum()), '| regra', int(calib.concorda_regra.sum()),
+          'de', len(calib), '| reprovadas pela revisora detectadas: modelo',
+          int((reprovadas.veredito == 'reprovada').sum()), '| regra', int((reprovadas.veredito_regra == 'reprovada').sum()),
+          'de', len(reprovadas))
+    print(calib[['julgamento_id', 'humano', 'veredito', 'veredito_regra', *colunas]].to_string(index=False))
+    if len(geradas):
+        print('geradas — modelo:', geradas.veredito.value_counts(dropna=False).to_dict(),
+              '| regra:', geradas.veredito_regra.value_counts(dropna=False).to_dict())
 
 
 if __name__ == '__main__':

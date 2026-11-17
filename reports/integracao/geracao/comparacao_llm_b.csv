@@ -1,0 +1,223 @@
+pergunta_id,acao,llm,modelo,valida,problemas,aprovada,bloqueantes,alertas,citacoes,segundos,tokens_saida
+q09_p1_JUS-001,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,7,126.8,724
+q09_p1_JUS-001,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,112.4,380
+q09_p1_JUS-002,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,4,22.7,423
+q09_p1_JUS-002,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,18.8,402
+q09_p1_JUS-004,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,5,36.4,654
+q09_p1_JUS-004,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,5,33.0,666
+q09_p1_JUS-007,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,61.8,889
+q09_p1_JUS-007,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,29.7,504
+q09_p1_JUS-008,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,38.9,600
+q09_p1_JUS-008,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,29.6,647
+q09_p1_JUS-009,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,4,37.5,575
+q09_p1_JUS-009,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,33.6,715
+q09_p1_JUS-010,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,26.3,384
+q09_p1_JUS-010,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,23.4,487
+q09_p1_JUS-013,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,44.9,692
+q09_p1_JUS-013,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,24.9,489
+q09_p1_JUS-014,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,3,23.4,327
+q09_p1_JUS-014,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,15.6,283
+q09_p1_JUS-016,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,63.1,987
+q09_p1_JUS-016,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",3,25.6,480
+q09_p1_JUS-017,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,31.1,485
+q09_p1_JUS-017,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",7,24.9,550
+q09_p1_JUS-018,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",0,53.5,839
+q09_p1_JUS-018,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,19.2,336
+q09_p1_JUS-019,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,33.2,458
+q09_p1_JUS-019,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,2,20.2,401
+q09_p1_JUS-021,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",6,25.5,371
+q09_p1_JUS-021,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,20.7,416
+q09_p1_JUS-022,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,afirmacao_sem_fonte,4,41.2,616
+q09_p1_JUS-022,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,20.8,365
+q09_p1_JUS-024,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,37.3,588
+q09_p1_JUS-024,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,20.7,423
+q09_p1_JUS-025,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,31.1,450
+q09_p1_JUS-025,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,21.7,421
+q09_p1_JUS-026,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,2,25.5,367
+q09_p1_JUS-026,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,0,17.0,318
+q09_p1_JUS-027,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,39.4,644
+q09_p1_JUS-027,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,24.5,546
+q09_p1_JUS-028,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,28.1,433
+q09_p1_JUS-028,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,19.1,395
+q09_p1_JUS-029,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,30.8,478
+q09_p1_JUS-029,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,19.3,392
+q09_p1_JUS-031,responder,A,qwen3:8b-q8_0,True,,True,,"artigo_sem_fonte, aviso_legal_ausente",5,29.3,468
+q09_p1_JUS-031,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,26.6,599
+q09_p1_JUS-032,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,43.0,705
+q09_p1_JUS-032,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,17.9,371
+q09_p1_JUS-033,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,39.0,618
+q09_p1_JUS-033,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,23.0,480
+q09_p1_JUS-034,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",0,126.5,978
+q09_p1_JUS-034,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,25.8,539
+q09_p1_JUS-035,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,6,46.3,738
+q09_p1_JUS-035,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,20.2,429
+q09_p1_JUS-036,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,37.9,615
+q09_p1_JUS-036,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,aviso_legal_ausente,0,17.4,359
+q09_p1_JUS-037,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,21.7,304
+q09_p1_JUS-037,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,27.5,584
+q09_p1_JUS-038,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,43.9,589
+q09_p1_JUS-038,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,26.9,451
+q09_p1_JUS-039,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,34.7,533
+q09_p1_JUS-039,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,aviso_legal_ausente,0,19.0,376
+q09_p1_JUS-040,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",6,50.6,808
+q09_p1_JUS-040,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,26.3,539
+q09_p1_JUS-041,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,26.7,396
+q09_p1_JUS-041,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,3,14.8,270
+q09_p1_JUS-042,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",6,51.1,840
+q09_p1_JUS-042,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,4,24.3,514
+q09_p1_JUS-043,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,37.1,578
+q09_p1_JUS-043,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,28.3,611
+q09_p1_JUS-045,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",5,36.3,565
+q09_p1_JUS-045,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,3,23.1,480
+q09_p1_JUS-046,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",2,40.0,650
+q09_p1_JUS-046,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,26.5,588
+q09_p1_JUS-047,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",6,28.1,420
+q09_p1_JUS-047,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,27.4,584
+q09_p1_JUS-048,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,45.3,708
+q09_p1_JUS-048,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,24.4,486
+q09_p1_JUS-049,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,36.0,575
+q09_p1_JUS-049,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,21.6,458
+q09_p1_JUS-050,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,38.2,602
+q09_p1_JUS-050,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,15.4,288
+q09_p2_FAQ08,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,5,27.6,431
+q09_p2_FAQ08,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,15.9,320
+q09_p2_FAQ09,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,40.7,645
+q09_p2_FAQ09,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",6,23.0,467
+q09_p2_FAQ10,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,30.4,476
+q09_p2_FAQ10,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,20.7,433
+q09_p2_FAQ11,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,3,34.2,446
+q09_p2_FAQ11,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,27.7,497
+q09_p2_FAQ12,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,34.6,517
+q09_p2_FAQ12,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,5,21.8,427
+q09_p2_FAQ13,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,43.5,707
+q09_p2_FAQ13,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,7,29.8,679
+q09_p2_FAQ14,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,4,29.1,453
+q09_p2_FAQ14,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,4,15.6,308
+q09_p2_FAQ15,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,5,27.1,411
+q09_p2_FAQ15,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,17.0,342
+q09_p2_FAQ16,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,31.7,460
+q09_p2_FAQ16,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,5,16.8,283
+q09_p2_FAQ17,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,33.1,515
+q09_p2_FAQ17,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,24.3,510
+q09_p2_FAQ18,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,3,27.2,409
+q09_p2_FAQ18,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,18.6,376
+q09_p2_FAQ19,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,5,37.4,578
+q09_p2_FAQ19,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,18.1,347
+q09_p2_FAQ20,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,27.4,408
+q09_p2_FAQ20,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,17.1,335
+q09_p2_FAQ21,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,36.7,570
+q09_p2_FAQ21,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,19.7,390
+q09_p2_FAQ22,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,34.0,414
+q09_p2_FAQ22,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,29.5,503
+q09_p2_FAQ23,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,27.8,409
+q09_p2_FAQ23,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,27.1,580
+q09_p2_FAQ24,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,3,31.1,456
+q09_p2_FAQ24,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,6,28.6,597
+q09_p2_FAQ25,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,33.6,505
+q09_p2_FAQ25,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,20.9,408
+q09_p2_FAQ26,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,0,30.0,446
+q09_p2_FAQ26,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,2,17.3,321
+q09_p2_FAQ27,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,32.6,446
+q09_p2_FAQ27,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,23.1,414
+q09_p2_FAQ28,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",18,56.9,925
+q09_p2_FAQ28,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,23.4,471
+q09_p2_FAQ29,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,37.5,607
+q09_p2_FAQ29,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,18.8,395
+q09_p2_FAQ30,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",5,48.7,779
+q09_p2_FAQ30,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,25.2,529
+q09_p2_FAQ31,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,34.6,464
+q09_p2_FAQ31,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,4,24.2,421
+q09_p2_FAQ32,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,6,30.6,480
+q09_p2_FAQ32,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,19.7,409
+q09_p2_FAQ33,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,29.6,425
+q09_p2_FAQ33,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,22.7,436
+q09_p2_FAQ34,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,3,35.7,535
+q09_p2_FAQ34,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,2,21.1,404
+q09_p2_FAQ36,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,5,35.5,563
+q09_p2_FAQ36,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,18.4,372
+q09_p2_FAQ37,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,2,21.3,272
+q09_p2_FAQ37,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,19.6,359
+q09_p2_FAQ38,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,37.1,568
+q09_p2_FAQ38,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",9,29.4,632
+q09_p2_FAQ39,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,41.4,647
+q09_p2_FAQ39,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,15.2,272
+q09_p2_FAQ40,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,8,34.3,535
+q09_p2_FAQ40,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,4,20.0,405
+q09_p2_FAQ42,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,2,16.6,232
+q09_p2_FAQ42,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,14.7,289
+q09_p2_FAQ44,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,31.0,463
+q09_p2_FAQ44,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,18.8,362
+q09_p2_FAQ45,responder,A,qwen3:8b-q8_0,True,,True,,afirmacao_sem_fonte,2,33.8,544
+q09_p2_FAQ45,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,5,21.3,459
+q09_p2_FAQ46,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,28.9,433
+q09_p2_FAQ46,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,0,15.7,283
+q09_p2_FAQ47,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,3,31.5,458
+q09_p2_FAQ47,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,19.6,357
+q09_p2_FAQ48,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",3,32.3,434
+q09_p2_FAQ48,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,18.7,292
+q09_p2_FAQ49,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,43.9,710
+q09_p2_FAQ49,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,18.6,378
+q09_p2_FAQ50,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,34.2,485
+q09_p2_FAQ50,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,2,12.5,208
+q_dev_01,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,17.8,251
+q_dev_01,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,2,10.1,170
+q_dev_02,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,34.4,514
+q_dev_02,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,4,25.2,518
+q_dev_03,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",2,38.8,617
+q_dev_03,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,23.4,496
+q_dev_04,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,5,34.9,542
+q_dev_04,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,28.0,605
+q_dev_05,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,33.5,534
+q_dev_05,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,21.6,466
+q_dev_06,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,4,29.0,398
+q_dev_06,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,18.6,318
+q_dev_07,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,5,31.9,490
+q_dev_07,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,21.6,441
+q_dev_08,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",7,36.2,561
+q_dev_08,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",6,27.5,589
+q_test_01,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,34.9,544
+q_test_01,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,4,21.9,444
+q_test_02,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,2,30.9,468
+q_test_02,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,22.0,447
+q_test_03,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,5,26.8,407
+q_test_03,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,18.8,387
+q_test_04,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,4,29.5,462
+q_test_04,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,23.8,523
+q_test_06,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",7,38.8,586
+q_test_06,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",6,25.7,505
+q_test_07,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",8,32.9,478
+q_test_07,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,21.6,410
+q_test_08,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",14,43.3,670
+q_test_08,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,44.9,1009
+juris_002,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,32.3,491
+juris_002,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,20.3,402
+juris_003,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,45.6,750
+juris_003,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,21.4,454
+juris_004,orientar_sem_aconselhar,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,30.1,460
+juris_004,orientar_sem_aconselhar,B,llama3.1:8b,True,,True,,aviso_legal_ausente,3,15.5,287
+juris_005,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,31.7,498
+juris_005,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,28.5,627
+juris_010,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,32.8,512
+juris_010,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",1,19.2,391
+juris_011,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,34.5,383
+juris_011,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,0,25.4,356
+juris_012,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,29.4,456
+juris_012,responder,B,llama3.1:8b,True,,True,,aviso_legal_ausente,5,18.3,392
+juris_013,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",5,46.0,763
+juris_013,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",7,22.9,508
+juris_014,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,4,36.8,585
+juris_014,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,18.2,361
+juris_017,responder,A,qwen3:8b-q8_0,True,,True,,"artigo_sem_fonte, aviso_legal_ausente",6,46.3,728
+juris_017,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,25.4,523
+juris_019,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",7,35.9,565
+juris_019,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,16.4,320
+juris_020,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31,50.5,816
+juris_020,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,24.1,503
+juris_022,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",6,35.1,567
+juris_022,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",2,18.0,373
+juris_023,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,29.8,482
+juris_023,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,16.8,359
+juris_024,responder,A,qwen3:8b-q8_0,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",4,35.1,505
+juris_024,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",0,25.4,487
+juris_026,responder,A,qwen3:8b-q8_0,True,,True,,aviso_legal_ausente,3,25.9,393
+juris_026,responder,B,llama3.1:8b,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",3,18.4,379

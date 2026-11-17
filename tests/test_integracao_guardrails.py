@@ -107,6 +107,14 @@ class TestSaida(unittest.TestCase):
                 r = g.verificar_saida(resposta, self.fontes, entrada)
                 self.assertFalse(any(a['codigo'] == 'consulta_individual_pede_dados' for a in r.alertas), r.alertas)
 
+    def test_resposta_fixa_de_recusa_sem_fontes_e_aprovada(self):
+        entrada = g.verificar_entrada('Qual a regra de férias na França?')
+        r = g.verificar_saida('Só consigo responder sobre o Direito do Trabalho brasileiro. Para as regras de outro país, '
+                              'consulte a legislação local.', [], entrada)
+        self.assertTrue(r.aprovada, r.alertas)
+        sem_entrada = g.verificar_saida('O direito ao adicional é garantido por lei.', [])
+        self.assertFalse(sem_entrada.aprovada)
+
     def test_frases_nao_quebram_em_abreviacoes(self):
         self.assertEqual(len(g.frases('Conforme o Art. 73, § 2º da CLT, o horário noturno vai das 22 às 5 horas.')), 1)
 

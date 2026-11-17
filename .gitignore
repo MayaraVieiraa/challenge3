@@ -72,6 +72,8 @@ Desktop.ini
 # Pedidos e respostas da geração no Kaggle; contêm trechos de decisões e perguntas protegidas
 /output/kaggle/geracao/
 /output/kaggle/juiz/
+/output/kaggle/fallback/
+/output/kaggle/juiz_llama/
 
 # Perguntas e evidências locais de jurisprudência; publicar apenas esquema/documentação.
 /data/evaluation/jurisprudencia/perguntas_suporte.jsonl
@@ -85,3 +87,9 @@ Desktop.ini
 /data/evaluation/jurisprudencia/referencias_teste_final.parquet
 /data/evaluation/jurisprudencia/curadoria_teste_final_iniciada.json
 /data/evaluation/jurisprudencia/curadoria_teste_final/
+
+# Curadoria da avaliação 09 e cópia anterior (perguntas e respostas-ouro não publicadas)
+/data/evaluation/legislacao/avaliacao_09/
+/data/evaluation/legislacao/perguntas_consolidadas_pre09.csv
+/output/kaggle/juiz_27b/
+/output/kaggle/juiz_27b_llama/

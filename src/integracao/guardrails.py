@@ -270,7 +270,11 @@ def verificar_saida(resposta, fontes, entrada=None):
                                 frase=frase.strip()[:200]))
     juridicas = [f for f in lista_frases if JURIDICO.search(_sem_acento(f))]
     sem_citacao = [f for f in juridicas if not CITACAO.search(f)]
-    if juridicas and not fontes:
+    # Sem fontes só é falha quando a entrada pedia busca; nas ações de recusa/redirecionamento a resposta não
+    # tem fontes por desenho, e o excesso de conteúdo jurídico é tratado por resposta_alem_do_escopo.
+    acao_sem_busca = entrada is not None and entrada.acao in ('fora_escopo', 'outra_jurisdicao', 'institucional',
+                                                              'consulta_individual')
+    if juridicas and not fontes and not acao_sem_busca:
         alertas.append(dict(codigo='sem_fontes', detalhe='Afirmações jurídicas sem nenhuma fonte entregue.'))
     elif len(juridicas) >= 3 and len(sem_citacao) / len(juridicas) > 0.6:
         alertas.append(dict(codigo='afirmacao_sem_fonte', detalhe=f'{len(sem_citacao)} de {len(juridicas)} frases jurídicas sem citação'))
