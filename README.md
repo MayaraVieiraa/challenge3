@@ -216,14 +216,13 @@ A licença do código será definida pelos responsáveis pelo projeto.
 As fontes de dados e os modelos utilizados possuem condições próprias de uso, que deverão ser documentadas.
 
 
-## RAG legislativo: execução e documentação
+## Legislação: preparação e recuperação
 
 - [Instalação e reprodução](docs/execucao_reproducao.md)
 - [Banco PostgreSQL e pgvector](docs/pgvector.md)
-- [Demonstração com uma consulta real](docs/06_demonstracao_rag_trabalhista.md)
 - [Arquitetura e base de conhecimento](docs/semana2_base_conhecimento_e_rag.md)
 
-Os notebooks 06, 07 e 08 utilizam os módulos de `src/rag/` e `src/storage/`. A configuração congelada e os resultados selecionados ficam em `reports/legislacao/`. Consulte as instruções de reprodução antes de executar a avaliação.
+Os notebooks 01 a 06 de `notebooks/01_legislacao/` preparam a base da CLT e avaliam a recuperação; a coleção fica no pgvector (schema `lex_clt`). A integração com a LLM (antigos notebooks 07 a 09 e `src/rag/`) foi retirada para ser refeita no fluxo integrado de legislação e jurisprudência, com guardrails e avaliação. A versão anterior está preservada na tag `rag-legislacao-v1`. O prompt jurídico do grupo foi mantido em `src/integracao/prompt_juridico.py`.
 
 ## Jurisprudência: notebooks 01 a 04
 
