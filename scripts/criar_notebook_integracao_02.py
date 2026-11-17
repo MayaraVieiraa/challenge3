@@ -35,7 +35,7 @@ Este notebook avalia os **guardrails determinísticos** do fluxo integrado (`src
 
 Antes da classificação, dados pessoais (CPF, CNPJ, número de processo, e-mail e telefone) são mascarados e frases com instruções suspeitas ("ignore as instruções...") são removidas.
 
-**Saída.** A resposta é conferida contra as fontes entregues: citação `[Fonte N]` inexistente, artigo ou parágrafo citado que não corresponde à fonte, número afirmado que não está no dispositivo citado, promessa de resultado, resposta jurídica desenvolvida quando a entrada pedia recusa, consulta individual sem ressalva de acesso e ausência do aviso legal (acrescentado automaticamente).
+**Saída.** A resposta é conferida contra as fontes entregues: citação `[Fonte N]` inexistente, artigo ou parágrafo citado que não corresponde à fonte, número afirmado que não está no dispositivo citado, promessa de resultado, resposta jurídica desenvolvida quando a entrada pedia recusa, consulta individual sem ressalva de acesso, consulta individual em que a resposta pede número do processo ou documentos, artigo citado que não está em nenhuma fonte (alerta informativo) e ausência do aviso legal (acrescentado automaticamente).
 
 **Dados usados** (todos já existentes na base, exceto o conjunto sintético da seção 4):
 
@@ -201,8 +201,33 @@ saida_df.to_csv(RELATORIOS / 'saida_respostas_revisadas.csv', index=False, encod
 alertas.to_csv(RELATORIOS / 'saida_alertas.csv', index=False, encoding='utf-8')
 ''')
 
+md('int02_novas_texto', '''
+## 6. Regras acrescentadas após o teste com o Qwen3 8B
+
+No teste de velocidade do `qwen3:8b`, que roda no Ollama, na GPU, com o prompt jurídico completo e as mesmas fontes do feedback, as regras anteriores aprovaram a resposta de q_test_neg_02. A pergunta é sobre a sentença do próprio processo da pessoa. A resposta diz que não é possível identificar o fundamento, mas **pede à pessoa o número do processo e os documentos**. O comportamento esperado é informar que o sistema não acessa processos e indicar onde consultar.
+
+Duas regras foram acrescentadas:
+
+- `consulta_individual_pede_dados` (**bloqueante**): em consulta individual, a resposta pede número do processo, documentos, sentença, CPF ou contracheque. Pedidos negados, como "não envie seu CPF", não contam.
+- `artigo_sem_fonte` (informativo): a resposta cita um artigo que não está em nenhuma fonte entregue, nem como `artigo_ref` nem citado no texto da fonte. A comparação usa só o número do artigo, sem a norma.
+
+As 9 respostas da seção 5 continuam com o mesmo resultado; nenhuma recebeu alerta das regras novas. Abaixo, as 3 respostas da amostra do 8B (`data/evaluation/integracao/amostra_respostas_qwen3_8b.jsonl`).
+''')
+code('int02_novas', r'''
+regs = {json.loads(l)['query_id']: json.loads(l) for l in arquivo.read_text(encoding='utf-8').splitlines() if l.strip()}
+linhas = []
+for l in (ROOT / 'data/evaluation/integracao/amostra_respostas_qwen3_8b.jsonl').read_text(encoding='utf-8').splitlines():
+    a = json.loads(l)
+    r = regs[a['query_id']]
+    fontes = [dict(texto=f.get('conteudo_chunk', ''), artigo_ref=f.get('artigo_ref')) for f in r['fontes_entregues']]
+    saida = g.verificar_saida(a['resposta'], fontes, g.verificar_entrada(r['pergunta']))
+    linhas.append(dict(query_id=a['query_id'], segundos=a['segundos'], guardrail='aprovada' if saida.aprovada else 'reprovada',
+                       alertas=', '.join(sorted({x['codigo'] for x in saida.alertas if x['codigo'] != 'aviso_legal_ausente'}))))
+display(pd.DataFrame(linhas))
+''')
+
 md('int02_exemplo_texto', '''
-## 6. Exemplo do fluxo completo de entrada
+## 7. Exemplo do fluxo completo de entrada
 
 Uma pergunta com dado pessoal e instrução suspeita: o CPF é mascarado, a instrução é removida e só a pergunta sanitizada segue para a busca.
 ''')
@@ -216,7 +241,7 @@ print('pergunta enviada à busca:', r.pergunta_sanitizada)
 ''')
 
 md('int02_conclusao', '''
-## 7. Conclusões
+## 8. Conclusões
 
 **Entrada.**
 
@@ -235,6 +260,7 @@ md('int02_conclusao', '''
   - q_test_05 foi reprovada por responder com fundamentação uma pergunta fora da base;
   - q_test_neg_02 foi reprovada por responder sobre o processo da pessoa sem dizer que não há acesso a ele.
 - Como essas respostas foram usadas na calibração, o resultado comprova a cobertura dos erros conhecidos, mas não mede a generalização.
+- O primeiro teste com o Qwen3 8B já mostrou uma falsa aprovação, que motivou as regras da seção 6. Esse é o padrão esperado: cada erro novo encontrado em revisão vira uma regra ou um caso de teste.
 
 **Limites e próximos passos.**
 

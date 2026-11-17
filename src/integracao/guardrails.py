@@ -20,6 +20,10 @@ Saída — confere a resposta contra as fontes entregues:
   sem_fontes              afirmação jurídica sem nenhuma fonte entregue
   consulta_individual_sem_ressalva  entrada de consulta individual cuja resposta não diz que o sistema
                               não tem acesso ao processo/registros da pessoa
+  consulta_individual_pede_dados    entrada de consulta individual cuja resposta pede número do processo,
+                              documentos ou dados pessoais
+  artigo_sem_fonte        artigo citado na resposta que não está em nenhuma fonte entregue (informativo;
+                              compara só o número do artigo, não a norma)
   aviso_legal_ausente     resposta sem o aviso de que não substitui orientação profissional (acrescentado)
 Bloqueantes (reprovam a resposta): ver BLOQUEANTES; os demais alertas são informativos.
 As regras são heurísticas e auditáveis; não substituem revisão humana nem certificam correção jurídica.
@@ -33,7 +37,7 @@ import unicodedata
 AVISO_LEGAL = ('Esta resposta é informativa e não substitui a orientação de um advogado, da Defensoria Pública '
                'ou do sindicato da categoria.')
 BLOQUEANTES = {'citacao_inexistente', 'dispositivo_inconsistente', 'promessa_resultado', 'resposta_alem_do_escopo',
-               'sem_fontes', 'consulta_individual_sem_ressalva'}
+               'sem_fontes', 'consulta_individual_sem_ressalva', 'consulta_individual_pede_dados'}
 
 
 def _sem_acento(texto):
@@ -150,6 +154,21 @@ ABREVIACOES = re.compile(r'\b(arts?|inc|incs|al|n|nº|p|pag|par|sr|sra|dr|dra|ex
 RESSALVA_INDIVIDUAL = _rx(r'nao (tenho|temos|consigo|e possivel) (acesso|acessar|consultar|saber|informar|dizer)',
                           r'sem (acesso|o numero|os documentos)', r'(consulte|consultar|verifique) .*(tribunal|advogad|processo|pje|site)',
                           r'nao (foram|foi) (informad|fornecid)')
+# Pedido de dados ou documentos do caso: o sistema não acessa processos, então não deve solicitá-los.
+PEDIDO_DADOS = re.compile(r'\b(forneca|fornecer|informe|informar|envie|enviar|mande|mandar|compartilhe|compartilhar|anexe|anexar|'
+                          r'passe|passar|apresente|apresentar|digite|digitar)\b(\s+\S+){0,6}?\s+(o\s+)?'
+                          r'(numero d[oa] (processo|acao)|documentos?|copia|trechos? da sentenca|sentenca|cpf|contracheques?)')
+
+
+def _artigos_nas_fontes(fontes):
+    """Artigos disponíveis nas fontes: o artigo_ref da legislação e os artigos citados no texto (ex.: em decisões)."""
+    artigos = set()
+    for fonte in fontes:
+        ref = _normaliza_artigo(fonte.get('artigo_ref'))
+        if ref:
+            artigos.add(ref)
+        artigos.update(a.upper() for a in ARTIGO.findall(fonte.get('texto', '') or ''))
+    return artigos
 
 
 def frases(texto):
@@ -223,6 +242,13 @@ def verificar_saida(resposta, fontes, entrada=None):
                         alertas.append(dict(codigo='dispositivo_inconsistente',
                                             detalhe=f'"{valor} {unidade}" não aparece no {rotulo} do art. {ref} [Fonte {n}]',
                                             frase=frase.strip()[:200]))
+    # Artigo citado na resposta que não está em nenhuma fonte entregue (só compara o número do artigo, não a norma).
+    if fontes:
+        disponiveis = _artigos_nas_fontes(fontes)
+        for artigo in sorted({m.group(1).upper() for m in MENCAO.finditer(texto)} - disponiveis):
+            frase = next((f for f in lista_frases if re.search(rf'\bart(?:igo)?\.?\s*{re.escape(artigo)}\b', f, re.IGNORECASE)), '')
+            alertas.append(dict(codigo='artigo_sem_fonte', detalhe=f'art. {artigo} não está em nenhuma fonte entregue',
+                                frase=frase.strip()[:200]))
     juridicas = [f for f in lista_frases if JURIDICO.search(_sem_acento(f))]
     sem_citacao = [f for f in juridicas if not CITACAO.search(f)]
     if juridicas and not fontes:
@@ -236,6 +262,14 @@ def verificar_saida(resposta, fontes, entrada=None):
     if entrada is not None and entrada.acao == 'consulta_individual' and not RESSALVA_INDIVIDUAL.search(_sem_acento(texto)):
         alertas.append(dict(codigo='consulta_individual_sem_ressalva',
                             detalhe='A resposta não informa que o sistema não tem acesso ao processo ou aos registros da pessoa.'))
+    if entrada is not None and entrada.acao == 'consulta_individual':
+        sem_acento = _sem_acento(texto)
+        for m in PEDIDO_DADOS.finditer(sem_acento):
+            if not re.search(r'\bnao\s+(\S+\s+)?$', sem_acento[max(0, m.start() - 15):m.start()]):  # "não envie seu CPF" é orientação correta
+                alertas.append(dict(codigo='consulta_individual_pede_dados',
+                                    detalhe='A resposta pede número do processo, documentos ou dados pessoais.',
+                                    frase=texto[m.start():m.end() + 40].strip()))
+                break
     if 'nao substitui' not in _sem_acento(texto):
         alertas.append(dict(codigo='aviso_legal_ausente', detalhe='Aviso acrescentado.'))
         final = final.rstrip() + '\n\n' + AVISO_LEGAL

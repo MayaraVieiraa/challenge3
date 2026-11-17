@@ -76,6 +76,29 @@ class TestSaida(unittest.TestCase):
         self.assertFalse(sem.aprovada)
         self.assertTrue(com.aprovada)
 
+    def test_artigo_sem_fonte(self):
+        r = g.verificar_saida('O adicional é de 20% (Art. 73 da CLT) [Fonte 1], e o art. 59 trata das horas extras.', self.fontes)
+        alertas = [a for a in r.alertas if a['codigo'] == 'artigo_sem_fonte']
+        self.assertEqual([a['detalhe'] for a in alertas], ['art. 59 não está em nenhuma fonte entregue'])
+        self.assertTrue(r.aprovada)  # informativo, não bloqueia
+
+    def test_artigo_citado_no_texto_da_fonte_nao_alerta(self):
+        fontes = [dict(texto='A decisão aplicou o art. 7º, XXIII, da Constituição.', artigo_ref=None)]
+        r = g.verificar_saida('O adicional decorre do art. 7º, XXIII, da Constituição [Fonte 1].', fontes)
+        self.assertFalse(any(a['codigo'] == 'artigo_sem_fonte' for a in r.alertas))
+
+    def test_consulta_individual_pede_dados(self):
+        entrada = g.verificar_entrada('Qual foi o fundamento da sentença do meu processo?')
+        pede = g.verificar_saida('Não tenho acesso ao seu processo. Para ajudar, é necessário fornecer o número do processo '
+                                 'e os documentos.', self.fontes, entrada)
+        self.assertFalse(pede.aprovada)
+        self.assertTrue(any(a['codigo'] == 'consulta_individual_pede_dados' for a in pede.alertas))
+        for resposta in ('Não tenho acesso ao seu processo. Não envie seu CPF nem documentos por aqui; consulte o site do tribunal.',
+                         'Não é possível saber, pois não foram fornecidos o número do processo e os documentos. Consulte o tribunal.'):
+            with self.subTest(resposta=resposta[:40]):
+                r = g.verificar_saida(resposta, self.fontes, entrada)
+                self.assertFalse(any(a['codigo'] == 'consulta_individual_pede_dados' for a in r.alertas), r.alertas)
+
     def test_frases_nao_quebram_em_abreviacoes(self):
         self.assertEqual(len(g.frases('Conforme o Art. 73, § 2º da CLT, o horário noturno vai das 22 às 5 horas.')), 1)
 
