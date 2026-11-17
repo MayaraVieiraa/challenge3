@@ -18,7 +18,9 @@ def main():
     sys.stdout.reconfigure(encoding='utf-8')
     root = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(root))
-    os.chdir(root / 'notebooks/02_jurisprudencia')
+    # Aceita o nome de um notebook de jurisprudência ou um caminho relativo à raiz do projeto.
+    alvo = root / sys.argv[1] if '/' in sys.argv[1] else root / 'notebooks/02_jurisprudencia' / sys.argv[1]
+    os.chdir(alvo.parent)
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.figure
@@ -26,8 +28,8 @@ def main():
     import IPython.display
     from src.jurisprudencia.notebook_integration import output_text
     from src.jurisprudencia.notebook_preservation import save_notebook
-    name = sys.argv[1]
-    path = root / 'notebooks/02_jurisprudencia' / name
+    name = alvo.name
+    path = alvo
     nb = json.loads(path.read_text(encoding='utf-8'))
     ns = {'__name__': '__main__'}
     original_display, original_show = IPython.display.display, plt.show
@@ -46,14 +48,14 @@ def main():
                         value.savefig(buf, format='png', dpi=110)
                         outputs.append({'output_type': 'display_data', 'data': {
                             'image/png': base64.b64encode(buf.getvalue()).decode(),
-                            'text/plain': '<Gráfico do experimento de chunking>'}, 'metadata': {}})
+                            'text/plain': '<Figura>'}, 'metadata': {}})
                         plt.close(value)
                         continue
                     png = value._repr_png_() if hasattr(value, '_repr_png_') else None
                     if png:  # IPython.display.Image com PNG salvo nos relatórios.
                         outputs.append({'output_type': 'display_data', 'data': {
                             'image/png': png if isinstance(png, str) else base64.b64encode(png).decode(),
-                            'text/plain': '<Gráfico do experimento de chunking>'}, 'metadata': {}})
+                            'text/plain': '<Figura>'}, 'metadata': {}})
                         continue
                     data = {'text/plain': str(value)}
                     if hasattr(value, '_repr_html_') and value._repr_html_():
@@ -71,7 +73,7 @@ def main():
                     plt.figure(num).savefig(buf, format='png', dpi=110)
                     outputs.append({'output_type': 'display_data', 'data': {
                         'image/png': base64.b64encode(buf.getvalue()).decode(),
-                        'text/plain': '<Gráfico do experimento de chunking>'}, 'metadata': {}})
+                        'text/plain': '<Figura>'}, 'metadata': {}})
                 plt.close('all')
 
             IPython.display.display, plt.show = display, show
