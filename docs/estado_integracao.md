@@ -1,6 +1,26 @@
 # Estado da integração (03_integracao)
 
-Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-17.
+Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-18.
+
+## Atualização de 2026-11-18 (Windows)
+
+- **Juiz Gemma 3 27B importado.** Os kernels `lexia-juiz-gemma3-27b` (9 de calibração + 111 respostas do Qwen) e `lexia-juiz-gemma3-27b-llama` (111 respostas do Llama) estavam concluídos no Kaggle, mas o resultado não tinha sido importado. Agora: `julgamentos_27b.csv`, `julgamentos_27b_llama.csv` e `calibracao_27b.csv` (vereditos iguais aos de antes; só mudaram os tempos). Todos os 231 julgamentos são válidos, com média de 59 s cada.
+- **Calibração:** o veredito do modelo acerta 7 de 9 e detecta 1 das 3 reprovadas; a regra fixa acerta 8 de 9 e detecta as 3. Vale a regra.
+- **Qwen × Llama (veredito pela regra, 111 respostas cada):**
+
+  | | Qwen3 8B | Llama 3.1 8B |
+  |---|---|---|
+  | Reprovadas pela regra | 44 | 66 |
+  | Reprovadas pelo veredito do modelo | 4 | 4 |
+  | Fidelidade (0 a 2) | 1,80 | 1,68 |
+  | Correção | 1,71 | 1,46 |
+  | Comportamento | 1,77 | 1,76 |
+  | Clareza | 1,93 | 1,80 |
+
+  O Qwen fica como gerador principal.
+- **Guardrails × juiz:** os guardrails aprovaram as 111 respostas do Qwen, mas a regra do juiz reprova 44. Essas 44 são as primeiras a revisar à mão e podem compor a validação com 20 a 30 respostas rotuladas por pessoa.
+- **Importar sem os pedidos locais:** quando `output/kaggle/juiz_27b*/dataset/` não existe na máquina, baixe os pedidos do dataset privado (`lexia-juiz-27b-pedidos` ou `lexia-juiz-27b-llama-pedidos`) para essa pasta e as saídas do kernel para `resultados/`. Depois rode o `importar_juiz_kaggle.py --sem-download --27b`, com `--llama` para o Llama.
+- **Token do Kaggle no Windows:** o arquivo `~/.kaggle/access_token` precisa ficar sem extensão; o Bloco de Notas salva como `.txt`.
 
 ## Atualização de 2026-11-17 (tarde, no Mac)
 
@@ -17,9 +37,9 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
 |---|---|---|
 | Recuperação conjunta | `notebooks/03_integracao/01_recuperacao_conjunta.ipynb`, `src/integracao/recuperacao.py` | concluída |
 | Guardrails de entrada e saída | `notebooks/03_integracao/02_guardrails.ipynb`, `src/integracao/guardrails.py` | concluída |
-| Geração (Qwen3 8B no Kaggle) | `src/integracao/geracao.py`, `scripts/*geracao*`, `scripts/kaggle_gerar_respostas.py` | em execução no Kaggle |
-| Juiz (Gemma 3 12B no Kaggle) | `src/integracao/juiz.py`, `scripts/*juiz*` | código pronto, ainda não executado |
-| Notebooks 03 (geração) e 04 (avaliação) | — | a fazer |
+| Geração (Qwen3 8B no Kaggle) | `src/integracao/geracao.py`, `scripts/*geracao*`, `scripts/kaggle_gerar_respostas.py`, `notebooks/03_integracao/03_geracao.ipynb` | concluída |
+| Juiz (Gemma 3 27B no Kaggle) | `src/integracao/juiz.py`, `scripts/*juiz*`, `reports/integracao/juiz/*_27b*.csv` | concluído e importado; falta validar com rótulos humanos |
+| Notebook 04 (avaliação) | — | a fazer |
 
 ## Resultados e decisões
 
@@ -63,29 +83,27 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
 
 ### Juiz
 
-- **Modelo:** Gemma 3 12B no Kaggle. É gratuito e de outra família que o gerador.
+- **Modelo:** Gemma 3 27B no Kaggle, dividido entre as 2 GPUs T4. É gratuito e de outra família que o gerador. O 12B foi descartado. O veredito vale pela regra fixa `juiz.veredito_regra`.
 - **Calibração:** antes de valer, o juiz é comparado com as 9 decisões da revisora, sem ver essas decisões.
 - **Referências:** resposta-ouro da curadoria, ou pontos esperados e limites dos conjuntos aprovados.
 - **Alternativa paga:** a classe `Juiz` chama a DeepSeek pela API, com a variável de ambiente `DEEPSEEK_API_KEY`.
 
 ## Próximos comandos
 
+A geração e o juiz já foram executados e importados. Os próximos passos são:
+
+1. Revisar à mão as 44 respostas do Qwen reprovadas pela regra do juiz (`reports/integracao/juiz/julgamentos_27b.csv`, coluna `veredito_regra`) e rotular de 20 a 30 respostas para validar o juiz.
+2. Criar o notebook `04_avaliacao` a partir de `reports/integracao/geracao/` e `reports/integracao/juiz/`.
+
+Para rodar o juiz 27B de novo:
+
 ```powershell
-# 1. Quando o kernel de geração terminar (status: kaggle kernels status laisapaiva93/lexia-geracao-qwen3)
-.venv\Scripts\python.exe scripts\importar_geracao_kaggle.py
-# Plano B, sem Kaggle: geração na GPU local com Q4
-#   .venv\Scripts\python.exe scripts\gerar_respostas_local.py
-#   .venv\Scripts\python.exe scripts\importar_geracao_kaggle.py --sem-download --local
-
-# 2. Juiz
-.venv\Scripts\python.exe scripts\preparar_juiz_kaggle.py
-kaggle datasets create -p (Resolve-Path output\kaggle\juiz\dataset).Path
-kaggle kernels push -p (Resolve-Path output\kaggle\juiz\kernel).Path
-# Quando terminar:
-.venv\Scripts\python.exe scripts\importar_juiz_kaggle.py
+.venv\Scripts\python.exe scripts\preparar_juiz_kaggle.py --27b          # --27b --llama para as respostas do Llama
+kaggle datasets create -p (Resolve-Path output\kaggle\juiz_27b\dataset).Path
+kaggle kernels push -p (Resolve-Path output\kaggle\juiz_27b\kernel).Path
+# Quando terminar (kaggle kernels status laisapaiva93/lexia-juiz-gemma3-27b):
+.venv\Scripts\python.exe scripts\importar_juiz_kaggle.py --27b
 ```
-
-O passo 3 é criar os notebooks `03_geracao` e `04_avaliacao` a partir de `reports/integracao/geracao/` e `reports/integracao/juiz/`.
 
 Use caminhos absolutos no `kaggle datasets create` e no `kaggle kernels push`. Com caminho relativo, o upload falha no Windows.
 
@@ -100,5 +118,5 @@ Os itens abaixo não estão no GitHub e precisam ser recriados ou copiados.
 - **Modelos do Hugging Face** em cache local: `BAAI/bge-m3` (revisão `5617a9f`) e `BAAI/bge-reranker-v2-m3`.
 - **Token do Kaggle** em `~/.kaggle`.
 - **Pedidos e respostas** em `output/kaggle/geracao/` e `output/kaggle/juiz/`. Estão fora do Git porque contêm trechos de decisões e perguntas protegidas.
-  - Os pedidos também estão no dataset privado `laisapaiva93/lexia-geracao-pedidos`.
+  - Os pedidos também estão nos datasets privados `laisapaiva93/lexia-geracao-pedidos`, `lexia-juiz-27b-pedidos` e `lexia-juiz-27b-llama-pedidos`.
 - **Regra do repositório:** commits sem a linha de atribuição do Claude.
