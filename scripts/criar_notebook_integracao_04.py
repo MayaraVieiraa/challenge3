@@ -59,7 +59,7 @@ if str(ROOT) not in sys.path:
 
 RELATORIOS = ROOT / 'reports/integracao/juiz'
 RELATORIOS.mkdir(parents=True, exist_ok=True)
-BASE_KAGGLE = ROOT / 'output/kaggle/juiz'
+BASE_KAGGLE = ROOT / 'output/kaggle/juiz_v2'
 
 df_calib = pd.read_csv(RELATORIOS / 'calibracao.csv')
 df_julg = pd.read_csv(RELATORIOS / 'julgamentos.csv')
