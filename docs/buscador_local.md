@@ -4,11 +4,11 @@ O `BuscadorLocal` pesquisa os artigos do JSON original de legislação e entrega
 
 ## Arquivos e responsabilidades
 
-- `src/multiagentes/buscador_local.py`: leitura da base, backend de embeddings, cache persistido e ranking por similaridade.
-- `scripts/consultar_buscador_local.py`: preparação do índice e consulta isolada, sem executar os modelos de linguagem.
-- `scripts/executar_multiagentes.py --modo local`: integração da busca semântica com os agentes.
-- `scripts/preparar_multiagentes_kaggle.py --buscador local`: pacote da base original e código para o Kaggle.
-- `requirements-buscador-local.txt`: dependência opcional de Sentence Transformers; os testes com fakes não precisam instalá-la.
+- `worker/evidencia/langgraph/buscador_local.py`: leitura da base, backend de embeddings, cache persistido e ranking por similaridade.
+- `worker/evidencia/scripts/consultar_buscador_local.py`: preparação do índice e consulta isolada, sem executar os modelos de linguagem.
+- `worker/evidencia/scripts/executar_multiagentes.py --modo local`: integração da busca semântica com os agentes.
+- `avaliacao/scripts/preparar_multiagentes_kaggle.py --buscador local`: pacote da base original e código para o Kaggle.
+- `docs/legado/requirements/requirements-buscador-local.txt`: dependência opcional de Sentence Transformers; os testes com fakes não precisam instalá-la.
 
 ## Base original e DVC
 
@@ -21,7 +21,7 @@ dados/processed/legislacao/legislacao_artigos_completos.json
 Neste checkout, o arquivo disponível fica no caminho alternativo:
 
 ```text
-data/processed/legislacao/legislacao_artigos_completos.json
+dados/processed/legislacao/legislacao_artigos_completos.json
 ```
 
 O segundo caminho é utilizado quando o primeiro está ausente. Para escolher explicitamente outra cópia, informe `--corpus /caminho/legislacao_artigos_completos.json`.
@@ -36,8 +36,8 @@ Na raiz do projeto:
 
 ```bash
 source .venv/bin/activate
-python -m pip install -r requirements-buscador-local.txt
-python scripts/consultar_buscador_local.py --preparar-indice
+python -m pip install -r docs/legado/requirements/requirements-buscador-local.txt
+python worker/evidencia/scripts/consultar_buscador_local.py --preparar-indice
 ```
 
 O backend real utiliza `BAAI/bge-m3`, revisão `5617a9f61b028005a4858fdac845db406aefb181`, com vetores de 1.024 dimensões. O carregamento é tardio: importar o módulo ou consultar um cache já pronto sem gerar uma consulta não carrega o modelo. A primeira indexação pode baixar o modelo e consome tempo de processamento. A execução padrão usa CPU; `--device-embeddings cuda` ou `mps` seleciona outro dispositivo quando disponível no ambiente.
@@ -49,8 +49,8 @@ O código usa a API de [SentenceTransformer](https://sbert.net/docs/package_refe
 Execute a preparação duas vezes, em processos separados:
 
 ```bash
-python scripts/consultar_buscador_local.py --preparar-indice
-python scripts/consultar_buscador_local.py --preparar-indice
+python worker/evidencia/scripts/consultar_buscador_local.py --preparar-indice
+python worker/evidencia/scripts/consultar_buscador_local.py --preparar-indice
 ```
 
 Na primeira criação, o diagnóstico informa `cache_reutilizado: false`. Na segunda, com o mesmo corpus e configuração, informa `cache_reutilizado: true`. Os embeddings dos artigos não são recalculados nessa segunda abertura. Uma consulta nova ainda precisa de seu próprio embedding.
@@ -68,14 +68,14 @@ Cada instância trabalha com um snapshot carregado. Para refletir uma alteraçã
 ## Fazer uma consulta sem os agentes
 
 ```bash
-python scripts/consultar_buscador_local.py \
+python worker/evidencia/scripts/consultar_buscador_local.py \
   --pergunta "Como funciona o adicional noturno no trabalho urbano?"
 ```
 
 O JSON de saída mostra o diagnóstico, os identificadores, as referências, os metadados disponíveis e os escores. O texto completo aparece somente com `--mostrar-texto`.
 
 ```bash
-python scripts/consultar_buscador_local.py \
+python worker/evidencia/scripts/consultar_buscador_local.py \
   --pergunta "Quais fontes tratam da jornada de trabalho?" \
   --top-k 4 --score-minimo 0.35 --mostrar-texto
 ```
@@ -89,7 +89,7 @@ O buscador retorna no máximo seis artigos. Na integração, o orquestrador sele
 Com as dependências de LangGraph instaladas, Ollama disponível e os modelos Qwen/Gemma preparados:
 
 ```bash
-python scripts/executar_multiagentes.py --modo local \
+python worker/evidencia/scripts/executar_multiagentes.py --modo local \
   --pergunta "Como funciona o adicional noturno no trabalho urbano?"
 ```
 
@@ -100,8 +100,8 @@ python scripts/executar_multiagentes.py --modo local \
 Gere um pacote separado para preservar o pacote lexical anterior:
 
 ```bash
-python scripts/preparar_multiagentes_kaggle.py --buscador local \
-  --destino output/kaggle/multiagentes/buscador-local
+python avaliacao/scripts/preparar_multiagentes_kaggle.py --buscador local \
+  --destino dados/output/kaggle/multiagentes/buscador-local
 ```
 
 Esse modo inclui a base original completa, sem o filtro de tema. A opção `--tema` pertence ao modo lexical e não restringe a base quando `--buscador local` é selecionado.

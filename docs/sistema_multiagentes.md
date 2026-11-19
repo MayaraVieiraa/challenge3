@@ -6,13 +6,13 @@ Implementação em Python com LangGraph, baseada no [guia de execução](plano_s
 
 | Componente | Responsabilidade |
 |---|---|
-| [Analista](../src/multiagentes/analista.py) — Qwen3 8B | Escolher a consulta da ferramenta, redigir com fontes e corrigir após feedback |
-| [Validador](../src/multiagentes/validador.py) — Gemma 3 12B | Conferir o candidato contra as mesmas fontes e decidir aprovação, revisão ou insuficiência |
-| [Orquestrador](../src/multiagentes/orquestrador.py) | Executar o StateGraph, controlar orçamento e impedir saída reprovada |
-| [Ferramentas](../src/multiagentes/ferramentas.py) | Recuperação no banco, corpus portátil de legislação ou material fictício |
-| [BuscadorLocal](../src/multiagentes/buscador_local.py) | Recuperação semântica no JSON original de artigos completos, com cache SQLite de embeddings |
-| [Cliente Ollama](../src/multiagentes/cliente_llm.py) | Inferência estruturada, validação, timeout e descarregamento dos modelos |
-| [Registro](../src/multiagentes/registro.py) | Exportar versões, eventos, fontes e manifesto com hashes |
+| [Analista](../worker/evidencia/langgraph/analista.py) — Qwen3 8B | Escolher a consulta da ferramenta, redigir com fontes e corrigir após feedback |
+| [Validador](../worker/evidencia/langgraph/validador.py) — Gemma 3 12B | Conferir o candidato contra as mesmas fontes e decidir aprovação, revisão ou insuficiência |
+| [Orquestrador](../worker/evidencia/langgraph/orquestrador.py) | Executar o StateGraph, controlar orçamento e impedir saída reprovada |
+| [Ferramentas](../worker/evidencia/langgraph/ferramentas.py) | Recuperação no banco, corpus portátil de legislação ou material fictício |
+| [BuscadorLocal](../worker/evidencia/langgraph/buscador_local.py) | Recuperação semântica no JSON original de artigos completos, com cache SQLite de embeddings |
+| [Cliente Ollama](../worker/evidencia/langgraph/cliente_llm.py) | Inferência estruturada, validação, timeout e descarregamento dos modelos |
+| [Registro](../worker/evidencia/langgraph/registro.py) | Exportar versões, eventos, fontes e manifesto com hashes |
 
 ## Fluxo de colaboração
 
@@ -43,10 +43,10 @@ A execução com os modelos usa a GPU do Kaggle. O pacote portátil leva código
 Preparar o pacote na raiz do projeto:
 
 ```bash
-python scripts/preparar_multiagentes_kaggle.py --tema ferias
+python avaliacao/scripts/preparar_multiagentes_kaggle.py --tema ferias
 ```
 
-O script não publica nem envia dados. Os arquivos serão criados em `output/kaggle/multiagentes/`, ignorado pelo Git. Siga [Execução dos agentes no Kaggle](execucao_multiagentes_kaggle.md) para criar o dataset privado, importar o notebook, executar e baixar o histórico.
+O script não publica nem envia dados. Os arquivos serão criados em `dados/output/kaggle/multiagentes/`, ignorado pelo Git. Siga [Execução dos agentes no Kaggle](execucao_multiagentes_kaggle.md) para criar o dataset privado, importar o notebook, executar e baixar o histórico.
 
 Nesse modo, a ferramenta faz **busca lexical no corpus portátil**. Isso não reproduz a busca híbrida com BGE-M3 e pgvector, que permanece disponível no modo `real`. Os textos e metadados originais são preservados; não há verificação nova de vigência.
 
@@ -57,8 +57,8 @@ O modo local continua disponível para quem tiver os modelos no Ollama.
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements-multiagentes.txt
-python scripts/executar_multiagentes.py --verificar-ambiente
+python -m pip install -r docs/legado/requirements/requirements-multiagentes.txt
+python worker/evidencia/scripts/executar_multiagentes.py --verificar-ambiente
 ```
 
 No Windows, usar `python` na criação do ambiente e `.venv/Scripts/Activate.ps1` para ativá-lo.
@@ -70,16 +70,16 @@ O diagnóstico informa versões, modelos disponíveis e presença de configuraç
 Com o pacote preparado e os dois modelos no Ollama:
 
 ```bash
-python scripts/executar_multiagentes.py --modo corpus --corpus output/kaggle/multiagentes/corpus_legislacao.json --pergunta "Quais são as regras gerais sobre férias segundo as fontes fornecidas?"
+python worker/evidencia/scripts/executar_multiagentes.py --modo corpus --corpus dados/output/kaggle/multiagentes/corpus_legislacao.json --pergunta "Quais são as regras gerais sobre férias segundo as fontes fornecidas?"
 ```
 
 ### Material sintético
 
 ```bash
-python scripts/executar_multiagentes.py --modo sintetico --caso ferias
-python scripts/executar_multiagentes.py --modo sintetico --caso revisao_controlada
-python scripts/executar_multiagentes.py --modo sintetico --caso sem_evidencia
-python scripts/executar_multiagentes.py --modo sintetico --caso fora_escopo
+python worker/evidencia/scripts/executar_multiagentes.py --modo sintetico --caso ferias
+python worker/evidencia/scripts/executar_multiagentes.py --modo sintetico --caso revisao_controlada
+python worker/evidencia/scripts/executar_multiagentes.py --modo sintetico --caso sem_evidencia
+python worker/evidencia/scripts/executar_multiagentes.py --modo sintetico --caso fora_escopo
 ```
 
 Os três primeiros casos usam modelos reais. O material é fictício e não define regras jurídicas. O caso de revisão controlada insere `[Fonte 99]` depois do rascunho e registra `falha_injetada=true`; esse recurso é proibido nos modos `real` e `corpus`.
@@ -88,13 +88,13 @@ O caso fora do escopo usa somente o guardrail e uma resposta fixa, sem inferênc
 
 ### Buscador local com embeddings
 
-O modo `local` consulta a base original completa, sem PostgreSQL e sem selecionar um tema fixo. Os caminhos procurados são `dados/processed/legislacao/legislacao_artigos_completos.json` e, como alternativa deste checkout, `data/processed/legislacao/legislacao_artigos_completos.json`. É possível informar outro caminho com `--corpus`.
+O modo `local` consulta a base original completa, sem PostgreSQL e sem selecionar um tema fixo. Os caminhos procurados são `dados/processed/legislacao/legislacao_artigos_completos.json` e, como alternativa deste checkout, `dados/processed/legislacao/legislacao_artigos_completos.json`. É possível informar outro caminho com `--corpus`.
 
 ```bash
-python -m pip install -r requirements-buscador-local.txt
-python scripts/consultar_buscador_local.py --preparar-indice
-python scripts/consultar_buscador_local.py --pergunta "Como funciona o adicional noturno no trabalho urbano?"
-python scripts/executar_multiagentes.py --modo local --pergunta "Como funciona o adicional noturno no trabalho urbano?"
+python -m pip install -r docs/legado/requirements/requirements-buscador-local.txt
+python worker/evidencia/scripts/consultar_buscador_local.py --preparar-indice
+python worker/evidencia/scripts/consultar_buscador_local.py --pergunta "Como funciona o adicional noturno no trabalho urbano?"
+python worker/evidencia/scripts/executar_multiagentes.py --modo local --pergunta "Como funciona o adicional noturno no trabalho urbano?"
 ```
 
 As duas primeiras operações do buscador não precisam de Ollama. A última executa os agentes e exige seus modelos disponíveis. O índice é preparado antes do orçamento de atendimento; o cache fica em `dados/output/buscador_local/`, ignorado pelo Git. Uma nova instância reutiliza embeddings dos artigos somente se corpus, modelo, revisão e configuração forem compatíveis. O embedding de cada nova consulta continua sendo calculado.
@@ -103,17 +103,17 @@ O corpus local disponível foi lido e validado: 5.284 artigos, distribuídos por
 
 ### Banco original com pgvector
 
-Instalar também `requirements.txt`, disponibilizar modelos BGE-M3/reranker e restaurar o banco já populado conforme [a documentação do banco](pgvector.md).
+Instalar também `docs/legado/requirements/requirements.txt`, disponibilizar modelos BGE-M3/reranker e restaurar o banco já populado conforme [a documentação do banco](./legado/pgvector.md).
 
 ```bash
-python scripts/executar_multiagentes.py --modo real --preparar-lexico --pergunta "Quais são as regras gerais sobre férias?"
+python worker/evidencia/scripts/executar_multiagentes.py --modo real --preparar-lexico --pergunta "Quais são as regras gerais sobre férias?"
 ```
 
 `--preparar-lexico` cria as visões e índices necessários à busca lexical. Usar na preparação; as consultas normais não executam essa criação. Os datasets A/D de legislação e o dataset validado de jurisprudência precisam existir.
 
 ## Saídas e limites
 
-Cada execução cria um diretório novo em `output/multiagentes/<run_id>/`:
+Cada execução cria um diretório novo em `dados/output/multiagentes/<run_id>/`:
 
 - `estado.json`: estado final e histórico das versões.
 - `eventos.jsonl`: ações, decisões e contadores.
@@ -149,7 +149,7 @@ python -m unittest discover -s tests -p "test_integracao_guardrails.py" -v
 python -m unittest discover -s tests -p "test_integracao_juiz.py" -v
 ```
 
-O [notebook local](../notebooks/04_multiagentes/01_demonstracao_multiagentes.ipynb) permite inspecionar versões e decisões. Os flags de inferência estão desligados por padrão. O notebook do Kaggle é o roteiro para a primeira execução com os modelos.
+O [notebook local](../avaliacao/notebooks/04_multiagentes/01_demonstracao_multiagentes.ipynb) permite inspecionar versões e decisões. Os flags de inferência estão desligados por padrão. O notebook do Kaggle é o roteiro para a primeira execução com os modelos.
 
 Na apresentação, mostrar consulta, fontes, rascunho, decisão e, quando houver, feedback e revisão. Diferenciar execução natural, teste com falha inserida e reprodução de registros. Saídas de modelos não são fabricadas nos notebooks versionados.
 

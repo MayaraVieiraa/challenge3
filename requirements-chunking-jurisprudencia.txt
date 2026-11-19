@@ -1,5 +1,0 @@
-# Experimentos de chunking: dependências do preparo + modelos locais.
--r requirements-jurisprudencia.txt
-transformers
-sentence-transformers
-ipython

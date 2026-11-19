@@ -27,7 +27,7 @@ Se estiver preparando um ambiente novo, crie o virtualenv e instale antes:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements-multiagentes.txt
+python -m pip install -r docs/legado/requirements/requirements-multiagentes.txt
 ```
 
 Os 68 testes multiagentes anteriores passaram. A segunda suíte cobre agora o buscador local, suas CLIs e o empacotamento para Kaggle. Os testes usam fakes ou transporte substituído e não precisam de Ollama, GPU, PostgreSQL ou acesso à rede durante sua execução.
@@ -61,22 +61,22 @@ Os nomes dos testes de fluxo estão em `tests/test_multiagentes.py`, exceto os d
 Para a recuperação semântica nova, instale as dependências e faça duas preparações do índice:
 
 ```bash
-python -m pip install -r requirements-buscador-local.txt
-python scripts/consultar_buscador_local.py --preparar-indice
-python scripts/consultar_buscador_local.py --preparar-indice
-python scripts/consultar_buscador_local.py --pergunta "Como funciona o adicional noturno no trabalho urbano?"
+python -m pip install -r docs/legado/requirements/requirements-buscador-local.txt
+python worker/evidencia/scripts/consultar_buscador_local.py --preparar-indice
+python worker/evidencia/scripts/consultar_buscador_local.py --preparar-indice
+python worker/evidencia/scripts/consultar_buscador_local.py --pergunta "Como funciona o adicional noturno no trabalho urbano?"
 ```
 
 Se ainda não existir cache compatível, a primeira preparação gera os embeddings. A segunda deve apresentar `cache_reutilizado: true`, sem recodificar os artigos. A consulta calcula seu próprio embedding. O modelo real pode ser baixado na primeira utilização; a execução dos agentes continua no comando separado `executar_multiagentes.py --modo local`.
 
 O teste lexical antigo permanece abaixo para reprodução da primeira demo.
 
-O JSON original disponível neste checkout está em `data/processed/legislacao/legislacao_artigos_completos.json`. O novo buscador prefere o caminho `dados/processed/...` da issue e aceita `data/processed/...` como alternativa. A obtenção por DVC ainda não está configurada aqui.
+O JSON original disponível neste checkout está em `dados/processed/legislacao/legislacao_artigos_completos.json`. O novo buscador prefere o caminho `dados/processed/...` da issue e aceita `dados/processed/...` como alternativa. A obtenção por DVC ainda não está configurada aqui.
 
 Prepare um pacote separado do usado na execução já registrada:
 
 ```bash
-python scripts/preparar_multiagentes_kaggle.py --tema ferias --destino output/multiagentes/teste-busca
+python avaliacao/scripts/preparar_multiagentes_kaggle.py --tema ferias --destino dados/output/multiagentes/teste-busca
 ```
 
 Depois execute, ainda na raiz do projeto:
@@ -84,9 +84,9 @@ Depois execute, ainda na raiz do projeto:
 ```bash
 python - <<'PY'
 from pathlib import Path
-from src.multiagentes.ferramentas import BuscaCorpus
+from worker.evidencia.langgraph.ferramentas import BuscaCorpus
 
-busca = BuscaCorpus(Path("output/multiagentes/teste-busca/corpus_legislacao.json"))
+busca = BuscaCorpus(Path("dados/output/multiagentes/teste-busca/corpus_legislacao.json"))
 try:
     fontes = busca.buscar("regras gerais sobre férias")
     assert fontes, "A consulta não recuperou fontes."

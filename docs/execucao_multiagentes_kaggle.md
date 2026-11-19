@@ -2,21 +2,21 @@
 
 O pacote executa o **Analista, Qwen3 8B**, e o **Validador, Gemma 3 12B**, na GPU da sessão do Kaggle. O Analista escolhe uma consulta e usa a ferramenta de busca; o Validador recebe a pergunta, as mesmas fontes, a resposta candidata e os alertas dos guardrails. Quando solicita uma correção, o feedback volta ao Analista para uma única revisão.
 
-O notebook principal é [02_execucao_kaggle_multiagentes.ipynb](../notebooks/04_multiagentes/02_execucao_kaggle_multiagentes.ipynb). Ele está sem execuções e sem resultados preenchidos. O roteiro abaixo prepara uma execução real dos modelos, usando o recorte de legislação do pacote. Não é necessário executar o servidor ou os modelos na máquina local.
+O notebook principal é [02_execucao_kaggle_multiagentes.ipynb](../avaliacao/notebooks/04_multiagentes/02_execucao_kaggle_multiagentes.ipynb). Ele está sem execuções e sem resultados preenchidos. O roteiro abaixo prepara uma execução real dos modelos, usando o recorte de legislação do pacote. Não é necessário executar o servidor ou os modelos na máquina local.
 
-Para pesquisar a **base original completa com embeddings**, também há o pacote `python scripts/preparar_multiagentes_kaggle.py --buscador local --destino output/kaggle/multiagentes/buscador-local`. Ele usa `legislacao_artigos_completos.json` no lugar de `corpus_legislacao.json` e exige importar o notebook atualizado. O manifesto seleciona automaticamente esse modo. Veja [BuscadorLocal](buscador_local.md) para instalar/preparar o cache, escolher CPU/GPU e conferir os arquivos. As instruções de recorte e busca lexical abaixo descrevem o modo padrão.
+Para pesquisar a **base original completa com embeddings**, também há o pacote `python avaliacao/scripts/preparar_multiagentes_kaggle.py --buscador local --destino dados/output/kaggle/multiagentes/buscador-local`. Ele usa `legislacao_artigos_completos.json` no lugar de `corpus_legislacao.json` e exige importar o notebook atualizado. O manifesto seleciona automaticamente esse modo. Veja [BuscadorLocal](buscador_local.md) para instalar/preparar o cache, escolher CPU/GPU e conferir os arquivos. As instruções de recorte e busca lexical abaixo descrevem o modo padrão.
 
 ## Preparar os arquivos locais
 
 Na raiz do projeto, execute:
 
 ```bash
-python3 scripts/preparar_multiagentes_kaggle.py --tema ferias
+python3 avaliacao/scripts/preparar_multiagentes_kaggle.py --tema ferias
 ```
 
 No Windows, use o comando `python` do ambiente do projeto. Esse script monta os arquivos localmente, sem acessar a rede, instalar dependências ou enviar dados ao Kaggle.
 
-Os arquivos ficam em `output/kaggle/multiagentes/`:
+Os arquivos ficam em `dados/output/kaggle/multiagentes/`:
 
 | Arquivo | Uso |
 |---|---|
@@ -28,7 +28,7 @@ Os arquivos ficam em `output/kaggle/multiagentes/`:
 
 O tema padrão é `ferias`. O empacotador também aceita `noturno`, `jornada` e `todos`. Se escolher outro tema, ajuste a pergunta na primeira célula do notebook para corresponder ao recorte. O manifesto identifica exatamente os artigos e a origem utilizada. O pacote preserva o texto e os metadados da base, incluindo seus alertas; a seleção não constitui uma nova validação de vigência.
 
-O conteúdo de `output/` é gerado e não é versionado. Para reconstruir o pacote após uma alteração no código ou no notebook, execute novamente o empacotador. O notebook versionado permanece em `notebooks/04_multiagentes/`.
+O conteúdo de `dados/output/` é gerado e não é versionado. Para reconstruir o pacote após uma alteração no código ou no notebook, execute novamente o empacotador. O notebook versionado permanece em `avaliacao/notebooks/04_multiagentes/`.
 
 ## Criar o dataset privado e importar o notebook
 
@@ -54,7 +54,7 @@ PERGUNTA = "Quais são as regras gerais sobre férias segundo as fontes fornecid
 
 O notebook descobre automaticamente um pacote em `/kaggle/input/**`. Se adicionar mais de um pacote, preencha `DIRETORIO_DATASET` com a pasta que contém seu `manifesto_pacote.json`.
 
-Antes de importar o runtime, o notebook confere os tamanhos e hashes de `runtime.zip` e `corpus_legislacao.json`. Também verifica o inventário e os hashes de cada entrada do ZIP. A extração aceita apenas arquivos Python dentro de `src/` e `requirements-multiagentes.txt`, rejeitando caminhos que escapem da pasta, atalhos simbólicos, entradas duplicadas e tipos de arquivo não permitidos. Os hashes detectam divergências em relação ao manifesto; use o pacote produzido pelo projeto como origem.
+Antes de importar o runtime, o notebook confere os tamanhos e hashes de `runtime.zip` e `corpus_legislacao.json`. Também verifica o inventário e os hashes de cada entrada do ZIP. A extração aceita apenas arquivos Python dentro de `worker/evidencia/` e os requisitos em `docs/legado/requirements/`, rejeitando caminhos que escapem da pasta, atalhos simbólicos, entradas duplicadas e tipos de arquivo não permitidos. Os hashes detectam divergências em relação ao manifesto; use o pacote produzido pelo projeto como origem.
 
 A preparação instala **LangGraph 1.2.22** no Python do kernel e o **Ollama 0.40.16**, conforme a configuração utilizada pelo projeto. O servidor escuta em `127.0.0.1:11434`. Em seguida, são preparados os modelos, um após o outro:
 

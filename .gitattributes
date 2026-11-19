@@ -1,8 +1,14 @@
 # Preserve the exact bytes checked by the frozen evaluation hashes.
-data/chunks/legislacao/chunks_A_artigo.json -text
-data/chunks/legislacao/chunks_D_paragrafo_completo.json -text
-src/rag/workflow_07.py -text
-src/rag/presentation_07.py -text
-src/storage/pgvector_store.py -text
-src/storage/parent_documents.py -text
-data/evaluation/legislacao/teste_congelado.json -text
+dados/chunks/legislacao/chunks_A_artigo.json -text
+dados/chunks/legislacao/chunks_D_paragrafo_completo.json -text
+worker/evidencia/indices/pgvector_store.py -text
+worker/evidencia/indices/parent_documents.py -text
+avaliacao/dados/legislacao/teste_congelado.json -text
+
+# Formats used by the integrated Lexai structure.
+*.ipynb linguist-documentation
+*.parquet binary
+*.png binary
+*.pdf binary
+avaliacao/dados/** -text
+dados/relatorios/** -text

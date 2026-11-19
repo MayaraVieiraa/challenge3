@@ -3,6 +3,14 @@ Aplicação com inteligência artificial para analisar processos trabalhistas, i
 
 > 🚧 Projeto em desenvolvimento. As funcionalidades descritas representam o escopo planejado e serão implementadas e avaliadas progressivamente.
 
+## Estrutura Lexai integrada
+
+Este checkout também incorpora a estrutura MLOps e o protótipo multiagente do repositório final. O backend, os contratos, o worker, os prompts e a avaliação estão organizados nos diretórios `backend/`, `contratos/`, `worker/`, `prompts/` e `avaliacao/`. Consulte o [manual de arquitetura](docs/manual.md), a [arquitetura dos agentes](docs/agentes/arquitetura.md) e o [registro da integração](docs/estado_integracao.md).
+
+A implementação existente com LangGraph continua preservada em `worker/evidencia/langgraph/`. O protótipo importado, baseado em contratos Pydantic e orquestração própria, está em `worker/evidencia/agentes/`; as duas implementações coexistem e não foram fundidas nem substituídas. Os arquivos e notebooks anteriores foram migrados para os caminhos do layout atual; as configurações e os recursos Kaggle existentes foram preservados.
+
+Os manifestos DVC foram trazidos, mas o remoto do repositório final apontava para uma pasta local que não existe neste checkout. Os dados já presentes foram preservados; configure um remoto compartilhado antes de executar `dvc pull`. O arquivo de feedback com respostas reais permanece local e ignorado pelo Git.
+
 ## Sobre o projeto
 
 A disponibilidade de informações processuais nem sempre significa que elas sejam compreensíveis para quem precisa utilizá-las. Documentos técnicos, termos jurídicos e decisões complexas podem dificultar o acompanhamento de um processo trabalhista.
@@ -43,7 +51,7 @@ A identificação da fase processual dependerá da abrangência e da atualidade 
 
 ## Arquitetura proposta
 
-> A arquitetura implementada, a base de conhecimento, as estratégias de chunking e embeddings, o banco vetorial e o roteiro da demonstração estão descritos em [docs/semana2_base_conhecimento_e_rag.md](docs/semana2_base_conhecimento_e_rag.md).
+> A arquitetura do projeto e a estrutura atual estão descritas em [docs/estrutura_do_projeto.md](docs/estrutura_do_projeto.md). O material histórico de base de conhecimento está em [docs/legado/semana2_base_conhecimento_e_rag.md](docs/legado/semana2_base_conhecimento_e_rag.md).
 
 O sistema será organizado em dois fluxos principais.
 
@@ -84,44 +92,30 @@ O RAG integra a recuperação de informações à geração das respostas. O cro
 
 Na primeira versão, poderão ser utilizados modelos pré-treinados. A necessidade de treinamento ou fine-tuning será avaliada a partir dos resultados dos experimentos.
 
-## Organização prevista do repositório
+## Organização atual do repositório
 
 ```text
 .
-├── README.md
-├── .gitignore
-├── .env.example
-├── requirements.txt
-│
-├── configs/                 # Configurações dos pipelines
-├── docs/                    # Requisitos, arquitetura e decisões
-│
-├── data/
-│   ├── raw/                 # Fontes originais
-│   ├── interim/             # Extrações intermediárias
-│   ├── processed/           # Documentos estruturados
-│   ├── chunks/              # Trechos para recuperação
-│   └── evaluation/          # Perguntas e referências de avaliação
-│
-├── notebooks/               # Auditoria, EDA e experimentos
-├── reports/                 # Relatórios e gráficos
-├── indexes/                 # Índices gerados
-│
-├── src/
-│   ├── ingestion/           # Leitura de fontes
-│   ├── processing/          # Limpeza, metadados e chunking
-│   ├── retrieval/           # Indexação e recuperação
-│   ├── reranking/           # Cross-encoder
-│   ├── generation/          # Integração com a LLM
-│   ├── classification/      # Classificação documental
-│   └── evaluation/          # Avaliação dos componentes
-│
-├── backend/                 # API e serviços da aplicação
-├── frontend/                # Interface do usuário
-└── tests/                   # Testes dos componentes
+├── avaliacao/       # Notebooks, scripts e dados de avaliação
+├── backend/         # API e serviços
+├── configs/         # Configurações
+├── contratos/       # Contratos e modelos compartilhados
+├── corpus/          # Instruções e metadados para obter corpora
+├── dados/           # Dados, artefatos e relatórios
+├── docs/            # Documentação atual e legado em docs/legado/
+├── entregas/        # Materiais de entrega
+├── frontend/        # Interface do usuário
+├── infra/           # Infraestrutura local e deploy
+├── prompts/         # Prompts versionados
+├── scripts/         # Utilitários de operação do projeto final
+├── tests/           # Testes da aplicação e legado em tests/legado/
+├── treino/          # Componentes de treino e MLOps
+└── worker/
+    ├── evidencia/   # Recuperação, geração, guardas e agentes
+    └── ingestao/    # Ingestão e preparação de fontes jurídicas
 ```
 
-Essa estrutura será criada conforme o desenvolvimento dos módulos.
+Os dados de avaliação ficam em `avaliacao/dados/`; dados de trabalho, artefatos e relatórios ficam em `dados/`. As implementações multiagente coexistem em `worker/evidencia/agentes/` e `worker/evidencia/langgraph/`. A descrição detalhada está em [docs/estrutura_do_projeto.md](docs/estrutura_do_projeto.md).
 
 Documentos reais de usuários, credenciais, arquivos de ambiente e índices contendo dados pessoais não deverão ser versionados no repositório.
 
@@ -218,15 +212,15 @@ As fontes de dados e os modelos utilizados possuem condições próprias de uso,
 
 ## Legislação: preparação e recuperação
 
-- [Instalação e reprodução](docs/execucao_reproducao.md)
-- [Banco PostgreSQL e pgvector](docs/pgvector.md)
-- [Arquitetura e base de conhecimento](docs/semana2_base_conhecimento_e_rag.md)
+- [Instalação e reprodução](docs/legado/execucao_reproducao.md)
+- [Banco PostgreSQL e pgvector](docs/legado/pgvector.md)
+- [Arquitetura e base de conhecimento](docs/legado/semana2_base_conhecimento_e_rag.md)
 
-Os notebooks 01 a 06 de `notebooks/01_legislacao/` preparam a base da CLT e avaliam a recuperação; a coleção fica no pgvector (schema `lex_clt`). A integração com a LLM (antigos notebooks 07 a 09 e `src/rag/`) foi retirada para ser refeita no fluxo integrado de legislação e jurisprudência, com guardrails e avaliação. A versão anterior está preservada na tag `rag-legislacao-v1`. O prompt jurídico do grupo foi mantido em `src/integracao/prompt_juridico.py`.
+Os notebooks de `avaliacao/notebooks/01_legislacao/` preparam a base da CLT e avaliam a recuperação; a coleção fica no pgvector (schema `lex_clt`). A integração com a LLM segue no fluxo integrado de legislação e jurisprudência, com guardas e avaliação. A versão anterior está preservada na tag `rag-legislacao-v1`. Os prompts versionados ficam em `prompts/`, com carregamento feito por `worker/evidencia/prompts.py`.
 
 ## Jurisprudência: notebooks 01 a 04
 
-Os notebooks de `notebooks/02_jurisprudencia/` usam a **base reduzida** de jurisprudência trabalhista: 179.812 registros do TST, dos TRTs 10, 13 e 17 e do STF (somente decisões com sinais de tema trabalhista). A base mantém um documento por processo e limita o TST a 100.000 decisões, por amostragem estratificada por ano e órgão julgador.
+Os notebooks de `avaliacao/notebooks/02_jurisprudencia/` usam a **base reduzida** de jurisprudência trabalhista: 179.812 registros do TST, dos TRTs 10, 13 e 17 e do STF (somente decisões com sinais de tema trabalhista). A base mantém um documento por processo e limita o TST a 100.000 decisões, por amostragem estratificada por ano e órgão julgador.
 
 | Notebook | Conteúdo |
 |---|---|
@@ -246,7 +240,7 @@ Os notebooks de `notebooks/02_jurisprudencia/` usam a **base reduzida** de juris
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate    Linux/macOS: source .venv/bin/activate
-pip install -r requirements-chunking-jurisprudencia.txt
+pip install -r docs/legado/requirements/requirements-chunking-jurisprudencia.txt
 python -m unittest discover -s tests -p "test_jurisprudencia_chunking_avancado.py"
 ```
 
@@ -254,8 +248,8 @@ Os testes usados pelo notebook 04 são `test_avaliacao_complementar.py`, `test_c
 
 **3. Usar a base reduzida.** A base fica no dataset **privado** `laaaii/lex_ai`, no Hugging Face. O acesso é concedido pelos responsáveis pelo repositório. O dataset contém:
 
-- `data/parquet/`: 19 arquivos Parquet, a versão usada pelo pipeline;
-- `data/jsonl/`: a mesma base num único JSONL;
+- `dados/parquet/`: 19 arquivos Parquet, a versão usada pelo pipeline;
+- `dados/jsonl/`: a mesma base num único JSONL;
 - `manifestos/`: contagens e hashes para conferência.
 
 ```bash
@@ -270,25 +264,25 @@ df = pd.read_parquet("hf://datasets/laaaii/lex_ai/data/parquet/f01.parquet")
 
 > **Atenção:** os CPFs estão mascarados, mas a base **não está anonimizada**: nomes de partes e outros dados pessoais podem permanecer. Não redistribua nem publique os dados. As licenças declaradas pelas fontes são CC BY 4.0 (celsowm e RepoJus) e MIT (TRT-13). A origem do arquivo JSON do TST não foi confirmada.
 
-**4. Reexecutar as células.** As células conferem os hashes dos dados processados e dos relatórios gerados pelo pipeline. Esses arquivos não são versionados (`data/` e `reports/jurisprudencia/`), então é preciso gerá-los primeiro.
+**4. Reexecutar as células.** As células conferem os hashes dos dados processados e dos relatórios gerados pelo pipeline. Esses arquivos não são versionados (`dados/` e `dados/relatorios/jurisprudencia/`), então é preciso gerá-los primeiro.
 
 - **Notebooks 01 a 03.** É preciso receber dos responsáveis três entradas que não estão no repositório nem no dataset:
-  - os 20 arquivos de entrada da base reduzida, em `data/raw/jurisprudencia/base_reduzida/`;
-  - a declaração das origens, em `data/raw/jurisprudencia/origens_declaradas.json`;
-  - a rastreabilidade das fontes, em `reports/jurisprudencia/origens_huggingface/`.
+  - os 20 arquivos de entrada da base reduzida, em `dados/raw/jurisprudencia/base_reduzida/`;
+  - a declaração das origens, em `dados/raw/jurisprudencia/origens_declaradas.json`;
+  - a rastreabilidade das fontes, em `dados/relatorios/jurisprudencia/origens_huggingface/`.
 
   Depois, execute:
 
   ```bash
-  python scripts/rodar_pipeline_base_reduzida.py
-  python scripts/run_auditoria_jurisprudencia.py
-  python scripts/run_preparacao_jurisprudencia.py --etapa eda
-  python scripts/run_preparacao_jurisprudencia.py --etapa estrutura
+  python worker/ingestao/scripts/rodar_pipeline_base_reduzida.py
+  python worker/ingestao/scripts/run_auditoria_jurisprudencia.py
+  python worker/ingestao/scripts/run_preparacao_jurisprudencia.py --etapa eda
+  python worker/ingestao/scripts/run_preparacao_jurisprudencia.py --etapa estrutura
   ```
 
   No Windows, a renomeação dos CSVs grandes pode ser bloqueada pela sincronização ou pelo antivírus. Nesse caso, o pipeline imprime `FINALIZAR_FORA_DO_PROCESSO` com o script a executar. Execute esse script e retome com `--desde <próxima etapa>`.
 
-- **Notebook 04.** Depende também dos gabaritos de avaliação (`data/evaluation/jurisprudencia/`) e dos artefatos dos experimentos, que existem apenas no ambiente de origem. Por isso, ele não pode ser reexecutado só com o clone.
+- **Notebook 04.** Depende também dos gabaritos de avaliação (`avaliacao/dados/jurisprudencia/`) e dos artefatos dos experimentos, que existem apenas no ambiente de origem. Por isso, ele não pode ser reexecutado só com o clone.
 
 - **Modelo.** O notebook 04 e o chunking usam o tokenizador do BGE-M3 a partir do cache local:
 
@@ -307,41 +301,41 @@ O notebook `05_chunking_definitivo_jurisprudencia` aplica a estratégia escolhid
 
 - **Seleção:** os 187 documentos usados nos experimentos do notebook 04 e na avaliação entram obrigatoriamente. Os demais vêm de uma amostra estratificada proporcional por tribunal, ano e órgão julgador, com seed fixa. Composição: TST 11.749, TRT-17 3.226, TRT-10 2.795, TRT-13 1.403 e STF 827.
 - **Motivo:** indexar todos os candidatos exigiria cerca de 2,57 milhões de chunks e cerca de 19 h de GPU. O recorte cabe numa sessão de cerca de 2,3 h e torna o projeto reprodutível.
-- **Rastreabilidade:** cada chunk e cada embedding guarda o `registro_id` do documento de origem, o mesmo da base. O recorte é gerado por `scripts/criar_recorte_indexacao_jurisprudencia.py`, e o hash do arquivo fica registrado na configuração do chunking.
-- **Embeddings (notebook 06):** os 303.257 chunks foram vetorizados com o BGE-M3 na GPU T4 do Kaggle, em FP16 (autocast), e gravados em float32. Cada parte foi conferida contra uma amostra em float32 (cosseno mínimo de 0,999813). Os vetores estão no schema `lex_jurisprudencia` do mesmo banco PostgreSQL/pgvector da legislação. Scripts: `exportar_pacotes_kaggle_jurisprudencia.py`, `importar_embeddings_kaggle_jurisprudencia.py` e o notebook portátil `output/kaggle/06_embeddings_gpu_kaggle.ipynb`.
+- **Rastreabilidade:** cada chunk e cada embedding guarda o `registro_id` do documento de origem, o mesmo da base. O recorte é gerado por `worker/ingestao/scripts/criar_recorte_indexacao_jurisprudencia.py`, e o hash do arquivo fica registrado na configuração do chunking.
+- **Embeddings (notebook 06):** os 303.257 chunks foram vetorizados com o BGE-M3 na GPU T4 do Kaggle, em FP16 (autocast), e gravados em float32. Cada parte foi conferida contra uma amostra em float32 (cosseno mínimo de 0,999813). Os vetores estão no schema `lex_jurisprudencia` do mesmo banco PostgreSQL/pgvector da legislação. Scripts: `exportar_pacotes_kaggle_jurisprudencia.py`, `importar_embeddings_kaggle_jurisprudencia.py` e o notebook portátil `dados/output/kaggle/06_embeddings_gpu_kaggle.ipynb`.
 - **Limitação:** a busca só recupera decisões que estão no recorte. O índice pode ser ampliado depois, vetorizando apenas os documentos novos.
 
-Mais detalhes em [notebooks/02_jurisprudencia/README.md](notebooks/02_jurisprudencia/README.md), [auditoria](docs/auditoria_jurisprudencia.md), [proteção de CPFs](docs/protecao_cpf_jurisprudencia.md), [PLN leve](docs/pln_leve_jurisprudencia.md) e [avaliação do chunking](docs/avaliacao_chunking_avancada.md).
+Mais detalhes nos [notebooks de jurisprudência](avaliacao/notebooks/02_jurisprudencia/), [relatórios de auditoria](docs/legado/auditoria_jurisprudencia.md), [proteção de CPFs](docs/legado/protecao_cpf_jurisprudencia.md), [PLN leve](docs/legado/pln_leve_jurisprudencia.md) e [avaliação do chunking](docs/legado/avaliacao_chunking_avancada.md).
 
 ## Sistema multiagentes com LangGraph
 
-A primeira implementação está em `src/multiagentes/`. O **Analista** (Qwen3 8B) escolhe uma consulta, recebe evidências e redige; o **Validador** (Gemma 3 12B) confere o candidato e pode devolver feedback para uma revisão. O LangGraph coordena as etapas, preserva as fontes e impede a liberação de respostas bloqueadas.
+A primeira implementação está em `worker/evidencia/langgraph/`. O **Analista** (Qwen3 8B) escolhe uma consulta, recebe evidências e redige; o **Validador** (Gemma 3 12B) confere o candidato e pode devolver feedback para uma revisão. O LangGraph coordena as etapas, preserva as fontes e impede a liberação de respostas bloqueadas.
 
 - [Arquitetura, comandos e estado da implementação](docs/sistema_multiagentes.md).
 - [Guia de planejamento da atividade](docs/plano_sistema_multiagentes.md).
 - [Execução dos dois agentes na GPU do Kaggle](docs/execucao_multiagentes_kaggle.md).
 - [Buscador local com embeddings persistidos](docs/buscador_local.md).
-- [Notebook de demonstração local](notebooks/04_multiagentes/01_demonstracao_multiagentes.ipynb).
+- [Notebook de demonstração local](avaliacao/notebooks/04_multiagentes/01_demonstracao_multiagentes.ipynb).
 
 Preparar a primeira demonstração no Kaggle, com um corpus portátil da legislação:
 
 ```bash
-python scripts/preparar_multiagentes_kaggle.py --tema ferias
+python avaliacao/scripts/preparar_multiagentes_kaggle.py --tema ferias
 ```
 
-Por padrão, o pacote usa busca lexical no corpus fornecido. Para a base original completa, use `python scripts/preparar_multiagentes_kaggle.py --buscador local`: o notebook prepara embeddings BGE-M3 e cache SQLite antes do atendimento. Na CLI, `--modo local` usa esse buscador sem banco; `--modo real` reaproveita a busca híbrida no pgvector; `--modo sintetico` usa fontes fictícias. Os modelos configurados são chamados quando a pergunta exige inferência. Testes com modelos substitutos ficam restritos a `tests/`.
+Por padrão, o pacote usa busca lexical no corpus fornecido. Para a base original completa, use `python avaliacao/scripts/preparar_multiagentes_kaggle.py --buscador local`: o notebook prepara embeddings BGE-M3 e cache SQLite antes do atendimento. Na CLI, `--modo local` usa esse buscador sem banco; `--modo real` reaproveita a busca híbrida no pgvector; `--modo sintetico` usa fontes fictícias. Os modelos configurados são chamados quando a pergunta exige inferência. Testes com modelos substitutos ficam restritos a `tests/`.
 
-Para testar somente a busca sem chamar os agentes, instale `requirements-buscador-local.txt` e execute:
+Para testar somente a busca sem chamar os agentes, instale `docs/legado/requirements/requirements-buscador-local.txt` e execute:
 
 ```bash
-python scripts/consultar_buscador_local.py --preparar-indice
-python scripts/consultar_buscador_local.py --pergunta "Como funciona o adicional noturno no trabalho urbano?"
+python worker/evidencia/scripts/consultar_buscador_local.py --preparar-indice
+python worker/evidencia/scripts/consultar_buscador_local.py --pergunta "Como funciona o adicional noturno no trabalho urbano?"
 ```
 
 Para instalar e verificar o código dos agentes:
 
 ```bash
-python -m pip install -r requirements-multiagentes.txt
+python -m pip install -r docs/legado/requirements/requirements-multiagentes.txt
 python -m unittest discover -s tests -p "test_multiagentes*.py" -v
 ```
 
