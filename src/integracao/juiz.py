@@ -48,18 +48,32 @@ Responda APENAS com um objeto JSON, sem texto fora dele, no formato:
  "jurisprudencia_pertinente": [{"fonte": <número>, "pertinente": true}],
  "veredito": "aprovada", "justificativa": "até 3 frases"}"""
 
+# Variante da rubrica para a comparação do notebook 05: a referência é a fonte sugerida e o comportamento esperado
+# (não uma resposta completa), e com a rubrica v1 o juiz deixava a correção nula em 109 de 120 julgamentos.
+SISTEMA_JUIZ_COMPARACAO = SISTEMA_JUIZ.replace(
+    '- correcao: a resposta está correta e completa em relação à resposta de referência? (null se não houver referência)',
+    '- correcao: a resposta está juridicamente correta e responde à pergunta, à luz das fontes e da referência da\n'
+    '  curadoria (fonte jurídica sugerida e comportamento esperado)? 2 = correta e suficiente; 1 = correta, mas\n'
+    '  incompleta ou imprecisa; 0 = com erro jurídico ou sem responder à pergunta. Sempre dê uma nota (nunca null).')
+assert SISTEMA_JUIZ_COMPARACAO != SISTEMA_JUIZ
+
 CAMPOS = ('afirmacoes', 'fidelidade', 'correcao', 'comportamento', 'clareza', 'jurisprudencia_pertinente', 'veredito',
           'justificativa')
 
 
-def montar_entrada(pergunta, acao, fontes, resposta, referencia=None):
+# Para respostas geradas sem fontes (LLM isolado), as fontes da busca servem só para o juiz conferir as afirmações.
+TITULO_FONTES = 'FONTES ENTREGUES AO ASSISTENTE'
+TITULO_FONTES_VERIFICACAO = 'FONTES PARA VERIFICAÇÃO (o assistente NÃO as recebeu; use-as para conferir as afirmações)'
+
+
+def montar_entrada(pergunta, acao, fontes, resposta, referencia=None, titulo_fontes=TITULO_FONTES):
     blocos = []
     for i, f in enumerate(fontes, 1):
         rotulo = (f"Legislação — {f.get('caminho_relativo') or ''} {f.get('artigo_ref') or ''}" if f.get('fonte') != 'jurisprudencia'
                   else f"Jurisprudência — {f.get('tribunal') or ''} processo {f.get('processo') or ''}")
         blocos.append(f'[Fonte {i}] {rotulo.strip()}\n{f.get("conteudo") or f.get("texto") or ""}')
     partes = [f'PERGUNTA:\n{pergunta}', f'AÇÃO ESPERADA: {acao}',
-              'FONTES ENTREGUES AO ASSISTENTE:\n' + ('\n\n'.join(blocos) if blocos else '(nenhuma)')]
+              titulo_fontes + ':\n' + ('\n\n'.join(blocos) if blocos else '(nenhuma)')]
     if referencia:
         partes.append(f'RESPOSTA DE REFERÊNCIA (curadoria):\n{referencia}')
     partes.append(f'RESPOSTA A AVALIAR:\n{resposta}')
@@ -79,10 +93,11 @@ MODELO_JUIZ_KAGGLE = 'gemma3:12b'
 OPCOES_JUIZ = dict(temperature=0, seed=42, num_predict=2500, num_ctx=16384)
 
 
-def pedido_kaggle(julgamento_id, pergunta, acao, fontes, resposta, referencia=None, modelo=MODELO_JUIZ_KAGGLE):
+def pedido_kaggle(julgamento_id, pergunta, acao, fontes, resposta, referencia=None, modelo=MODELO_JUIZ_KAGGLE,
+                  titulo_fontes=TITULO_FONTES, sistema=SISTEMA_JUIZ):
     """Pedido de julgamento no formato do kernel do Kaggle (Ollama, saída JSON)."""
-    mensagens = [dict(role='system', content=SISTEMA_JUIZ),
-                 dict(role='user', content=montar_entrada(pergunta, acao, fontes, resposta, referencia))]
+    mensagens = [dict(role='system', content=sistema),
+                 dict(role='user', content=montar_entrada(pergunta, acao, fontes, resposta, referencia, titulo_fontes))]
     sha = hashlib.sha256(json.dumps([VERSAO_RUBRICA, modelo, OPCOES_JUIZ, mensagens], ensure_ascii=False,
                                     sort_keys=True).encode('utf-8')).hexdigest()
     return dict(pergunta_id=julgamento_id, precisa_llm=True, modelo=modelo, opcoes=OPCOES_JUIZ, mensagens=mensagens,

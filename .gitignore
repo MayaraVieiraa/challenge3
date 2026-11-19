@@ -94,3 +94,7 @@ Desktop.ini
 /output/kaggle/juiz_27b/
 /output/kaggle/juiz_27b_llama/
 /output/integracao/revisao_juiz/
+# Revisão humana (perguntas protegidas e trechos de decisões)
+/output/revisao_humana/
+# Comparação do notebook 05 (perguntas protegidas e trechos de decisões)
+/output/kaggle/comparacao/
