@@ -5,8 +5,8 @@ Com --todas, a B gera para todos os pedidos com LLM, para comparar os dois model
 sendo a da A quando ela serve).
 
 Saídas (fora do Git):
-  output/kaggle/fallback/dataset/pedidos.jsonl + dataset-metadata.json
-  output/kaggle/fallback/kernel/gerar_respostas.py + kernel-metadata.json
+  output/kaggle/fallback_v2/dataset/pedidos.jsonl + dataset-metadata.json
+  output/kaggle/fallback_v2/kernel/gerar_respostas.py + kernel-metadata.json
 Depois: kaggle datasets create/version, kaggle kernels push e
         python scripts/importar_geracao_kaggle.py --sem-download --fallback
 """
@@ -20,10 +20,10 @@ sys.path.insert(0, str(ROOT))
 from src.integracao.geracao import motivo_fallback, pedido_fallback
 
 USUARIO_KAGGLE = 'laisapaiva93'
-DATASET = 'lexia-fallback-pedidos'
-KERNEL = 'lexia-fallback-llama31'
-GERACAO = ROOT / 'output/kaggle/geracao'
-DESTINO = ROOT / 'output/kaggle/fallback'
+DATASET = 'lexia-fallback-pedidos-v2'
+KERNEL = 'lexia-fallback-llama31-v2'
+GERACAO = ROOT / 'output/kaggle/geracao_v2'
+DESTINO = ROOT / 'output/kaggle/fallback_v2'
 
 
 def main():

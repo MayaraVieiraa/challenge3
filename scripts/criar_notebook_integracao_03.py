@@ -1,6 +1,6 @@
 """Cria notebooks/03_integracao/03_geracao.ipynb (código; as saídas vêm da execução).
 
-Lê só métricas versionadas (reports/integracao/geracao/) e, para os exemplos, as respostas locais das perguntas
+Lê só métricas versionadas (reports/integracao/geracao_v2/) e, para os exemplos, as respostas locais das perguntas
 públicas (conjuntos dev/test aprovados). Texto de perguntas protegidas e de decisões não aparece.
 Executar: python scripts/executar_notebook_jurisprudencia.py notebooks/03_integracao/03_geracao.ipynb
 """
@@ -40,7 +40,7 @@ pergunta
   → resposta final
 ```
 
-**Dados.** As 137 perguntas da base de avaliação: 100 da curadoria (avaliação 09), 20 dos conjuntos dev/test aprovados da legislação e 17 de suporte da jurisprudência. As métricas vêm de `reports/integracao/geracao/`; pedidos e respostas completos ficam fora do Git (`output/kaggle/geracao/`), porque contêm perguntas protegidas e trechos de decisões.
+**Dados.** As 137 perguntas da base de avaliação: 100 da curadoria (avaliação 09), 20 dos conjuntos dev/test aprovados da legislação e 17 de suporte da jurisprudência. As métricas vêm de `reports/integracao/geracao_v2/`; pedidos e respostas completos ficam fora do Git (`output/kaggle/geracao_v2/`), porque contêm perguntas protegidas e trechos de decisões.
 ''')
 
 md('int03_setup_texto', '## 1. Configuração')
@@ -57,7 +57,7 @@ from src.integracao import geracao as ger
 from src.integracao import guardrails as g
 
 pd.set_option('display.width', 200); pd.set_option('display.max_colwidth', 90)
-RELATORIOS = ROOT / 'reports/integracao/geracao'
+RELATORIOS = ROOT / 'reports/integracao/geracao_v2'
 revisao = pd.read_csv(RELATORIOS / 'revisao_saida.csv')
 resumo = json.loads((RELATORIOS / 'resumo_kernel.json').read_text(encoding='utf-8'))
 
@@ -275,7 +275,7 @@ md('int03_exemplos_texto', '''
 Respostas a perguntas públicas (conjuntos dev/test aprovados, já versionados). As respostas completas ficam fora do Git; esta célula só as mostra quando o arquivo local existe.
 ''')
 code('int03_exemplos', r'''
-arquivo = ROOT / 'output/kaggle/geracao/respostas_revisadas.jsonl'
+arquivo = ROOT / 'output/kaggle/geracao_v2/respostas_revisadas.jsonl'
 EXEMPLOS = ['q_test_03', 'q_test_neg_02']
 if arquivo.exists():
     for l in arquivo.read_text(encoding='utf-8').splitlines():
@@ -286,7 +286,7 @@ if arquivo.exists():
                              f"· alertas: {', '.join(alertas) or 'nenhum'}\n\n**Pergunta:** {r['pergunta_sanitizada']}\n\n"
                              + '\n'.join('> ' + linha for linha in r['resposta_final'].splitlines())))
 else:
-    print('respostas completas não disponíveis nesta máquina (output/kaggle/geracao/ fica fora do Git)')
+    print('respostas completas não disponíveis nesta máquina (output/kaggle/geracao_v2/ fica fora do Git)')
 ''')
 md('int03_exemplos_obs', '''
 - **q_test_03** é a pergunta em que o sistema anterior errou o parágrafo do art. 73 (caso reprovado pela revisora).

@@ -1,9 +1,9 @@
 """Baixa as respostas do kernel do Kaggle, valida e aplica o guardrail de saída.
 
 Saídas:
-  output/kaggle/geracao/resultados/            saída bruta do kernel (fora do Git)
-  output/kaggle/geracao/respostas_revisadas.jsonl  pergunta, ação, fontes, resposta final e alertas (fora do Git)
-  reports/integracao/geracao/revisao_saida.csv     uma linha por pergunta, só identificadores e métricas (no Git)
+  output/kaggle/geracao_v2/resultados/              saída bruta do kernel (fora do Git)
+  output/kaggle/geracao_v2/respostas_revisadas.jsonl pergunta, ação, fontes, resposta final e alertas (fora do Git)
+  reports/integracao/geracao_v2/revisao_saida.csv   uma linha por pergunta, só identificadores e métricas (no Git)
 Uso: python scripts/importar_geracao_kaggle.py [--sem-download] [--fallback] [--local]
   --fallback  lê também a segunda passada (LLM B, scripts/preparar_fallback_kaggle.py) e escolhe a resposta final:
               A se servir, senão B se servir, senão a resposta segura (geracao.escolher_resposta).
@@ -19,13 +19,21 @@ sys.path.insert(0, str(ROOT))
 import pandas as pd
 
 from src.integracao import guardrails as g
-from src.integracao.geracao import (validar_resposta, revisar, escolher_resposta, pedido_fallback, MODELO_FALLBACK,
-                                    RESPOSTA_SEGURA)
+from src.integracao.geracao import (
+    MODELO_FALLBACK,
+    RESPOSTA_SEGURA,
+    escolher_resposta,
+    pedido_fallback,
+    revisar,
+    validar_resposta,
+)
+from src.integracao.observabilidade import Observabilidade
 
-KERNEL = 'laisapaiva93/lexia-geracao-qwen3'
-KERNEL_FALLBACK = 'laisapaiva93/lexia-fallback-llama31'
-BASE = ROOT / 'output/kaggle/geracao'
-RELATORIOS = ROOT / 'reports/integracao/geracao'
+KERNEL = 'laisapaiva93/lexia-geracao-qwen3-v2'
+KERNEL_FALLBACK = 'laisapaiva93/lexia-fallback-llama31-v2'
+BASE = ROOT / 'output/kaggle/geracao_v2'
+BASE_FALLBACK = ROOT / 'output/kaggle/fallback_v2'
+RELATORIOS = ROOT / 'reports/integracao/geracao_v2'
 
 
 def main():
@@ -41,9 +49,9 @@ def main():
         if l.strip():
             r = json.loads(l)
             respostas[r['pergunta_id']] = r
-    # Segunda passada (LLM B, fallback): output/kaggle/fallback/resultados/respostas.jsonl, se existir.
+    # Segunda passada (LLM B, fallback): output/kaggle/fallback_v2/resultados/respostas.jsonl, se existir.
     respostas_b = {}
-    arquivo_b = ROOT / 'output/kaggle/fallback/resultados/respostas.jsonl'
+    arquivo_b = BASE_FALLBACK / 'resultados/respostas.jsonl'
     if '--fallback' in sys.argv:
         if '--sem-download' not in sys.argv:
             subprocess.run(['kaggle', 'kernels', 'output', KERNEL_FALLBACK, '-p', str(arquivo_b.parent), '-o'], check=True)
@@ -52,9 +60,15 @@ def main():
                 r = json.loads(l)
                 respostas_b[r['pergunta_id']] = r
     linhas, revisadas = [], []
+    observabilidade = Observabilidade(BASE / 'observabilidade_importacao.jsonl')
     for p in pedidos:
         modelo, motivo_a, motivo_b, resposta_b = None, None, None, None
-        if p['precisa_llm']:
+        if p.get('erro_contexto'):
+            problemas = ['prompt excedeu o orçamento de contexto; geração não executada']
+            texto = RESPOSTA_SEGURA
+            segundos, tokens = 0, None
+            motivo_a = 'context_window_exceeded'
+        elif p['precisa_llm']:
             r = respostas.get(p['pergunta_id'])
             problemas = ['sem resposta do kernel'] if r is None else validar_resposta(p, r)
             segundos, tokens = (r or {}).get('segundos'), (r or {}).get('tokens_saida')
@@ -79,6 +93,19 @@ def main():
                               modelo_final=modelo, motivo_fallback=motivo_a, resposta_llm_b=resposta_b,
                               resposta_final=saida.resposta_final, alertas=saida.alertas, aprovada=linhas[-1]['aprovada'],
                               problemas=problemas))
+        observabilidade.registrar(
+            'validacao_resposta',
+            status='aprovada' if linhas[-1]['aprovada'] else 'reprovada',
+            pergunta_id=p['pergunta_id'],
+            metricas={
+                'valida': not problemas,
+                'aprovada': linhas[-1]['aprovada'],
+                'alertas': len(saida.alertas),
+                'tokens_saida': tokens or 0,
+                'duracao_geracao_ms': (segundos or 0) * 1000,
+            },
+            tipo_erro='context_window_exceeded' if p.get('erro_contexto') else ('validation_failed' if problemas else None),
+        )
     with (BASE / 'respostas_revisadas.jsonl').open('w', encoding='utf-8', newline='\n') as f:
         for r in revisadas:
             f.write(json.dumps(r, ensure_ascii=False) + '\n')
@@ -115,7 +142,7 @@ def comparar_llm_b(pedidos, respostas_a, respostas_b):
                                citacoes=citacoes, segundos=(r or {}).get('segundos'), tokens_saida=(r or {}).get('tokens_saida')))
     df = pd.DataFrame(linhas)
     df.to_csv(RELATORIOS / 'comparacao_llm_b.csv', index=False, encoding='utf-8')
-    resumo_b = ROOT / 'output/kaggle/fallback/resultados/resumo.json'
+    resumo_b = BASE_FALLBACK / 'resultados/resumo.json'
     if resumo_b.exists():
         (RELATORIOS / 'resumo_kernel_llm_b.json').write_text(resumo_b.read_text(encoding='utf-8'), encoding='utf-8')
     print(df.groupby('modelo').agg(respostas=('valida', 'size'), validas=('valida', 'sum'), aprovadas=('aprovada', 'sum'),

@@ -11,11 +11,11 @@ Camada 3 (pessoa): planilha com as abas
   aprovadas_com_alerta  aprovadas pela regra, mas com artigo, lei ou número que não está em fonte nenhuma
   fontes                texto das fontes entregues, por resposta
 
-Entradas (fora do Git): output/kaggle/juiz_27b/dataset/pedidos.jsonl e output/kaggle/juiz_27b/julgamentos.jsonl
-(scripts/importar_juiz_kaggle.py --27b). Com --llama, usa output/kaggle/juiz_27b_llama/.
+Entradas (fora do Git): output/kaggle/juiz_v2_27b/dataset/pedidos.jsonl e output/kaggle/juiz_v2_27b/julgamentos.jsonl
+(scripts/importar_juiz_kaggle.py --27b). Com --llama, usa output/kaggle/juiz_v2_27b_llama/.
 Saídas:
-  output/integracao/revisao_juiz/revisao_juiz_27b[_llama].xlsx   (fora do Git: tem perguntas e trechos protegidos)
-  reports/integracao/juiz/triagem_27b[_llama].csv                (só identificadores, notas, motivos e contagens)
+  output/integracao/revisao_juiz/revisao_juiz_27b[_llama].xlsx      (fora do Git: tem perguntas e trechos protegidos)
+  reports/integracao/juiz_v2/triagem_27b[_llama].csv               (só identificadores, notas, motivos e contagens)
 """
 from pathlib import Path
 import json
@@ -159,7 +159,7 @@ def formatar(ws, df):
 def main():
     llama = '--llama' in sys.argv
     sufixo = '_27b_llama' if llama else '_27b'
-    base = ROOT / f'output/kaggle/juiz{sufixo}'
+    base = ROOT / f'output/kaggle/juiz_v2{sufixo}'
     pedidos, julgamentos = carregar(base)
     tabela, afirmacoes, alertas, fontes = montar(pedidos, julgamentos, 'llama_' if llama else 'ger_')
 
@@ -188,7 +188,7 @@ def main():
     colunas_csv = ['id', 'acao', 'veredito_regra', 'veredito_modelo', 'triagem', 'motivos', 'notas',
                    'afirmacoes_a_conferir', 'sinal_apoio_textual', 'sinal_inconclusivo', 'sinal_pouco_apoio',
                    'sinal_referencia_ausente', 'alertas_em_aprovada']
-    csv = ROOT / f'reports/integracao/juiz/triagem{sufixo}.csv'
+    csv = ROOT / f'reports/integracao/juiz_v2/triagem{sufixo}.csv'
     tabela[colunas_csv].assign(no_rotulo_cego=tabela.id.isin(cego.id)).to_csv(csv, index=False, encoding='utf-8')
 
     print(f'respostas: {len(tabela)} | reprovadas pela regra: {len(reprovadas)}')

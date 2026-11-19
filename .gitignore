@@ -75,6 +75,14 @@ Desktop.ini
 /output/kaggle/fallback/
 /output/kaggle/juiz_llama/
 
+# Evidências e mensagens das execuções multiagentes; podem conter dados privados.
+/output/multiagentes/
+/output/kaggle/multiagentes/
+
+# Corpus obtido por DVC na estrutura da equipe e cache semântico local.
+/dados/processed/
+/dados/output/
+
 # Perguntas e evidências locais de jurisprudência; publicar apenas esquema/documentação.
 /data/evaluation/jurisprudencia/perguntas_suporte.jsonl
 /data/evaluation/jurisprudencia/candidatas_legislacao/
@@ -88,6 +96,9 @@ Desktop.ini
 /data/evaluation/jurisprudencia/curadoria_teste_final_iniciada.json
 /data/evaluation/jurisprudencia/curadoria_teste_final/
 
+# Cópia local da jurisprudência
+/data/raw/jurisprudencia/
+
 # Curadoria da avaliação 09 e cópia anterior (perguntas e respostas-ouro não publicadas)
 /data/evaluation/legislacao/avaliacao_09/
 /data/evaluation/legislacao/perguntas_consolidadas_pre09.csv
@@ -98,3 +109,8 @@ Desktop.ini
 /output/revisao_humana/
 # Comparação do notebook 05 (perguntas protegidas e trechos de decisões)
 /output/kaggle/comparacao/
+
+# Execuções estruturadas v2 do fluxo de geração e avaliação
+/output/kaggle/geracao_v2/
+/output/kaggle/fallback_v2/
+/output/kaggle/juiz_v2*/

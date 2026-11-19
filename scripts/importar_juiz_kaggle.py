@@ -1,10 +1,10 @@
 """Baixa os julgamentos do Gemma 3 12B (Kaggle), valida o JSON e cruza com as decisões humanas e os guardrails.
 
 Saídas:
-  output/kaggle/juiz/julgamentos.jsonl            julgamentos completos (fora do Git)
-  reports/integracao/juiz/calibracao.csv          juiz × revisora nas 9 respostas com decisão humana
-  reports/integracao/juiz/julgamentos.csv         notas e veredito por resposta gerada, com o resultado dos guardrails
-  reports/integracao/juiz/julgamentos_llama.csv   (com --llama) notas e veredito das respostas da LLM B
+  output/kaggle/juiz_v2/julgamentos.jsonl            julgamentos completos (fora do Git)
+  reports/integracao/juiz_v2/calibracao.csv          juiz × revisora nas 9 respostas com decisão humana
+  reports/integracao/juiz_v2/julgamentos.csv         notas e veredito por resposta gerada, com o resultado dos guardrails
+  reports/integracao/juiz_v2/julgamentos_llama.csv   (com --llama) notas e veredito das respostas da LLM B
 Uso: python scripts/importar_juiz_kaggle.py [--sem-download] [--llama] [--27b]  (--27b: juiz Gemma 3 27B, arquivos com sufixo _27b)
 """
 from pathlib import Path
@@ -12,6 +12,7 @@ import glob
 import json
 import subprocess
 import sys
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -19,10 +20,11 @@ sys.path.insert(0, str(ROOT))
 import pandas as pd
 
 from src.integracao.juiz import interpretar
+from src.integracao.observabilidade import Observabilidade
 
-KERNEL = 'laisapaiva93/lexia-juiz-gemma3'
-BASE = ROOT / 'output/kaggle/juiz'
-RELATORIOS = ROOT / 'reports/integracao/juiz'
+KERNEL = 'laisapaiva93/lexia-juiz-gemma3-v2'
+BASE = ROOT / 'output/kaggle/juiz_v2'
+RELATORIOS = ROOT / 'reports/integracao/juiz_v2'
 
 
 def main():
@@ -42,10 +44,14 @@ def main():
     saidas = {json.loads(l)['pergunta_id']: json.loads(l)
               for l in (resultados / 'respostas.jsonl').read_text(encoding='utf-8').splitlines() if l.strip()}
     julgamentos = []
+    observabilidade = Observabilidade(BASE / 'observabilidade_importacao.jsonl')
     for jid, p in pedidos.items():
+        inicio = time.monotonic()
         s = saidas.get(jid)
         registro = dict(julgamento_id=jid, grupo=p['grupo'], valido=False, erro=None)
-        if s is None:
+        if p.get('erro_contexto'):
+            registro['erro'] = 'context window exceeded; julgamento não executado'
+        elif s is None:
             registro['erro'] = 'sem saída do kernel'
         elif s.get('pedido_sha256') != p['pedido_sha256']:
             registro['erro'] = 'hash do pedido diferente'
@@ -54,6 +60,20 @@ def main():
                 registro.update(interpretar(s['resposta']), valido=True, segundos=s.get('segundos'))
             except (ValueError, TypeError) as e:
                 registro['erro'] = str(e)[:200]
+        observabilidade.registrar(
+            'importacao_julgamento',
+            status='valido' if registro['valido'] else 'invalido',
+            pergunta_id=jid,
+            duracao_ms=(time.monotonic() - inicio) * 1000,
+            metricas={'tem_saida': s is not None},
+            tipo_erro=(
+                None
+                if registro['valido']
+                else 'context_window_exceeded'
+                if p.get('erro_contexto')
+                else 'validation_failed'
+            ),
+        )
         julgamentos.append(registro)
     with (BASE / 'julgamentos.jsonl').open('w', encoding='utf-8', newline='\n') as f:
         for j in julgamentos:
@@ -83,7 +103,7 @@ def main():
     calib = calib.assign(concorda=calib.veredito == calib.humano, concorda_regra=calib.veredito_regra == calib.humano)
     calib.to_csv(RELATORIOS / f'calibracao{sufixo}.csv', index=False, encoding='utf-8')
     geradas = tabela[tabela.grupo == 'geracao'].copy()
-    revisao = ROOT / 'reports/integracao/geracao/revisao_saida.csv'
+    revisao = ROOT / 'reports/integracao/geracao_v2/revisao_saida.csv'
     if revisao.exists():
         guard = pd.read_csv(revisao).set_index('pergunta_id')
         ids = geradas.julgamento_id.str.removeprefix('ger_')

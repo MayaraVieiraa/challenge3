@@ -20,6 +20,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from .context_window import validar_janela_contexto
+
 PROVEDORES = {
     'deepseek': dict(url='https://api.deepseek.com/chat/completions', chave='DEEPSEEK_API_KEY', modelo='deepseek-chat'),
 }
@@ -98,10 +100,16 @@ def pedido_kaggle(julgamento_id, pergunta, acao, fontes, resposta, referencia=No
     """Pedido de julgamento no formato do kernel do Kaggle (Ollama, saída JSON)."""
     mensagens = [dict(role='system', content=sistema),
                  dict(role='user', content=montar_entrada(pergunta, acao, fontes, resposta, referencia, titulo_fontes))]
+    janela = validar_janela_contexto(
+        mensagens,
+        max_context_tokens=OPCOES_JUIZ['num_ctx'],
+        max_output_tokens=OPCOES_JUIZ['num_predict'],
+    )
     sha = hashlib.sha256(json.dumps([VERSAO_RUBRICA, modelo, OPCOES_JUIZ, mensagens], ensure_ascii=False,
                                     sort_keys=True).encode('utf-8')).hexdigest()
     return dict(pergunta_id=julgamento_id, precisa_llm=True, modelo=modelo, opcoes=OPCOES_JUIZ, mensagens=mensagens,
-                think=None, formato='json', pedido_sha256=sha, rubrica=VERSAO_RUBRICA)
+                think=None, formato='json', pedido_sha256=sha, rubrica=VERSAO_RUBRICA,
+                janela_contexto=janela.para_dict())
 
 
 CRITERIOS_REGRA = ('fidelidade', 'correcao', 'comportamento')   # clareza é estilo e não reprova

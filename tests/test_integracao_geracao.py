@@ -79,6 +79,12 @@ class TestFallback(unittest.TestCase):
         self.assertTrue(r['resposta_segura'])
         self.assertEqual(r['motivo_b'], 'nao executada')
 
+    def test_resposta_segura_em_texto_livre_nao_e_interpretada_como_json(self):
+        pedido = _pedido()
+        pedido['formato'] = ger.FORMATO_SAIDA
+        saida = ger.revisar(pedido, ger.RESPOSTA_SEGURA)
+        self.assertIsInstance(saida, ger.g.ResultadoSaida)
+
 
 if __name__ == '__main__':
     unittest.main()

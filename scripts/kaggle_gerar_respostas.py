@@ -8,18 +8,23 @@ de forma incremental em /kaggle/working. Cada resposta é validada (não vazia, 
 interno); uma resposta cortada é refeita com limite maior de tokens. Mesma versão do Ollama do ambiente local.
 """
 import glob
+import hashlib
 import json
 import os
 import re
 import subprocess
 import time
 import urllib.request
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 
 OLLAMA_VERSAO = '0.40.16'
 LIMITE_SEGUNDOS = 11 * 3600          # para antes do limite de 12 h da sessão
 SAIDA = Path('/kaggle/working/respostas.jsonl')
+OBSERVABILIDADE = Path('/kaggle/working/observabilidade.jsonl')
 URL = 'http://127.0.0.1:11434'
+RUN_ID = str(uuid.uuid4())
 
 
 def sh(comando):
@@ -33,7 +38,49 @@ def chamar(caminho, corpo=None, timeout=1800):
     return json.load(urllib.request.urlopen(req, timeout=timeout))
 
 
+def registrar_evento(pergunta_id, status, segundos, metricas, tipo_erro=None):
+    evento = dict(
+        timestamp=datetime.now(timezone.utc).isoformat(),
+        run_id=RUN_ID,
+        etapa='geracao_llm',
+        status=status,
+        duracao_ms=round(segundos * 1000, 2),
+        pergunta_id_sha256=hashlib.sha256(pergunta_id.encode('utf-8')).hexdigest(),
+        metricas=metricas,
+        tipo_erro=tipo_erro,
+    )
+    with OBSERVABILIDADE.open('a', encoding='utf-8', newline='\n') as arquivo:
+        arquivo.write(json.dumps(evento, ensure_ascii=False, allow_nan=False) + '\n')
+
+
+def problema_saida_estruturada(formato, texto):
+    if not isinstance(formato, dict):
+        return None
+    try:
+        dados = json.loads(texto)
+    except json.JSONDecodeError:
+        return 'structured_output'
+    if not isinstance(dados, dict):
+        return 'structured_output'
+    obrigatorios = set(formato.get('required', []))
+    propriedades = formato.get('properties', {})
+    if dados.keys() != obrigatorios:
+        return 'structured_output'
+    for campo, schema in propriedades.items():
+        valor = dados.get(campo)
+        if schema.get('type') == 'string' and (not isinstance(valor, str) or not valor.strip()):
+            return 'structured_output'
+        if schema.get('type') == 'array':
+            tipo_item = schema.get('items', {}).get('type')
+            if not isinstance(valor, list):
+                return 'structured_output'
+            if tipo_item == 'string' and any(not isinstance(item, str) or not item.strip() for item in valor):
+                return 'structured_output'
+    return None
+
+
 inicio = time.monotonic()
+OBSERVABILIDADE.write_text('', encoding='utf-8')
 sh('apt-get install -y -q zstd > /dev/null 2>&1 || true')
 sh(f'curl -fsSL https://ollama.com/install.sh | OLLAMA_VERSION={OLLAMA_VERSAO} sh')
 log = open('/kaggle/working/ollama.log', 'w')
@@ -89,7 +136,8 @@ with SAIDA.open('a', encoding='utf-8') as saida:
             texto = r['message']['content']
             problema = ('cortada' if r.get('done_reason') == 'length' else
                         'vazia' if len(texto.strip()) < 80 else
-                        'raciocinio' if re.search(r'</?think>', texto) else None)
+                        'raciocinio' if re.search(r'</?think>', texto) else
+                        problema_saida_estruturada(p.get('formato'), texto))
             tentativas.append(dict(segundos=round(time.monotonic() - t, 1), done_reason=r.get('done_reason'), problema=problema))
             if problema is None:
                 break
@@ -102,6 +150,19 @@ with SAIDA.open('a', encoding='utf-8') as saida:
                         segundos=sum(x.get('segundos', 0) for x in tentativas), tentativas=tentativas)
         saida.write(json.dumps(registro, ensure_ascii=False) + '\n')
         saida.flush()
+        problema_final = tentativas[-1].get('problema')
+        houve_erro = 'erro' in tentativas[-1]
+        registrar_evento(
+            p['pergunta_id'],
+            'erro' if houve_erro else ('resposta_invalida' if problema_final else 'ok'),
+            registro['segundos'],
+            {
+                'tentativas': len(tentativas),
+                'prompt_tokens': registro['prompt_tokens'] or 0,
+                'tokens_saida': registro['tokens_saida'] or 0,
+            },
+            'chamada_llm' if houve_erro else ('saida_invalida' if problema_final else None),
+        )
         print(f'{i}/{len(pendentes)} {p["pergunta_id"]} {registro["segundos"]:.1f}s {tentativas[-1]}', flush=True)
 
 linhas = [json.loads(l) for l in SAIDA.read_text(encoding='utf-8').splitlines() if l.strip()]
