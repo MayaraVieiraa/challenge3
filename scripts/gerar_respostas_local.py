@@ -1,8 +1,8 @@
 """Plano B da geração: roda os pedidos no Ollama local (GPU da máquina) em vez do Kaggle.
 
 A placa local tem 8 GB, então usa `qwen3:8b` (Q4_K_M) em vez de `qwen3:8b-q8_0`. Os pedidos são copiados com o
-modelo trocado e o hash recalculado (output/kaggle/geracao/dataset_local/pedidos.jsonl); as respostas vão para
-output/kaggle/geracao/resultados_local/respostas.jsonl, no mesmo formato do kernel. Retoma de onde parou.
+modelo trocado e o hash recalculado (output/kaggle/geracao_v2/dataset_local/pedidos.jsonl); as respostas vão para
+output/kaggle/geracao_v2/resultados_local/respostas.jsonl, no mesmo formato do kernel. Retoma de onde parou.
 Depois: python scripts/importar_geracao_kaggle.py --sem-download --local
 """
 from pathlib import Path
@@ -15,10 +15,11 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from src.integracao.geracao import _hash
+from src.integracao.geracao import FORMATO_SAIDA, _hash, analisar_saida_estruturada
+from src.integracao.observabilidade import Observabilidade
 
 MODELO_LOCAL = 'qwen3:8b'
-BASE = ROOT / 'output/kaggle/geracao'
+BASE = ROOT / 'output/kaggle/geracao_v2'
 
 
 def chamar(corpo):
@@ -33,13 +34,14 @@ def main():
     for p in origem:
         p = dict(p, modelo=MODELO_LOCAL)
         if p['precisa_llm']:
-            p['pedido_sha256'] = _hash(MODELO_LOCAL, p['opcoes'], p['mensagens'])
+            p['pedido_sha256'] = _hash(MODELO_LOCAL, p['opcoes'], p['mensagens'], p.get('formato'))
         pedidos.append(p)
     with (BASE / 'dataset_local/pedidos.jsonl').open('w', encoding='utf-8', newline='\n') as f:
         for p in pedidos:
             f.write(json.dumps(p, ensure_ascii=False) + '\n')
     saida = BASE / 'resultados_local/respostas.jsonl'
     saida.parent.mkdir(exist_ok=True)
+    observabilidade = Observabilidade(BASE / 'observabilidade_geracao_local.jsonl')
     feitos = {json.loads(l)['pergunta_id'] for l in saida.read_text(encoding='utf-8').splitlines() if l.strip()} if saida.exists() else set()
     pendentes = [p for p in pedidos if p['precisa_llm'] and p['pergunta_id'] not in feitos]
     print(f'{len(pendentes)} pendentes', flush=True)
@@ -48,10 +50,18 @@ def main():
             opcoes, tentativas = dict(p['opcoes']), []
             for _ in range(3):
                 t = time.monotonic()
-                r = chamar(dict(model=p['modelo'], messages=p['mensagens'], stream=False, think=False, options=opcoes))
+                corpo = dict(model=p['modelo'], messages=p['mensagens'], stream=False, think=False, options=opcoes)
+                if p.get('formato'):
+                    corpo['format'] = p['formato']
+                r = chamar(corpo)
                 texto = r['message']['content']
                 problema = ('cortada' if r.get('done_reason') == 'length' else 'vazia' if len(texto.strip()) < 80 else
                             'raciocinio' if re.search(r'</?think>', texto) else None)
+                if problema is None and p.get('formato'):
+                    try:
+                        analisar_saida_estruturada(texto)
+                    except ValueError:
+                        problema = 'structured_output'
                 tentativas.append(dict(segundos=round(time.monotonic() - t, 1), done_reason=r.get('done_reason'), problema=problema))
                 if problema is None:
                     break
@@ -63,6 +73,19 @@ def main():
                                     segundos=sum(x['segundos'] for x in tentativas), tentativas=tentativas),
                                ensure_ascii=False) + '\n')
             f.flush()
+            problema_final = tentativas[-1].get('problema')
+            observabilidade.registrar(
+                'geracao_llm_local',
+                status='resposta_invalida' if problema_final else 'ok',
+                pergunta_id=p['pergunta_id'],
+                duracao_ms=sum(x['segundos'] for x in tentativas) * 1000,
+                metricas={
+                    'tentativas': len(tentativas),
+                    'prompt_tokens': r.get('prompt_eval_count') or 0,
+                    'tokens_saida': r.get('eval_count') or 0,
+                },
+                tipo_erro='saida_invalida' if problema_final else None,
+            )
             print(f'{i}/{len(pendentes)} {p["pergunta_id"]} {tentativas[-1]}', flush=True)
 
 

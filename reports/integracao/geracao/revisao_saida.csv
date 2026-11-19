@@ -1,138 +1,138 @@
-pergunta_id,origem,acao,precisa_llm,fontes,valida,problemas,aprovada,bloqueantes,alertas,segundos_geracao,tokens_saida,segundos_recuperacao
-q09_p1_JUS-001,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,126.8,724.0,16.1
-q09_p1_JUS-002,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,22.7,423.0,9.4
-q09_p1_JUS-003,curadoria_09,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q09_p1_JUS-004,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,36.4,654.0,9.4
-q09_p1_JUS-005,curadoria_09,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q09_p1_JUS-006,curadoria_09,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q09_p1_JUS-007,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",61.8,889.0,9.7
-q09_p1_JUS-008,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",38.9,600.0,12.5
-q09_p1_JUS-009,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,37.5,575.0,17.7
-q09_p1_JUS-010,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",26.3,384.0,15.9
-q09_p1_JUS-011,curadoria_09,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q09_p1_JUS-012,curadoria_09,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q09_p1_JUS-013,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",44.9,692.0,16.6
-q09_p1_JUS-014,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,23.4,327.0,16.5
-q09_p1_JUS-015,curadoria_09,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q09_p1_JUS-016,curadoria_09,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",63.1,987.0,18.5
-q09_p1_JUS-017,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31.1,485.0,16.0
-q09_p1_JUS-018,curadoria_09,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",53.5,839.0,18.4
-q09_p1_JUS-019,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",33.2,458.0,17.6
-q09_p1_JUS-020,curadoria_09,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q09_p1_JUS-021,curadoria_09,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",25.5,371.0,16.2
-q09_p1_JUS-022,curadoria_09,orientar_sem_aconselhar,True,6,True,,True,,afirmacao_sem_fonte,41.2,616.0,17.4
-q09_p1_JUS-023,curadoria_09,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q09_p1_JUS-024,curadoria_09,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",37.3,588.0,14.8
-q09_p1_JUS-025,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31.1,450.0,15.5
-q09_p1_JUS-026,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,25.5,367.0,15.0
-q09_p1_JUS-027,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",39.4,644.0,18.6
-q09_p1_JUS-028,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",28.1,433.0,17.2
-q09_p1_JUS-029,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",30.8,478.0,14.4
-q09_p1_JUS-030,curadoria_09,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q09_p1_JUS-031,curadoria_09,responder,True,6,True,,True,,"artigo_sem_fonte, aviso_legal_ausente",29.3,468.0,17.6
-q09_p1_JUS-032,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",43.0,705.0,15.6
-q09_p1_JUS-033,curadoria_09,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",39.0,618.0,18.3
-q09_p1_JUS-034,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",126.5,978.0,19.4
-q09_p1_JUS-035,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,46.3,738.0,17.9
-q09_p1_JUS-036,curadoria_09,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",37.9,615.0,15.7
-q09_p1_JUS-037,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",21.7,304.0,18.2
-q09_p1_JUS-038,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",43.9,589.0,17.7
-q09_p1_JUS-039,curadoria_09,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.7,533.0,17.0
-q09_p1_JUS-040,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",50.6,808.0,18.6
-q09_p1_JUS-041,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",26.7,396.0,13.8
-q09_p1_JUS-042,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",51.1,840.0,18.1
-q09_p1_JUS-043,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",37.1,578.0,14.1
-q09_p1_JUS-044,curadoria_09,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q09_p1_JUS-045,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",36.3,565.0,16.6
-q09_p1_JUS-046,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",40.0,650.0,16.8
-q09_p1_JUS-047,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",28.1,420.0,19.2
-q09_p1_JUS-048,curadoria_09,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",45.3,708.0,16.3
-q09_p1_JUS-049,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",36.0,575.0,14.7
-q09_p1_JUS-050,curadoria_09,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",38.2,602.0,15.1
-q09_p2_FAQ01,curadoria_09,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q09_p2_FAQ02,curadoria_09,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q09_p2_FAQ03,curadoria_09,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q09_p2_FAQ04,curadoria_09,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q09_p2_FAQ05,curadoria_09,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q09_p2_FAQ06,curadoria_09,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q09_p2_FAQ07,curadoria_09,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q09_p2_FAQ08,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,27.6,431.0,13.0
-q09_p2_FAQ09,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",40.7,645.0,13.7
-q09_p2_FAQ10,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",30.4,476.0,16.7
-q09_p2_FAQ11,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,34.2,446.0,14.7
-q09_p2_FAQ12,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.6,517.0,16.8
-q09_p2_FAQ13,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",43.5,707.0,14.1
-q09_p2_FAQ14,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,29.1,453.0,14.9
-q09_p2_FAQ15,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,27.1,411.0,14.0
-q09_p2_FAQ16,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31.7,460.0,14.6
-q09_p2_FAQ17,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",33.1,515.0,16.3
-q09_p2_FAQ18,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,27.2,409.0,12.0
-q09_p2_FAQ19,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,37.4,578.0,15.6
-q09_p2_FAQ20,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",27.4,408.0,13.7
-q09_p2_FAQ21,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",36.7,570.0,16.2
-q09_p2_FAQ22,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.0,414.0,14.4
-q09_p2_FAQ23,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",27.8,409.0,13.9
-q09_p2_FAQ24,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,31.1,456.0,15.2
-q09_p2_FAQ25,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",33.6,505.0,15.5
-q09_p2_FAQ26,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,30.0,446.0,15.0
-q09_p2_FAQ27,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",32.6,446.0,18.2
-q09_p2_FAQ28,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",56.9,925.0,14.5
-q09_p2_FAQ29,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",37.5,607.0,18.6
-q09_p2_FAQ30,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",48.7,779.0,14.4
-q09_p2_FAQ31,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.6,464.0,17.2
-q09_p2_FAQ32,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,30.6,480.0,14.1
-q09_p2_FAQ33,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",29.6,425.0,17.4
-q09_p2_FAQ34,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,35.7,535.0,16.0
-q09_p2_FAQ35,curadoria_09,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q09_p2_FAQ36,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,35.5,563.0,15.1
-q09_p2_FAQ37,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,21.3,272.0,17.2
-q09_p2_FAQ38,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",37.1,568.0,10.9
-q09_p2_FAQ39,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",41.4,647.0,13.1
-q09_p2_FAQ40,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,34.3,535.0,14.2
-q09_p2_FAQ41,curadoria_09,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q09_p2_FAQ42,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,16.6,232.0,13.6
-q09_p2_FAQ43,curadoria_09,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q09_p2_FAQ44,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31.0,463.0,13.3
-q09_p2_FAQ45,curadoria_09,responder,True,6,True,,True,,afirmacao_sem_fonte,33.8,544.0,15.2
-q09_p2_FAQ46,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",28.9,433.0,11.6
-q09_p2_FAQ47,curadoria_09,responder,True,6,True,,True,,aviso_legal_ausente,31.5,458.0,14.5
-q09_p2_FAQ48,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",32.3,434.0,13.2
-q09_p2_FAQ49,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",43.9,710.0,16.6
-q09_p2_FAQ50,curadoria_09,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.2,485.0,14.1
-q_dev_01,legislacao_dev,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",17.8,251.0,15.9
-q_dev_02,legislacao_dev,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.4,514.0,14.5
-q_dev_03,legislacao_dev,responder,True,6,True,,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",38.8,617.0,17.5
-q_dev_04,legislacao_dev,responder,True,6,True,,True,,aviso_legal_ausente,34.9,542.0,15.7
-q_dev_05,legislacao_dev,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",33.5,534.0,15.0
-q_dev_neg_01,legislacao_dev,fora_escopo,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q_dev_neg_02,legislacao_dev,fora_escopo,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q_dev_06,legislacao_dev,responder,True,6,True,,True,,aviso_legal_ausente,29.0,398.0,14.7
-q_dev_07,legislacao_dev,responder,True,6,True,,True,,aviso_legal_ausente,31.9,490.0,13.4
-q_dev_08,legislacao_dev,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",36.2,561.0,14.5
-q_dev_neg_03,legislacao_dev,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-q_test_01,legislacao_test,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.9,544.0,16.8
-q_test_02,legislacao_test,responder,True,6,True,,True,,aviso_legal_ausente,30.9,468.0,13.6
-q_test_03,legislacao_test,responder,True,6,True,,True,,aviso_legal_ausente,26.8,407.0,12.9
-q_test_04,legislacao_test,responder,True,6,True,,True,,aviso_legal_ausente,29.5,462.0,14.3
-q_test_05,legislacao_test,outra_jurisdicao,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-q_test_06,legislacao_test,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",38.8,586.0,13.1
-q_test_07,legislacao_test,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",32.9,478.0,14.4
-q_test_08,legislacao_test,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",43.3,670.0,13.5
-q_test_neg_02,legislacao_test,consulta_individual,False,0,True,,True,,aviso_legal_ausente,0.0,,
-juris_001,jurisprudencia_suporte,institucional,False,0,True,,False,sem_fontes,aviso_legal_ausente,0.0,,
-juris_002,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",32.3,491.0,14.2
-juris_003,jurisprudencia_suporte,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",45.6,750.0,13.6
-juris_004,jurisprudencia_suporte,orientar_sem_aconselhar,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",30.1,460.0,14.4
-juris_005,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31.7,498.0,14.8
-juris_010,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",32.8,512.0,14.1
-juris_011,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.5,383.0,13.6
-juris_012,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",29.4,456.0,13.9
-juris_013,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",46.0,763.0,13.5
-juris_014,jurisprudencia_suporte,responder,True,6,True,,True,,aviso_legal_ausente,36.8,585.0,15.0
-juris_017,jurisprudencia_suporte,responder,True,6,True,,True,,"artigo_sem_fonte, aviso_legal_ausente",46.3,728.0,17.3
-juris_019,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",35.9,565.0,15.4
-juris_020,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",50.5,816.0,17.5
-juris_022,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",35.1,567.0,19.8
-juris_023,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",29.8,482.0,17.5
-juris_024,jurisprudencia_suporte,responder,True,6,True,,True,,"afirmacao_sem_fonte, aviso_legal_ausente",35.1,505.0,15.8
-juris_026,jurisprudencia_suporte,responder,True,6,True,,True,,aviso_legal_ausente,25.9,393.0,17.2
+pergunta_id,origem,acao,precisa_llm,fontes,valida,problemas,modelo_final,motivo_fallback,motivo_b,resposta_segura,aprovada,bloqueantes,alertas,segundos_geracao,tokens_saida,segundos_recuperacao
+q09_p1_JUS-001,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,126.8,724.0,16.1
+q09_p1_JUS-002,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,22.7,423.0,9.4
+q09_p1_JUS-003,curadoria_09,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p1_JUS-004,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,36.4,654.0,9.4
+q09_p1_JUS-005,curadoria_09,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p1_JUS-006,curadoria_09,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p1_JUS-007,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",61.8,889.0,9.7
+q09_p1_JUS-008,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",38.9,600.0,12.5
+q09_p1_JUS-009,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,37.5,575.0,17.7
+q09_p1_JUS-010,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",26.3,384.0,15.9
+q09_p1_JUS-011,curadoria_09,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p1_JUS-012,curadoria_09,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p1_JUS-013,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",44.9,692.0,16.6
+q09_p1_JUS-014,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,23.4,327.0,16.5
+q09_p1_JUS-015,curadoria_09,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p1_JUS-016,curadoria_09,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",63.1,987.0,18.5
+q09_p1_JUS-017,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31.1,485.0,16.0
+q09_p1_JUS-018,curadoria_09,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",53.5,839.0,18.4
+q09_p1_JUS-019,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",33.2,458.0,17.6
+q09_p1_JUS-020,curadoria_09,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p1_JUS-021,curadoria_09,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",25.5,371.0,16.2
+q09_p1_JUS-022,curadoria_09,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,afirmacao_sem_fonte,41.2,616.0,17.4
+q09_p1_JUS-023,curadoria_09,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p1_JUS-024,curadoria_09,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",37.3,588.0,14.8
+q09_p1_JUS-025,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31.1,450.0,15.5
+q09_p1_JUS-026,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,25.5,367.0,15.0
+q09_p1_JUS-027,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",39.4,644.0,18.6
+q09_p1_JUS-028,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",28.1,433.0,17.2
+q09_p1_JUS-029,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",30.8,478.0,14.4
+q09_p1_JUS-030,curadoria_09,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p1_JUS-031,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"artigo_sem_fonte, aviso_legal_ausente",29.3,468.0,17.6
+q09_p1_JUS-032,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",43.0,705.0,15.6
+q09_p1_JUS-033,curadoria_09,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",39.0,618.0,18.3
+q09_p1_JUS-034,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",126.5,978.0,19.4
+q09_p1_JUS-035,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,46.3,738.0,17.9
+q09_p1_JUS-036,curadoria_09,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",37.9,615.0,15.7
+q09_p1_JUS-037,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",21.7,304.0,18.2
+q09_p1_JUS-038,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",43.9,589.0,17.7
+q09_p1_JUS-039,curadoria_09,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.7,533.0,17.0
+q09_p1_JUS-040,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",50.6,808.0,18.6
+q09_p1_JUS-041,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",26.7,396.0,13.8
+q09_p1_JUS-042,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",51.1,840.0,18.1
+q09_p1_JUS-043,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",37.1,578.0,14.1
+q09_p1_JUS-044,curadoria_09,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p1_JUS-045,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",36.3,565.0,16.6
+q09_p1_JUS-046,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",40.0,650.0,16.8
+q09_p1_JUS-047,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",28.1,420.0,19.2
+q09_p1_JUS-048,curadoria_09,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",45.3,708.0,16.3
+q09_p1_JUS-049,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",36.0,575.0,14.7
+q09_p1_JUS-050,curadoria_09,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",38.2,602.0,15.1
+q09_p2_FAQ01,curadoria_09,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p2_FAQ02,curadoria_09,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p2_FAQ03,curadoria_09,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p2_FAQ04,curadoria_09,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p2_FAQ05,curadoria_09,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p2_FAQ06,curadoria_09,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p2_FAQ07,curadoria_09,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p2_FAQ08,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,27.6,431.0,13.0
+q09_p2_FAQ09,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",40.7,645.0,13.7
+q09_p2_FAQ10,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",30.4,476.0,16.7
+q09_p2_FAQ11,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,34.2,446.0,14.7
+q09_p2_FAQ12,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.6,517.0,16.8
+q09_p2_FAQ13,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",43.5,707.0,14.1
+q09_p2_FAQ14,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,29.1,453.0,14.9
+q09_p2_FAQ15,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,27.1,411.0,14.0
+q09_p2_FAQ16,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31.7,460.0,14.6
+q09_p2_FAQ17,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",33.1,515.0,16.3
+q09_p2_FAQ18,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,27.2,409.0,12.0
+q09_p2_FAQ19,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,37.4,578.0,15.6
+q09_p2_FAQ20,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",27.4,408.0,13.7
+q09_p2_FAQ21,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",36.7,570.0,16.2
+q09_p2_FAQ22,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.0,414.0,14.4
+q09_p2_FAQ23,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",27.8,409.0,13.9
+q09_p2_FAQ24,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,31.1,456.0,15.2
+q09_p2_FAQ25,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",33.6,505.0,15.5
+q09_p2_FAQ26,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,30.0,446.0,15.0
+q09_p2_FAQ27,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",32.6,446.0,18.2
+q09_p2_FAQ28,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",56.9,925.0,14.5
+q09_p2_FAQ29,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",37.5,607.0,18.6
+q09_p2_FAQ30,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",48.7,779.0,14.4
+q09_p2_FAQ31,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.6,464.0,17.2
+q09_p2_FAQ32,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,30.6,480.0,14.1
+q09_p2_FAQ33,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",29.6,425.0,17.4
+q09_p2_FAQ34,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,35.7,535.0,16.0
+q09_p2_FAQ35,curadoria_09,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p2_FAQ36,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,35.5,563.0,15.1
+q09_p2_FAQ37,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,21.3,272.0,17.2
+q09_p2_FAQ38,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",37.1,568.0,10.9
+q09_p2_FAQ39,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",41.4,647.0,13.1
+q09_p2_FAQ40,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,34.3,535.0,14.2
+q09_p2_FAQ41,curadoria_09,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p2_FAQ42,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,16.6,232.0,13.6
+q09_p2_FAQ43,curadoria_09,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q09_p2_FAQ44,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31.0,463.0,13.3
+q09_p2_FAQ45,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,afirmacao_sem_fonte,33.8,544.0,15.2
+q09_p2_FAQ46,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",28.9,433.0,11.6
+q09_p2_FAQ47,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,31.5,458.0,14.5
+q09_p2_FAQ48,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",32.3,434.0,13.2
+q09_p2_FAQ49,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",43.9,710.0,16.6
+q09_p2_FAQ50,curadoria_09,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.2,485.0,14.1
+q_dev_01,legislacao_dev,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",17.8,251.0,15.9
+q_dev_02,legislacao_dev,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.4,514.0,14.5
+q_dev_03,legislacao_dev,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, artigo_sem_fonte, aviso_legal_ausente",38.8,617.0,17.5
+q_dev_04,legislacao_dev,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,34.9,542.0,15.7
+q_dev_05,legislacao_dev,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",33.5,534.0,15.0
+q_dev_neg_01,legislacao_dev,fora_escopo,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q_dev_neg_02,legislacao_dev,fora_escopo,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q_dev_06,legislacao_dev,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,29.0,398.0,14.7
+q_dev_07,legislacao_dev,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,31.9,490.0,13.4
+q_dev_08,legislacao_dev,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",36.2,561.0,14.5
+q_dev_neg_03,legislacao_dev,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q_test_01,legislacao_test,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.9,544.0,16.8
+q_test_02,legislacao_test,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,30.9,468.0,13.6
+q_test_03,legislacao_test,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,26.8,407.0,12.9
+q_test_04,legislacao_test,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,29.5,462.0,14.3
+q_test_05,legislacao_test,outra_jurisdicao,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+q_test_06,legislacao_test,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",38.8,586.0,13.1
+q_test_07,legislacao_test,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",32.9,478.0,14.4
+q_test_08,legislacao_test,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",43.3,670.0,13.5
+q_test_neg_02,legislacao_test,consulta_individual,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+juris_001,jurisprudencia_suporte,institucional,False,0,True,,,,,False,True,,aviso_legal_ausente,0.0,,
+juris_002,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",32.3,491.0,14.2
+juris_003,jurisprudencia_suporte,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",45.6,750.0,13.6
+juris_004,jurisprudencia_suporte,orientar_sem_aconselhar,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",30.1,460.0,14.4
+juris_005,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",31.7,498.0,14.8
+juris_010,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",32.8,512.0,14.1
+juris_011,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",34.5,383.0,13.6
+juris_012,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",29.4,456.0,13.9
+juris_013,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",46.0,763.0,13.5
+juris_014,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,36.8,585.0,15.0
+juris_017,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"artigo_sem_fonte, aviso_legal_ausente",46.3,728.0,17.3
+juris_019,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",35.9,565.0,15.4
+juris_020,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",50.5,816.0,17.5
+juris_022,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",35.1,567.0,19.8
+juris_023,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",29.8,482.0,17.5
+juris_024,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,"afirmacao_sem_fonte, aviso_legal_ausente",35.1,505.0,15.8
+juris_026,jurisprudencia_suporte,responder,True,6,True,,qwen3:8b-q8_0,,,False,True,,aviso_legal_ausente,25.9,393.0,17.2

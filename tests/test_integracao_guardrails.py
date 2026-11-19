@@ -107,8 +107,116 @@ class TestSaida(unittest.TestCase):
                 r = g.verificar_saida(resposta, self.fontes, entrada)
                 self.assertFalse(any(a['codigo'] == 'consulta_individual_pede_dados' for a in r.alertas), r.alertas)
 
+    def test_resposta_fixa_de_recusa_sem_fontes_e_aprovada(self):
+        entrada = g.verificar_entrada('Qual a regra de férias na França?')
+        r = g.verificar_saida('Só consigo responder sobre o Direito do Trabalho brasileiro. Para as regras de outro país, '
+                              'consulte a legislação local.', [], entrada)
+        self.assertTrue(r.aprovada, r.alertas)
+        sem_entrada = g.verificar_saida('O direito ao adicional é garantido por lei.', [])
+        self.assertFalse(sem_entrada.aprovada)
+
     def test_frases_nao_quebram_em_abreviacoes(self):
         self.assertEqual(len(g.frases('Conforme o Art. 73, § 2º da CLT, o horário noturno vai das 22 às 5 horas.')), 1)
+
+    def test_citacoes_apos_pontuacao_pertencem_a_frase_anterior(self):
+        afirmacao = 'Esta afirmação jurídica descreve um direito previsto nas fontes'
+        for pontuacao in ('.', '!', '?'):
+            with self.subTest(pontuacao=pontuacao):
+                resposta = f'{afirmacao}{pontuacao} [Fonte 1]'
+                self.assertEqual(g.frases(resposta), [resposta])
+
+    def test_multiplas_citacoes_pospostas_ficam_na_mesma_frase(self):
+        afirmacao = 'Esta afirmação jurídica descreve um direito previsto nas fontes.'
+        for citacoes in ('[Fonte 1][Fonte 2]', '[Fonte 1] [Fonte 2]', '(Fonte 1) (Fonte 2)'):
+            with self.subTest(citacoes=citacoes):
+                resposta = afirmacao + ' ' + citacoes
+                partes = g.frases(resposta)
+                self.assertEqual(partes, [resposta])
+                self.assertEqual(g.CITACAO.findall(partes[0]), ['1', '2'])
+
+    def test_citacao_antes_do_ponto_permanece_na_propria_frase(self):
+        resposta = 'Esta afirmação jurídica descreve um direito previsto nas fontes [Fonte 1].'
+        self.assertEqual(g.frases(resposta), [resposta])
+
+    def test_frase_seguinte_nao_herda_citacao_posposta(self):
+        primeira = 'Esta afirmação jurídica descreve um direito previsto nas fontes.'
+        segunda = 'A outra regra trabalhista ainda depende de evidência específica.'
+        for citacao in ('[Fonte 1]', '[Fonte1]', '[Fonte 1][Fonte 2]'):
+            with self.subTest(citacao=citacao):
+                partes = g.frases(f'{primeira} {citacao} {segunda}')
+                self.assertEqual(partes, [f'{primeira} {citacao}', segunda])
+                self.assertTrue(g.CITACAO.search(partes[0]))
+                self.assertFalse(g.CITACAO.search(partes[1]))
+
+    def test_paragrafos_e_itens_sem_citacao_continuam_independentes(self):
+        afirmacoes = [
+            'A primeira afirmação jurídica descreve um direito sem fonte.',
+            'A segunda afirmação jurídica descreve outro direito sem fonte.',
+            'A terceira afirmação jurídica descreve mais um direito sem fonte.',
+        ]
+        for separador, prefixos in (('\n\n', ('', '', '')), ('\n', ('1. ', '2. ', '3. ')),
+                                   ('\n', ('- ', '- ', '- '))):
+            with self.subTest(separador=separador, prefixos=prefixos):
+                resposta = separador.join(p + a for p, a in zip(prefixos, afirmacoes))
+                partes = g.frases(resposta)
+                self.assertEqual(len(partes), 3)
+                self.assertTrue(all(not g.CITACAO.search(p) for p in partes))
+                r = g.verificar_saida(resposta, self.fontes)
+                self.assertTrue(any(a['codigo'] == 'afirmacao_sem_fonte' for a in r.alertas))
+
+    def test_citacao_em_linha_propria_nao_cola_o_paragrafo_seguinte(self):
+        primeira = 'Esta afirmação jurídica descreve um direito previsto nas fontes.'
+        segunda = 'Esta outra afirmação jurídica continua sem suporte citado.'
+        partes = g.frases(primeira + '\n[Fonte 1]\n\n' + segunda)
+        self.assertEqual(partes, [primeira + ' [Fonte 1]', segunda])
+        self.assertFalse(g.CITACAO.search(partes[1]))
+
+    def test_citacao_no_inicio_de_outro_paragrafo_nao_retrocede(self):
+        primeira = 'Esta afirmação jurídica continua sem suporte citado.'
+        segunda = '[Fonte 1] Esta outra afirmação jurídica cita sua própria fonte.'
+        for separador in ('\n\n', '\n \t\n', '\r\n\r\n'):
+            with self.subTest(separador=separador):
+                partes = g.frases(primeira + separador + segunda)
+                self.assertEqual(partes, [primeira, segunda])
+                self.assertFalse(g.CITACAO.search(partes[0]))
+                self.assertTrue(g.CITACAO.search(partes[1]))
+
+    def test_numero_de_item_nao_separa_citacao_do_texto_que_inicia(self):
+        primeira = '[Fonte 1] Esta afirmação jurídica descreve um direito previsto nas fontes.'
+        segunda = 'Esta outra afirmação jurídica continua sem suporte citado.'
+        partes = g.frases('1. ' + primeira + '\n2. ' + segunda)
+        self.assertEqual(partes, [primeira, segunda])
+
+    def test_citacoes_pospostas_nao_geram_alerta_falso_de_afirmacao_sem_fonte(self):
+        afirmacoes = [
+            'Esta afirmação jurídica descreve um direito previsto nas fontes.',
+            'Esta outra afirmação jurídica descreve um direito previsto nas fontes!',
+            'Esta terceira afirmação jurídica descreve um direito previsto nas fontes?',
+        ]
+        resposta = '\n\n'.join(a + ' [Fonte 1]' for a in afirmacoes)
+        r = g.verificar_saida(resposta, self.fontes)
+        self.assertFalse(any(a['codigo'] == 'afirmacao_sem_fonte' for a in r.alertas), r.alertas)
+
+    def test_citacao_posposta_nao_acoberta_afirmacoes_seguintes_sem_fonte(self):
+        resposta = ('Esta afirmação jurídica descreve um direito previsto nas fontes. [Fonte1] '
+                    'A segunda afirmação jurídica descreve um direito sem fonte. '
+                    'A terceira afirmação jurídica descreve outro direito sem fonte. '
+                    'A quarta afirmação jurídica descreve mais um direito sem fonte.')
+        r = g.verificar_saida(resposta, self.fontes)
+        alertas = [a for a in r.alertas if a['codigo'] == 'afirmacao_sem_fonte']
+        self.assertEqual(len(alertas), 1)
+        self.assertEqual(alertas[0]['detalhe'], '3 de 4 frases jurídicas sem citação')
+
+    def test_dispositivo_inconsistente_continua_bloqueado_com_citacao_posposta(self):
+        resposta = 'O acréscimo é de 20%, conforme o Art. 73, § 2º da CLT. [Fonte 1]'
+        r = g.verificar_saida(resposta, self.fontes)
+        self.assertFalse(r.aprovada)
+        self.assertTrue(any(a['codigo'] == 'dispositivo_inconsistente' for a in r.alertas), r.alertas)
+
+    def test_fonte_compacta_inexistente_continua_bloqueada(self):
+        r = g.verificar_saida('Esta afirmação jurídica descreve um direito sem suporte. [Fonte99]', self.fontes)
+        self.assertFalse(r.aprovada)
+        self.assertTrue(any(a['codigo'] == 'citacao_inexistente' for a in r.alertas), r.alertas)
 
 
 if __name__ == '__main__':

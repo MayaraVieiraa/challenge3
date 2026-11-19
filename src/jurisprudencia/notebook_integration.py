@@ -15,14 +15,14 @@ def load_state(root):
     if state.get('destino')!=TARGET or state.get('estado')!='concluido':raise ValueError('Estado de integração inválido.')
     directory=root/'notebooks/02_jurisprudencia'
     for name in PREFIXES:
-        archive=(root/state['historico'][name]).resolve()
+        archive=(root/state['historico'][name].replace('\\','/')).resolve()  # estado gravado no Windows usa '\'
         if not archive.is_relative_to(directory/'historico') or archive.name!=name:raise ValueError('Arquivo histórico fora do local permitido.')
     return state
 
 
 def source_path(root,name):
     root=Path(root).resolve();state=load_state(root)
-    return root/state['historico'][name] if state and name in PREFIXES else root/'notebooks/02_jurisprudencia'/name
+    return root/state['historico'][name].replace('\\','/') if state and name in PREFIXES else root/'notebooks/02_jurisprudencia'/name
 
 
 def rewrite_references(text,current_name=TARGET):

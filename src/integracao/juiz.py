@@ -20,6 +20,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from .context_window import validar_janela_contexto
+
 PROVEDORES = {
     'deepseek': dict(url='https://api.deepseek.com/chat/completions', chave='DEEPSEEK_API_KEY', modelo='deepseek-chat'),
 }
@@ -83,19 +85,49 @@ def pedido_kaggle(julgamento_id, pergunta, acao, fontes, resposta, referencia=No
     """Pedido de julgamento no formato do kernel do Kaggle (Ollama, saída JSON)."""
     mensagens = [dict(role='system', content=SISTEMA_JUIZ),
                  dict(role='user', content=montar_entrada(pergunta, acao, fontes, resposta, referencia))]
+    janela = validar_janela_contexto(
+        mensagens,
+        max_context_tokens=OPCOES_JUIZ['num_ctx'],
+        max_output_tokens=OPCOES_JUIZ['num_predict'],
+    )
     sha = hashlib.sha256(json.dumps([VERSAO_RUBRICA, modelo, OPCOES_JUIZ, mensagens], ensure_ascii=False,
                                     sort_keys=True).encode('utf-8')).hexdigest()
     return dict(pergunta_id=julgamento_id, precisa_llm=True, modelo=modelo, opcoes=OPCOES_JUIZ, mensagens=mensagens,
-                think=None, formato='json', pedido_sha256=sha, rubrica=VERSAO_RUBRICA)
+                think=None, formato='json', pedido_sha256=sha, rubrica=VERSAO_RUBRICA,
+                janela_contexto=janela.para_dict())
+
+
+CRITERIOS_REGRA = ('fidelidade', 'correcao', 'comportamento')   # clareza é estilo e não reprova
+
+
+def veredito_regra(dados):
+    """Veredito derivado das notas, fixado antes de ver os resultados do juiz 27B (regra declarada, não calibrada).
+
+    Reprovada se o juiz reprovou, se fidelidade, correção ou comportamento tiver nota abaixo de 2 (nota nula, quando
+    não há referência, não conta) ou se alguma afirmação estiver sem apoio ou contradita pelas fontes. Motivo: na
+    calibração do Gemma 3 12B o veredito do modelo não acompanhou as próprias notas (q_test_05: notas 1 e veredito
+    aprovada).
+    """
+    if dados.get('veredito') == 'reprovada':
+        return 'reprovada'
+    for criterio in CRITERIOS_REGRA:
+        nota = dados.get(criterio)
+        if isinstance(nota, (int, float)) and nota < 2:
+            return 'reprovada'
+    if any(a.get('suporte') in ('sem_apoio', 'contradita') for a in dados.get('afirmacoes') or []):
+        return 'reprovada'
+    return 'aprovada'
 
 
 def interpretar(texto):
-    """Converte a saída do juiz em dicionário validado (ValueError se inválida)."""
+    """Converte a saída do juiz em dicionário validado (ValueError se inválida), com `veredito_regra` acrescentado."""
     try:
         dados = json.loads(texto)
     except json.JSONDecodeError as e:
         raise ValueError(f'JSON inválido: {e}') from None
-    return _validar(dados)
+    dados = _validar(dados)
+    dados['veredito_regra'] = veredito_regra(dados)
+    return dados
 
 
 class Juiz:
