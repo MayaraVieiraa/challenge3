@@ -1,0 +1,16 @@
+trace_id,session_id,timestamp,status,duracao_total_ms,total_spans,tokens_in,tokens_out,tools_executadas,cache_hits
+8f4eff3f-b154-4104-9b6b-229a3b34cb70,test_run_1,2026-11-19T10:26:20.389218,sucesso,10.47,6,850,240,,0
+beba4900-37dc-4dc2-a720-45d3530144eb,default_session,2026-11-19T10:27:04.453744,sucesso,4.01,5,850,240,,0
+49bd03ff-111c-4ce4-96be-19f0395d8026,default_session,2026-11-19T10:27:37.454716,sucesso,0.39,5,850,240,,0
+b3b008dc-9d25-42e3-a439-8e69b6cbc627,default_session,2026-11-19T10:27:52.674560,sucesso,4.12,5,850,240,,0
+827134a7-3e8e-42a0-85a1-59f3ff577037,default_session,2026-11-19T10:28:03.625754,sucesso,3.98,5,850,240,,0
+72d8ef63-5c77-452a-a9b6-c7577a5cd88a,default_session,2026-11-19T10:28:21.392223,sucesso,3.94,5,850,240,,0
+ecbab9e5-4d55-4fab-9db9-bbd2b9b47a22,demo_caso_1,2026-11-19T10:30:16.788752,sucesso,6.91,6,850,240,,0
+1ae28f94-49be-4eea-a3b8-3b51db5804d0,demo_caso_2,2026-11-19T10:30:16.792114,sucesso,0.47,6,850,240,,0
+82d496ba-ec4d-4da6-83a7-b6997ea069c5,demo_caso_3,2026-11-19T10:30:16.793141,sucesso,0.3,6,850,240,,0
+00c9088e-7401-4ec8-aace-fa5b77525af2,demo_cache_hit,2026-11-19T10:30:16.793783,sucesso_cache,0.05,3,0,0,,1
+1c9013cc-8277-4f65-878c-dfc7983fa083,sessao_ped_agente_001,2026-11-19T10:30:41.206865,sucesso,5.42,6,850,240,,0
+862db863-60b3-46f0-8dc9-d0a222b43ce9,sessao_ped_agente_002,2026-11-19T10:30:41.210345,sucesso,0.58,6,850,240,,0
+c699bdcc-47a6-4d3d-8795-0811cd872432,sessao_ped_agente_003,2026-11-19T10:30:41.211526,sucesso,0.34,6,850,240,,0
+bc07aee5-184c-4a51-a98a-3c3e74a434eb,sessao_ped_agente_004,2026-11-19T10:30:41.212443,sucesso,0.29,6,850,240,,0
+276cbe0e-005b-4d89-82cd-d2b4e5c22046,sessao_ped_agente_005,2026-11-19T10:30:41.213288,sucesso,0.29,6,850,240,,0
