@@ -1,8 +1,8 @@
 """Prepara a geração no Kaggle: perguntas da base → guardrail de entrada → recuperação → pedidos para a LLM.
 
 Saídas (fora do Git: contêm texto de decisões e perguntas protegidas):
-  output/kaggle/geracao/dataset/pedidos.jsonl + dataset-metadata.json   (dataset privado no Kaggle)
-  output/kaggle/geracao/kernel/gerar_respostas.py + kernel-metadata.json (kernel com GPU T4)
+  output/kaggle/geracao_v2/dataset/pedidos.jsonl + dataset-metadata.json   (dataset privado no Kaggle)
+  output/kaggle/geracao_v2/kernel/gerar_respostas.py + kernel-metadata.json (kernel com GPU T4)
 O arquivo de pedidos é gravado de forma incremental; uma nova execução continua de onde parou.
 """
 from pathlib import Path
@@ -10,6 +10,7 @@ import glob
 import hashlib
 import json
 import sys
+import time
 import unicodedata
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,12 +20,15 @@ import pandas as pd
 
 from src.storage.pgvector_store import load_database_url
 from src.integracao.recuperacao import Recuperador, Configuracao
+from src.integracao.context_window import ContextWindowExceeded
 from src.integracao.geracao import montar_pedido, MODELO_GERACAO, OPCOES_GERACAO
+from src.integracao.guardrails import verificar_entrada
+from src.integracao.observabilidade import Observabilidade
 
 USUARIO_KAGGLE = 'laisapaiva93'
-DATASET = 'lexia-geracao-pedidos'
-KERNEL = 'lexia-geracao-qwen3'
-DESTINO = ROOT / 'output/kaggle/geracao'
+DATASET = 'lexia-geracao-pedidos-v2'
+KERNEL = 'lexia-geracao-qwen3-v2'
+DESTINO = ROOT / 'output/kaggle/geracao_v2'
 COTAS = {'legislacao': 3, 'jurisprudencia': 3}
 
 
@@ -72,6 +76,7 @@ def escrever_metadados():
 def main():
     escrever_metadados()
     arquivo = DESTINO / 'dataset/pedidos.jsonl'
+    observabilidade = Observabilidade(DESTINO / 'observabilidade_preparacao.jsonl')
     feitos = set()
     if arquivo.exists():
         feitos = {json.loads(l)['pergunta_id'] for l in arquivo.read_text(encoding='utf-8').splitlines() if l.strip()}
@@ -83,9 +88,47 @@ def main():
     config = Configuracao(entrega_por_fonte=COTAS, top_k=10)
     with arquivo.open('a', encoding='utf-8', newline='\n') as saida:
         for i, q in enumerate(perguntas, 1):
-            pedido = montar_pedido(q['pergunta_id'], q['pergunta'], recuperador, config)
+            inicio = time.monotonic()
+            try:
+                pedido = montar_pedido(q['pergunta_id'], q['pergunta'], recuperador, config)
+            except ContextWindowExceeded as erro:
+                entrada = verificar_entrada(q['pergunta'])
+                pedido = dict(
+                    pergunta_id=q['pergunta_id'],
+                    acao=entrada.acao,
+                    pergunta_sanitizada=entrada.pergunta_sanitizada,
+                    origem=q['origem'],
+                    tipo=q['tipo'],
+                    precisa_llm=False,
+                    erro_contexto=erro.budget.para_dict(),
+                    fontes=[],
+                )
+                observabilidade.registrar(
+                    'preparacao_pedido',
+                    status='contexto_excedido',
+                    pergunta_id=q['pergunta_id'],
+                    duracao_ms=(time.monotonic() - inicio) * 1000,
+                    metricas=erro.budget.para_dict(),
+                    tipo_erro=type(erro).__name__,
+                )
+                saida.write(json.dumps(pedido, ensure_ascii=False) + '\n')
+                saida.flush()
+                print(f'{i}/{len(perguntas)} {q["pergunta_id"]} contexto excedido', flush=True)
+                continue
             pedido.update(origem=q['origem'], tipo=q['tipo'], modelo=MODELO_GERACAO, opcoes=OPCOES_GERACAO,
                           pergunta_sha256=hashlib.sha256(q['pergunta'].encode('utf-8')).hexdigest())
+            observabilidade.registrar(
+                'preparacao_pedido',
+                status='preparado',
+                pergunta_id=q['pergunta_id'],
+                duracao_ms=(time.monotonic() - inicio) * 1000,
+                metricas={
+                    'precisa_llm': pedido['precisa_llm'],
+                    'fontes': len(pedido.get('fontes', [])),
+                    'tokens_entrada_estimados': pedido.get('janela_contexto', {}).get('estimated_input_tokens', 0),
+                    'contexto_maximo': pedido.get('janela_contexto', {}).get('max_context_tokens', 0),
+                },
+            )
             saida.write(json.dumps(pedido, ensure_ascii=False) + '\n')
             saida.flush()
             print(f'{i}/{len(perguntas)} {q["pergunta_id"]} {pedido["acao"]} {pedido.get("segundos_recuperacao", "")}', flush=True)

@@ -3,14 +3,15 @@
 Dois grupos de julgamento no mesmo pacote:
   calib_<id>  as 9 respostas antigas com decisão humana (feedback pós-teste): calibração do juiz.
               O juiz não vê a decisão da revisora.
-  ger_<id>    as respostas geradas pelo Qwen3 8B (output/kaggle/geracao/respostas_revisadas.jsonl).
+  ger_<id>    as respostas geradas pelo Qwen3 8B (output/kaggle/geracao_v2/respostas_revisadas.jsonl).
 Referência: resposta-ouro da curadoria (avaliação 09) ou pontos esperados + limites (conjuntos aprovados).
-Saídas (fora do Git): output/kaggle/juiz/dataset/ e output/kaggle/juiz/kernel/.
+Saídas (fora do Git): output/kaggle/juiz_v2/dataset/ e output/kaggle/juiz_v2/kernel/.
 """
 from pathlib import Path
 import glob
 import json
 import sys
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -18,12 +19,42 @@ sys.path.insert(0, str(ROOT))
 import pandas as pd
 
 from src.integracao import guardrails as g
+from src.integracao.context_window import ContextWindowExceeded
 from src.integracao.juiz import pedido_kaggle
+from src.integracao.observabilidade import Observabilidade
 
 USUARIO_KAGGLE = 'laisapaiva93'
-DATASET = 'lexia-juiz-pedidos'
-KERNEL = 'lexia-juiz-gemma3'
-DESTINO = ROOT / 'output/kaggle/juiz'
+DATASET = 'lexia-juiz-pedidos-v2'
+KERNEL = 'lexia-juiz-gemma3-v2'
+DESTINO = ROOT / 'output/kaggle/juiz_v2'
+
+
+def preparar_pedido(julgamento_id, grupo, pergunta, acao, fontes, resposta, referencia, observabilidade):
+    inicio = time.monotonic()
+    try:
+        pedido = pedido_kaggle(julgamento_id, pergunta, acao, fontes, resposta, referencia)
+    except ContextWindowExceeded as erro:
+        observabilidade.registrar(
+            'preparacao_pedido_juiz',
+            status='contexto_excedido',
+            pergunta_id=julgamento_id,
+            duracao_ms=(time.monotonic() - inicio) * 1000,
+            metricas=erro.budget.para_dict(),
+            tipo_erro=type(erro).__name__,
+        )
+        return dict(pergunta_id=julgamento_id, grupo=grupo, precisa_llm=False,
+                    erro_contexto=erro.budget.para_dict())
+    observabilidade.registrar(
+        'preparacao_pedido_juiz',
+        status='preparado',
+        pergunta_id=julgamento_id,
+        duracao_ms=(time.monotonic() - inicio) * 1000,
+        metricas={
+            'tokens_entrada_estimados': pedido['janela_contexto']['estimated_input_tokens'],
+            'contexto_maximo': pedido['janela_contexto']['max_context_tokens'],
+        },
+    )
+    return dict(pedido, grupo=grupo)
 
 
 def referencias():
@@ -44,6 +75,7 @@ def referencias():
 def main():
     refs = referencias()
     pedidos = []
+    observabilidade = Observabilidade(DESTINO / 'observabilidade_preparacao.jsonl')
     arquivo = glob.glob(str(ROOT / 'data/evaluation/legislacao/feedback_pos_teste/*/respostas_reais_e_feedback.jsonl'))[0]
     for l in Path(arquivo).read_text(encoding='utf-8').splitlines():
         if l.strip():
@@ -51,15 +83,19 @@ def main():
             entrada = g.verificar_entrada(r['pergunta'])
             fontes = [dict(fonte='legislacao', caminho_relativo=f.get('caminho_relativo'), artigo_ref=f.get('artigo_ref'),
                            conteudo=f.get('conteudo_chunk', '')) for f in r['fontes_entregues']]
-            pedidos.append(dict(pedido_kaggle(f'calib_{r["query_id"]}', entrada.pergunta_sanitizada, entrada.acao, fontes,
-                                              r['resposta_real_modelo'], refs.get(r['query_id'])), grupo='calibracao'))
-    revisadas = ROOT / 'output/kaggle/geracao/respostas_revisadas.jsonl'
+            pedidos.append(preparar_pedido(
+                f'calib_{r["query_id"]}', 'calibracao', entrada.pergunta_sanitizada, entrada.acao, fontes,
+                r['resposta_real_modelo'], refs.get(r['query_id']), observabilidade,
+            ))
+    revisadas = ROOT / 'output/kaggle/geracao_v2/respostas_revisadas.jsonl'
     for l in revisadas.read_text(encoding='utf-8').splitlines():
         if l.strip():
             r = json.loads(l)
             if r['acao'] in ('responder', 'orientar_sem_aconselhar') and r['resposta_modelo']:
-                pedidos.append(dict(pedido_kaggle(f'ger_{r["pergunta_id"]}', r['pergunta_sanitizada'], r['acao'], r['fontes'],
-                                                  r['resposta_modelo'], refs.get(r['pergunta_id'])), grupo='geracao'))
+                pedidos.append(preparar_pedido(
+                    f'ger_{r["pergunta_id"]}', 'geracao', r['pergunta_sanitizada'], r['acao'], r['fontes'],
+                    r['resposta_modelo'], refs.get(r['pergunta_id']), observabilidade,
+                ))
     (DESTINO / 'dataset').mkdir(parents=True, exist_ok=True)
     with (DESTINO / 'dataset/pedidos.jsonl').open('w', encoding='utf-8', newline='\n') as f:
         for p in pedidos:
@@ -76,7 +112,9 @@ def main():
     (DESTINO / 'kernel/gerar_respostas.py').write_text((ROOT / 'scripts/kaggle_gerar_respostas.py').read_text(encoding='utf-8'),
                                                        encoding='utf-8')
     print(f'{len(pedidos)} pedidos de julgamento:', pd.Series([p['grupo'] for p in pedidos]).value_counts().to_dict(),
-          '| com referência:', sum('RESPOSTA DE REFERÊNCIA' in p['mensagens'][1]['content'] for p in pedidos))
+          '| com referência:', sum(
+              'RESPOSTA DE REFERÊNCIA' in p.get('mensagens', [{}, {}])[1].get('content', '') for p in pedidos
+          ))
 
 
 if __name__ == '__main__':

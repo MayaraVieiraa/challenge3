@@ -1,6 +1,6 @@
 # Estado da integração (03_integracao)
 
-Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-17.
+Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-19.
 
 ## O que está pronto
 
@@ -73,6 +73,19 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
 
 Use caminhos absolutos no `kaggle datasets create` e no `kaggle kernels push`. Com caminho relativo, o upload falha no Windows.
 
+## Atualização do fluxo de geração (v2)
+
+O fluxo agora prepara novas execuções em `output/kaggle/geracao_v2/` e `output/kaggle/juiz_v2/`. Os dados antigos em `output/kaggle/geracao/` e `output/kaggle/juiz/` não são sobrescritos. Os datasets e kernels Kaggle usam sufixo `-v2`.
+
+- **Stracting:** `src/integracao/stracting.py` extrai fatos explicitamente mencionados e classifica a intenção (`CALCULO`, `PRESCRICAO`, `TRIAGEM` ou `CONSULTA_JURIDICA`). A classificação é determinística, não executa cálculos e não substitui os guardrails. Fatos ambíguos ou ausentes não são completados.
+- **Saída estruturada:** os pedidos para o modelo de geração solicitam JSON Schema com `resposta_direta`, `fundamentacao` e `ressalvas`. A importação valida chaves e tipos antes de renderizar o texto para os guardrails de saída.
+- **Janela de contexto:** `src/integracao/context_window.py` estima tokens com `cl100k_base`, aplica margem de 25% e reserva 1.200 tokens para geração (2.500 para o juiz) e 512 para segurança dentro do `num_ctx` de 16.384. A estimativa não é o tokenizer exato do Qwen/Gemma. Se o limite estimado for excedido, o pedido não é truncado nem enviado; fica marcado como erro de contexto. O fluxo atual é de uma pergunta por pedido, sem histórico de conversa para janela deslizante.
+- **Observabilidade:** preparação, inferência e validação registram duração, contagem de tokens, tentativas, status e tipo de erro. Os registros usam hash do identificador da pergunta e não incluem pergunta, prompt, fontes ou resposta.
+- **Prompt caching:** não foi adicionado cache de respostas do agente. O cache existente de julgamentos idênticos do juiz foi mantido.
+- **Escopo deliberado:** tool calling e cálculos automáticos do agente não foram migrados. Perguntas identificadas como cálculo recebem instrução para não estimar valores individualizados e para explicitar fatos faltantes.
+
+Como o contrato mudou, os resultados antigos em texto livre não servem como validação do novo schema. Para uma nova execução, use `scripts/preparar_geracao_kaggle.py`, o kernel configurado em `output/kaggle/geracao_v2/kernel/`, e depois `scripts/importar_geracao_kaggle.py`. A avaliação atualizada do juiz usa os artefatos v2 correspondentes.
+
 ## Para retomar em outra máquina
 
 Os itens abaixo não estão no GitHub e precisam ser recriados ou copiados.
@@ -83,6 +96,6 @@ Os itens abaixo não estão no GitHub e precisam ser recriados ou copiados.
   - criar as visões lexicais com `Recuperador.preparar_lexico()`.
 - **Modelos do Hugging Face** em cache local: `BAAI/bge-m3` (revisão `5617a9f`) e `BAAI/bge-reranker-v2-m3`.
 - **Token do Kaggle** em `~/.kaggle`.
-- **Pedidos e respostas** em `output/kaggle/geracao/` e `output/kaggle/juiz/`. Estão fora do Git porque contêm trechos de decisões e perguntas protegidas.
-  - Os pedidos também estão no dataset privado `laisapaiva93/lexia-geracao-pedidos`.
+- **Pedidos e respostas antigos** em `output/kaggle/geracao/` e `output/kaggle/juiz/`; novos artefatos estruturados ficam em `output/kaggle/geracao_v2/` e `output/kaggle/juiz_v2/`. Todos estão fora do Git porque podem conter trechos de decisões e perguntas protegidas.
+  - Os pedidos novos são destinados aos datasets privados `laisapaiva93/lexia-geracao-pedidos-v2` e `laisapaiva93/lexia-juiz-pedidos-v2`.
 - **Regra do repositório:** commits sem a linha de atribuição do Claude.

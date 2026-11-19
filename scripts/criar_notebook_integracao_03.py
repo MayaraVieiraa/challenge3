@@ -66,7 +66,7 @@ if str(ROOT) not in sys.path:
 
 RELATORIOS = ROOT / 'reports/integracao/geracao'
 RELATORIOS.mkdir(parents=True, exist_ok=True)
-BASE_KAGGLE = ROOT / 'output/kaggle/geracao'
+BASE_KAGGLE = ROOT / 'output/kaggle/geracao_v2'
 
 # Carrega relatórios estruturados
 df_saida = pd.read_csv(RELATORIOS / 'revisao_saida.csv')
