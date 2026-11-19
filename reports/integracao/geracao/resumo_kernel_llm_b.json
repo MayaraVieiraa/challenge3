@@ -1,0 +1,10 @@
+{
+  "pedidos_llm": 111,
+  "respostas": 111,
+  "validas": 111,
+  "segundos_medios": 22.8,
+  "ollama": {
+    "version": "0.40.16"
+  },
+  "gpu": "Tesla T4, 15360 MiB\nTesla T4, 15360 MiB"
+}

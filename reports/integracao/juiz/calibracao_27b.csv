@@ -1,0 +1,10 @@
+julgamento_id,grupo,valido,erro,veredito,veredito_regra,segundos,fidelidade,correcao,comportamento,clareza,afirmacoes,sem_apoio,jurisprudencia_entregue,jurisprudencia_pertinente,humano,concorda,concorda_regra
+calib_q_test_01,calibracao,True,,aprovada,aprovada,127.4,2,2.0,2,2,3,0,0,0,aprovada,True,True
+calib_q_test_02,calibracao,True,,aprovada,reprovada,63.9,2,2.0,1,2,8,0,0,0,aprovada,True,False
+calib_q_test_03,calibracao,True,,aprovada,reprovada,45.5,2,2.0,1,2,6,0,0,0,reprovada,False,True
+calib_q_test_04,calibracao,True,,aprovada,aprovada,62.3,2,2.0,2,2,7,0,0,0,aprovada,True,True
+calib_q_test_05,calibracao,True,,aprovada,reprovada,32.3,1,,1,1,2,2,0,0,reprovada,False,True
+calib_q_test_06,calibracao,True,,aprovada,aprovada,36.0,2,2.0,2,2,3,0,0,0,aprovada,True,True
+calib_q_test_07,calibracao,True,,aprovada,aprovada,45.4,2,2.0,2,2,7,0,0,0,aprovada,True,True
+calib_q_test_08,calibracao,True,,aprovada,aprovada,62.9,2,2.0,2,2,13,0,0,0,aprovada,True,True
+calib_q_test_neg_02,calibracao,True,,reprovada,reprovada,44.5,0,,1,2,6,6,0,0,reprovada,True,True

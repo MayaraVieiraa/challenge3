@@ -312,3 +312,37 @@ O notebook `05_chunking_definitivo_jurisprudencia` aplica a estratégia escolhid
 - **Limitação:** a busca só recupera decisões que estão no recorte. O índice pode ser ampliado depois, vetorizando apenas os documentos novos.
 
 Mais detalhes em [notebooks/02_jurisprudencia/README.md](notebooks/02_jurisprudencia/README.md), [auditoria](docs/auditoria_jurisprudencia.md), [proteção de CPFs](docs/protecao_cpf_jurisprudencia.md), [PLN leve](docs/pln_leve_jurisprudencia.md) e [avaliação do chunking](docs/avaliacao_chunking_avancada.md).
+
+## Sistema multiagentes com LangGraph
+
+A primeira implementação está em `src/multiagentes/`. O **Analista** (Qwen3 8B) escolhe uma consulta, recebe evidências e redige; o **Validador** (Gemma 3 12B) confere o candidato e pode devolver feedback para uma revisão. O LangGraph coordena as etapas, preserva as fontes e impede a liberação de respostas bloqueadas.
+
+- [Arquitetura, comandos e estado da implementação](docs/sistema_multiagentes.md).
+- [Guia de planejamento da atividade](docs/plano_sistema_multiagentes.md).
+- [Execução dos dois agentes na GPU do Kaggle](docs/execucao_multiagentes_kaggle.md).
+- [Buscador local com embeddings persistidos](docs/buscador_local.md).
+- [Notebook de demonstração local](notebooks/04_multiagentes/01_demonstracao_multiagentes.ipynb).
+
+Preparar a primeira demonstração no Kaggle, com um corpus portátil da legislação:
+
+```bash
+python scripts/preparar_multiagentes_kaggle.py --tema ferias
+```
+
+Por padrão, o pacote usa busca lexical no corpus fornecido. Para a base original completa, use `python scripts/preparar_multiagentes_kaggle.py --buscador local`: o notebook prepara embeddings BGE-M3 e cache SQLite antes do atendimento. Na CLI, `--modo local` usa esse buscador sem banco; `--modo real` reaproveita a busca híbrida no pgvector; `--modo sintetico` usa fontes fictícias. Os modelos configurados são chamados quando a pergunta exige inferência. Testes com modelos substitutos ficam restritos a `tests/`.
+
+Para testar somente a busca sem chamar os agentes, instale `requirements-buscador-local.txt` e execute:
+
+```bash
+python scripts/consultar_buscador_local.py --preparar-indice
+python scripts/consultar_buscador_local.py --pergunta "Como funciona o adicional noturno no trabalho urbano?"
+```
+
+Para instalar e verificar o código dos agentes:
+
+```bash
+python -m pip install -r requirements-multiagentes.txt
+python -m unittest discover -s tests -p "test_multiagentes*.py" -v
+```
+
+Os notebooks versionados não contêm respostas inventadas dos modelos. A primeira execução real Qwen/Gemma foi concluída no Kaggle, com feedback e revisão registrados. Veja [os resultados da demonstração](docs/resultados_multiagentes.md), incluindo limitações e correções posteriores ao piloto.

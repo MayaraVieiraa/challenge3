@@ -57,7 +57,7 @@ ROOT = next(p for p in (Path.cwd(), *Path.cwd().parents) if (p / 'src/integracao
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-RELATORIOS = ROOT / 'reports/integracao/juiz'
+RELATORIOS = ROOT / 'reports/integracao/juiz_v2'
 RELATORIOS.mkdir(parents=True, exist_ok=True)
 BASE_KAGGLE = ROOT / 'output/kaggle/juiz_v2'
 

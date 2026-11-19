@@ -7,6 +7,12 @@ Fluxo por pergunta:
   3. demais ações (institucional, consulta individual, fora do escopo, outra jurisdição): resposta fixa, sem LLM;
   4. a LLM roda fora daqui (Kaggle, GPU T4, Ollama) sobre os pedidos exportados;
   5. no retorno, `validar_resposta` confere integridade e formato, e `guardrails.verificar_saida` revisa o conteúdo.
+
+Fallback (LLM B): quando a resposta da LLM A (Qwen3 8B) falha tecnicamente (erro, vazia, cortada, raciocínio
+exposto) ou é reprovada por um guardrail bloqueante, o mesmo prompt vai para a LLM B (Llama 3.1 8B, outra família
+e diferente do juiz Gemma). Se a B também falhar, a resposta é a RESPOSTA_SEGURA. `gerar_com_fallback` aplica isso
+a uma pergunta (uso em tempo real); na avaliação em lote, `motivo_fallback` decide quais pedidos vão para a B
+(scripts/preparar_fallback_kaggle.py) e a importação escolhe a resposta final com `escolher_resposta`.
 """
 from __future__ import annotations
 
@@ -14,9 +20,9 @@ import hashlib
 import json
 import re
 
-from .context_window import validar_janela_contexto
 from . import guardrails as g
-from .prompt_juridico import SYSTEM_PROMPT_LEGAL, build_rag_prompt
+from .context_window import validar_janela_contexto
+from .prompt_juridico import build_rag_prompt
 from .stracting import extrair_fatos, rotear_intencao
 
 MODELO_GERACAO = 'qwen3:8b-q8_0'
@@ -38,6 +44,12 @@ INSTRUCAO_SAIDA_ESTRUTURADA = (
     'Escreva a resposta principal em "resposta_direta", a fundamentação com as citações [Fonte N] em "fundamentacao" '
     '(uma afirmação por item) e limites ou perguntas necessárias em "ressalvas". Não inclua campos adicionais.'
 )
+# LLM B (fallback): Llama 3.1 8B, sem modo de raciocínio. Contexto de 16384 como a A (o Llama 3.1 aceita até 128k).
+MODELO_FALLBACK = 'llama3.1:8b'
+OPCOES_FALLBACK = dict(OPCOES_GERACAO)
+RESPOSTA_SEGURA = ('Não consegui formular uma resposta confiável para esta pergunta com base nas fontes disponíveis. '
+                   'Para orientação sobre o seu caso, procure um advogado, a Defensoria Pública ou o sindicato da sua '
+                   'categoria.')
 
 RESPOSTAS_FIXAS = {
     'institucional': ('Esta pergunta é sobre o funcionamento da plataforma, e não sobre Direito do Trabalho. '
@@ -164,23 +176,83 @@ def validar_resposta(pedido, resposta):
     if resposta.get('pedido_sha256') != pedido.get('pedido_sha256'):
         problemas.append('hash do pedido diferente')
     texto = (resposta.get('resposta') or '').strip()
-    if pedido.get('formato') == FORMATO_SAIDA:
-        try:
-            estrutura = analisar_saida_estruturada(texto)
-            texto = renderizar_saida_estruturada(estrutura)
-        except ValueError as e:
-            problemas.append(f'saída estruturada inválida: {e}')
     if len(texto) < 80:
         problemas.append('resposta vazia ou curta')
     if resposta.get('done_reason') == 'length':
         problemas.append('resposta cortada no limite de tokens')
     if re.search(r'</?think>', texto):
         problemas.append('raciocínio interno na resposta')
+    if pedido.get('formato') == FORMATO_SAIDA:
+        try:
+            analisar_saida_estruturada(texto)
+        except ValueError as e:
+            problemas.append(f'saída estruturada inválida: {e}')
     return problemas
 
 
 def revisar(pedido, texto):
     """Guardrail de saída com as fontes do pedido."""
+    if pedido.get('formato') == FORMATO_SAIDA:
+        try:
+            texto = renderizar_saida_estruturada(analisar_saida_estruturada(texto))
+        except ValueError:
+            pass
     fontes = [dict(texto=f['conteudo'], artigo_ref=f.get('artigo_ref'), processo=f.get('processo')) for f in pedido['fontes']]
     entrada = g.ResultadoEntrada(pedido['acao'], pedido['pergunta_sanitizada'], pedido['sinais'], pedido['motivo'])
     return g.verificar_saida(texto, fontes, entrada)
+
+
+def motivo_fallback(pedido, resposta):
+    """Por que a resposta de uma LLM não serve (None = serve). `resposta`: registro no formato do kernel ou None.
+
+    Falha técnica: sem resposta, vazia/curta, cortada, raciocínio exposto. Conteúdo: guardrail bloqueante.
+    """
+    if resposta is None or not (resposta.get('resposta') or '').strip():
+        return 'tecnico: sem resposta'
+    problemas = validar_resposta(pedido, resposta)
+    if problemas:
+        return 'tecnico: ' + '; '.join(problemas)
+    saida = revisar(pedido, resposta['resposta'])
+    bloqueantes = sorted({a['codigo'] for a in saida.alertas if a['codigo'] in g.BLOQUEANTES})
+    return 'guardrail: ' + ', '.join(bloqueantes) if bloqueantes else None
+
+
+def pedido_fallback(pedido):
+    """Mesmo pedido para a LLM B (mesmas mensagens; modelo, opções e hash próprios)."""
+    return dict(pedido, modelo=MODELO_FALLBACK, opcoes=OPCOES_FALLBACK, think=None, papel='fallback',
+                pedido_sha256=_hash(MODELO_FALLBACK, OPCOES_FALLBACK, pedido['mensagens']))
+
+
+def escolher_resposta(pedido, resposta_a, resposta_b=None):
+    """Resposta final de uma pergunta com LLM: A se servir; senão B se servir; senão a RESPOSTA_SEGURA.
+
+    Devolve dict(texto, modelo, motivo_a, motivo_b, resposta_segura). `resposta_b` é None quando a B não rodou.
+    """
+    motivo_a = motivo_fallback(pedido, resposta_a)
+    if motivo_a is None:
+        return dict(texto=resposta_a['resposta'], modelo=MODELO_GERACAO, motivo_a=None, motivo_b=None, resposta_segura=False)
+    if resposta_b is None:
+        return dict(texto=RESPOSTA_SEGURA, modelo=None, motivo_a=motivo_a, motivo_b='nao executada', resposta_segura=True)
+    motivo_b = motivo_fallback(pedido_fallback(pedido), resposta_b)
+    if motivo_b is None:
+        return dict(texto=resposta_b['resposta'], modelo=MODELO_FALLBACK, motivo_a=motivo_a, motivo_b=None,
+                    resposta_segura=False)
+    return dict(texto=RESPOSTA_SEGURA, modelo=None, motivo_a=motivo_a, motivo_b=motivo_b, resposta_segura=True)
+
+
+def gerar_com_fallback(pedido, chamar_llm):
+    """Fluxo em tempo real para uma pergunta: LLM A → (se falhar) LLM B → (se falhar) resposta segura.
+
+    `chamar_llm(pedido)` recebe o pedido (com `modelo`, `opcoes`, `mensagens`, `think`) e devolve um registro com
+    `resposta`, `done_reason` e `pedido_sha256` (formato do kernel); exceções contam como falha técnica.
+    """
+    def tentar(p):
+        try:
+            return chamar_llm(p)
+        except Exception as erro:
+            return dict(resposta=None, erro=str(erro)[:300], pedido_sha256=p['pedido_sha256'])
+
+    resposta_a = tentar(pedido)
+    if motivo_fallback(pedido, resposta_a) is None:
+        return escolher_resposta(pedido, resposta_a)
+    return escolher_resposta(pedido, resposta_a, tentar(pedido_fallback(pedido)))

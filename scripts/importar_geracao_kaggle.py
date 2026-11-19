@@ -1,10 +1,12 @@
 """Baixa as respostas do kernel do Kaggle, valida e aplica o guardrail de saída.
 
 Saídas:
-  output/kaggle/geracao_v2/resultados/            saída bruta do kernel (fora do Git)
-  output/kaggle/geracao_v2/respostas_revisadas.jsonl  pergunta, ação, fontes, resposta final e alertas (fora do Git)
-  reports/integracao/geracao_v2/revisao_saida.csv     uma linha por pergunta, só identificadores e métricas (no Git)
-Uso: python scripts/importar_geracao_kaggle.py [--sem-download]
+  output/kaggle/geracao_v2/resultados/              saída bruta do kernel (fora do Git)
+  output/kaggle/geracao_v2/respostas_revisadas.jsonl pergunta, ação, fontes, resposta final e alertas (fora do Git)
+  reports/integracao/geracao_v2/revisao_saida.csv   uma linha por pergunta, só identificadores e métricas (no Git)
+Uso: python scripts/importar_geracao_kaggle.py [--sem-download] [--fallback] [--local]
+  --fallback  lê também a segunda passada (LLM B, scripts/preparar_fallback_kaggle.py) e escolhe a resposta final:
+              A se servir, senão B se servir, senão a resposta segura (geracao.escolher_resposta).
 """
 from pathlib import Path
 import json
@@ -18,16 +20,19 @@ import pandas as pd
 
 from src.integracao import guardrails as g
 from src.integracao.geracao import (
-    FORMATO_SAIDA,
-    analisar_saida_estruturada,
-    renderizar_saida_estruturada,
-    validar_resposta,
+    MODELO_FALLBACK,
+    RESPOSTA_SEGURA,
+    escolher_resposta,
+    pedido_fallback,
     revisar,
+    validar_resposta,
 )
 from src.integracao.observabilidade import Observabilidade
 
 KERNEL = 'laisapaiva93/lexia-geracao-qwen3-v2'
+KERNEL_FALLBACK = 'laisapaiva93/lexia-fallback-llama31-v2'
 BASE = ROOT / 'output/kaggle/geracao_v2'
+BASE_FALLBACK = ROOT / 'output/kaggle/fallback_v2'
 RELATORIOS = ROOT / 'reports/integracao/geracao_v2'
 
 
@@ -44,41 +49,48 @@ def main():
         if l.strip():
             r = json.loads(l)
             respostas[r['pergunta_id']] = r
+    # Segunda passada (LLM B, fallback): output/kaggle/fallback_v2/resultados/respostas.jsonl, se existir.
+    respostas_b = {}
+    arquivo_b = BASE_FALLBACK / 'resultados/respostas.jsonl'
+    if '--fallback' in sys.argv:
+        if '--sem-download' not in sys.argv:
+            subprocess.run(['kaggle', 'kernels', 'output', KERNEL_FALLBACK, '-p', str(arquivo_b.parent), '-o'], check=True)
+        for l in arquivo_b.read_text(encoding='utf-8').splitlines():
+            if l.strip():
+                r = json.loads(l)
+                respostas_b[r['pergunta_id']] = r
     linhas, revisadas = [], []
     observabilidade = Observabilidade(BASE / 'observabilidade_importacao.jsonl')
     for p in pedidos:
-        estrutura = None
+        modelo, motivo_a, motivo_b, resposta_b = None, None, None, None
         if p.get('erro_contexto'):
-            problemas, texto = ['prompt excedeu o orçamento de contexto; geração não executada'], ''
+            problemas = ['prompt excedeu o orçamento de contexto; geração não executada']
+            texto = RESPOSTA_SEGURA
             segundos, tokens = 0, None
-            tokens_entrada = None
+            motivo_a = 'context_window_exceeded'
         elif p['precisa_llm']:
             r = respostas.get(p['pergunta_id'])
             problemas = ['sem resposta do kernel'] if r is None else validar_resposta(p, r)
-            texto = ''
-            if r and not problemas:
-                bruto = r.get('resposta') or ''
-                if p.get('formato') == FORMATO_SAIDA:
-                    estrutura = analisar_saida_estruturada(bruto)
-                    texto = renderizar_saida_estruturada(estrutura)
-                else:
-                    texto = bruto
             segundos, tokens = (r or {}).get('segundos'), (r or {}).get('tokens_saida')
-            tokens_entrada = (r or {}).get('prompt_tokens')
+            # Resposta final com fallback: A se servir, senão B se servir, senão a resposta segura.
+            escolha = escolher_resposta(p, r, respostas_b.get(p['pergunta_id']))
+            texto, modelo, motivo_a, motivo_b = escolha['texto'], escolha['modelo'], escolha['motivo_a'], escolha['motivo_b']
+            resposta_b = (respostas_b.get(p['pergunta_id']) or {}).get('resposta')
         else:
             problemas, texto, segundos, tokens = [], p['resposta_fixa'], 0, None
-            tokens_entrada = None
         saida = revisar(p, texto) if texto else g.ResultadoSaida(False, [dict(codigo='sem_resposta', detalhe='')], '')
         codigos = sorted({a['codigo'] for a in saida.alertas})
         linhas.append(dict(pergunta_id=p['pergunta_id'], origem=p['origem'], acao=p['acao'], precisa_llm=p['precisa_llm'],
                            fontes=len(p['fontes']), valida=not problemas, problemas='; '.join(problemas),
-                           aprovada=saida.aprovada and not problemas,
+                           modelo_final=modelo, motivo_fallback=motivo_a, motivo_b=motivo_b,
+                           resposta_segura=texto == RESPOSTA_SEGURA,
+                           aprovada=saida.aprovada and (not problemas or modelo == MODELO_FALLBACK),
                            bloqueantes=', '.join(c for c in codigos if c in g.BLOQUEANTES),
                            alertas=', '.join(c for c in codigos if c not in g.BLOQUEANTES),
                            segundos_geracao=segundos, tokens_saida=tokens, segundos_recuperacao=p.get('segundos_recuperacao')))
         revisadas.append(dict(pergunta_id=p['pergunta_id'], origem=p['origem'], acao=p['acao'],
                               pergunta_sanitizada=p['pergunta_sanitizada'], fontes=p['fontes'], resposta_modelo=texto,
-                              saida_estruturada=estrutura,
+                              modelo_final=modelo, motivo_fallback=motivo_a, resposta_llm_b=resposta_b,
                               resposta_final=saida.resposta_final, alertas=saida.alertas, aprovada=linhas[-1]['aprovada'],
                               problemas=problemas))
         observabilidade.registrar(
@@ -87,10 +99,9 @@ def main():
             pergunta_id=p['pergunta_id'],
             metricas={
                 'valida': not problemas,
-                'aprovada': saida.aprovada and not problemas,
+                'aprovada': linhas[-1]['aprovada'],
                 'alertas': len(saida.alertas),
                 'tokens_saida': tokens or 0,
-                'tokens_entrada_observados': tokens_entrada or 0,
                 'duracao_geracao_ms': (segundos or 0) * 1000,
             },
             tipo_erro='context_window_exceeded' if p.get('erro_contexto') else ('validation_failed' if problemas else None),
@@ -106,6 +117,36 @@ def main():
     print(df.groupby(['precisa_llm', 'acao']).agg(perguntas=('aprovada', 'size'), validas=('valida', 'mean'),
                                                   aprovadas=('aprovada', 'mean')).round(2))
     print(resumo)
+    if respostas_b:
+        comparar_llm_b(pedidos, respostas, respostas_b)
+
+
+def comparar_llm_b(pedidos, respostas_a, respostas_b):
+    """Mesmas verificações para as respostas da A e da B, pergunta a pergunta (reports/.../comparacao_llm_b.csv)."""
+    linhas = []
+    for p in pedidos:
+        if not p['precisa_llm'] or p['pergunta_id'] not in respostas_b:
+            continue
+        for rotulo, pedido, r in (('A', p, respostas_a.get(p['pergunta_id'])),
+                                  ('B', pedido_fallback(p), respostas_b[p['pergunta_id']])):
+            texto = (r or {}).get('resposta') or ''
+            problemas = validar_resposta(pedido, r) if r else ['sem resposta']
+            saida = revisar(p, texto) if texto else None
+            codigos = sorted({a['codigo'] for a in saida.alertas}) if saida else []
+            citacoes = len(g.CITACAO.findall(texto))
+            linhas.append(dict(pergunta_id=p['pergunta_id'], acao=p['acao'], llm=rotulo, modelo=pedido['modelo'],
+                               valida=not problemas, problemas='; '.join(problemas),
+                               aprovada=bool(saida and saida.aprovada and not problemas),
+                               bloqueantes=', '.join(c for c in codigos if c in g.BLOQUEANTES),
+                               alertas=', '.join(c for c in codigos if c not in g.BLOQUEANTES),
+                               citacoes=citacoes, segundos=(r or {}).get('segundos'), tokens_saida=(r or {}).get('tokens_saida')))
+    df = pd.DataFrame(linhas)
+    df.to_csv(RELATORIOS / 'comparacao_llm_b.csv', index=False, encoding='utf-8')
+    resumo_b = BASE_FALLBACK / 'resultados/resumo.json'
+    if resumo_b.exists():
+        (RELATORIOS / 'resumo_kernel_llm_b.json').write_text(resumo_b.read_text(encoding='utf-8'), encoding='utf-8')
+    print(df.groupby('modelo').agg(respostas=('valida', 'size'), validas=('valida', 'sum'), aprovadas=('aprovada', 'sum'),
+                                   citacoes_media=('citacoes', 'mean'), segundos_media=('segundos', 'mean')).round(1))
 
 
 if __name__ == '__main__':

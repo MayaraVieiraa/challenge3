@@ -1,0 +1,3 @@
+# Dependência opcional: somente a busca semântica local usa este modelo.
+# Faixa compatível com SentenceTransformer.encode e revision/local_files_only.
+sentence-transformers>=3.4,<6

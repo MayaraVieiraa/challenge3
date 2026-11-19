@@ -1,5 +1,7 @@
 # Manipulação e análise dos dados
 pandas
+# Planilhas de revisão (.xlsx)
+openpyxl
 
 # Visualizações
 matplotlib

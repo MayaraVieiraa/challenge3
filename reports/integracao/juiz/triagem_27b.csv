@@ -1,0 +1,112 @@
+id,acao,veredito_regra,veredito_modelo,triagem,motivos,notas,afirmacoes_a_conferir,sinal_apoio_textual,sinal_inconclusivo,sinal_pouco_apoio,sinal_referencia_ausente,alertas_em_aprovada,no_rotulo_cego
+q09_p1_JUS-001,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,True
+q09_p1_JUS-002,responder,reprovada,aprovada,revisar_notas,fidelidade = 1; comportamento = 1; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 1 · clar 2,1,0,1,0,0,0,False
+q09_p1_JUS-004,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-007,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,True
+q09_p1_JUS-008,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-009,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-010,responder,reprovada,aprovada,inconclusiva,fidelidade = 1; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 2 · clar 2,1,0,1,0,0,0,False
+q09_p1_JUS-013,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-014,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-016,orientar_sem_aconselhar,reprovada,aprovada,revisar_notas,fidelidade = 1; comportamento = 1; 2 afirmação(ões) parcial; 2 afirmação(ões) sem_apoio,fide 1 · corr – · comp 1 · clar 1,4,0,2,2,0,0,True
+q09_p1_JUS-017,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-018,orientar_sem_aconselhar,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,2,True
+q09_p1_JUS-019,responder,reprovada,aprovada,inconclusiva,1 afirmação(ões) parcial; 1 afirmação(ões) sem_apoio,fide 2 · corr – · comp 2 · clar 2,2,0,2,0,0,0,True
+q09_p1_JUS-021,orientar_sem_aconselhar,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-022,orientar_sem_aconselhar,reprovada,aprovada,revisar_notas,comportamento = 1; 1 afirmação(ões) sem_apoio,fide 2 · corr – · comp 1 · clar 2,1,0,0,1,0,0,True
+q09_p1_JUS-024,orientar_sem_aconselhar,reprovada,aprovada,revisar_notas,fidelidade = 1; comportamento = 1; 3 afirmação(ões) parcial,fide 1 · corr – · comp 1 · clar 1,3,0,3,0,0,0,False
+q09_p1_JUS-025,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-026,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-027,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-028,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-029,responder,reprovada,aprovada,provavel_reprovacao_correta,fidelidade = 1; 1 afirmação(ões) parcial; 4 afirmação(ões) sem_apoio,fide 1 · corr – · comp 2 · clar 2,5,0,4,1,0,0,False
+q09_p1_JUS-031,responder,reprovada,aprovada,revisar_notas,fidelidade = 1; comportamento = 1; 1 afirmação(ões) parcial; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 1 · clar 2,2,0,1,0,1,0,False
+q09_p1_JUS-032,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-033,orientar_sem_aconselhar,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-034,responder,reprovada,aprovada,provavel_reprovacao_correta,4 afirmação(ões) sem_apoio,fide 2 · corr – · comp 2 · clar 2,4,1,1,1,1,0,False
+q09_p1_JUS-035,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-036,orientar_sem_aconselhar,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-037,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-038,responder,reprovada,reprovada,revisar_notas,o modelo reprovou; comportamento = 0; 4 afirmação(ões) sem_apoio,fide 2 · corr – · comp 0 · clar 1,4,0,4,0,0,0,False
+q09_p1_JUS-039,orientar_sem_aconselhar,reprovada,aprovada,revisar_notas,fidelidade = 1; comportamento = 1; 1 afirmação(ões) parcial; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 1 · clar 1,2,0,2,0,0,0,False
+q09_p1_JUS-040,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-041,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-042,responder,reprovada,aprovada,inconclusiva,fidelidade = 1; 1 afirmação(ões) parcial; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 2 · clar 2,2,0,2,0,0,0,False
+q09_p1_JUS-043,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,True
+q09_p1_JUS-045,responder,reprovada,reprovada,revisar_notas,o modelo reprovou; comportamento = 0; 1 afirmação(ões) sem_apoio,fide 2 · corr – · comp 0 · clar 2,1,0,0,1,0,0,False
+q09_p1_JUS-046,responder,reprovada,aprovada,provavel_reprovacao_correta,fidelidade = 1; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 2 · clar 2,1,0,0,1,0,0,False
+q09_p1_JUS-047,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-048,orientar_sem_aconselhar,reprovada,aprovada,revisar_notas,comportamento = 1; 3 afirmação(ões) sem_apoio,fide 2 · corr – · comp 1 · clar 2,3,0,1,2,0,0,False
+q09_p1_JUS-049,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p1_JUS-050,orientar_sem_aconselhar,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ08,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,True
+q09_p2_FAQ09,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ10,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ11,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,True
+q09_p2_FAQ12,responder,reprovada,aprovada,inconclusiva,fidelidade = 1; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 2 · clar 2,1,0,1,0,0,0,False
+q09_p2_FAQ13,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,True
+q09_p2_FAQ14,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ15,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,True
+q09_p2_FAQ16,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ17,responder,reprovada,aprovada,revisar_notas,fidelidade = 1; comportamento = 1; 3 afirmação(ões) parcial; 2 afirmação(ões) sem_apoio,fide 1 · corr – · comp 1 · clar 1,5,0,4,1,0,0,False
+q09_p2_FAQ18,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ19,responder,reprovada,aprovada,provavel_falso_alarme,1 afirmação(ões) sem_apoio,fide 2 · corr – · comp 2 · clar 2,1,1,0,0,0,0,False
+q09_p2_FAQ20,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ21,responder,reprovada,reprovada,revisar_notas,o modelo reprovou; fidelidade = 1; comportamento = 0; 1 afirmação(ões) parcial; 3 afirmação(ões) sem_apoio,fide 1 · corr – · comp 0 · clar 2,4,0,4,0,0,0,False
+q09_p2_FAQ22,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ23,responder,reprovada,aprovada,revisar_notas,correcao = 1,fide 2 · corr 1 · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ24,responder,reprovada,aprovada,revisar_notas,correcao = 1; comportamento = 1; 1 afirmação(ões) sem_apoio,fide 2 · corr 1 · comp 1 · clar 2,1,0,1,0,0,0,False
+q09_p2_FAQ25,responder,reprovada,aprovada,revisar_notas,comportamento = 1,fide 2 · corr – · comp 1 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ26,responder,reprovada,aprovada,revisar_notas,correcao = 1; 1 afirmação(ões) parcial,fide 2 · corr 1 · comp 2 · clar 2,1,0,1,0,0,0,True
+q09_p2_FAQ27,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ28,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,2,True
+q09_p2_FAQ29,responder,reprovada,aprovada,revisar_notas,correcao = 0; 1 afirmação(ões) parcial,fide 2 · corr 0 · comp 2 · clar 2,1,0,1,0,0,0,False
+q09_p2_FAQ30,responder,reprovada,aprovada,revisar_notas,correcao = 1,fide 2 · corr 1 · comp 2 · clar 2,0,0,0,0,0,0,True
+q09_p2_FAQ31,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ32,responder,reprovada,aprovada,inconclusiva,1 afirmação(ões) sem_apoio,fide 2 · corr – · comp 2 · clar 2,1,0,1,0,0,0,True
+q09_p2_FAQ33,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ34,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ36,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,1,True
+q09_p2_FAQ37,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ38,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ39,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ40,responder,reprovada,aprovada,revisar_notas,correcao = 1,fide 2 · corr 1 · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ42,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ44,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ45,responder,reprovada,aprovada,provavel_reprovacao_correta,fidelidade = 1; 1 afirmação(ões) parcial; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 2 · clar 2,2,0,0,2,0,0,False
+q09_p2_FAQ46,responder,reprovada,aprovada,provavel_reprovacao_correta,1 afirmação(ões) sem_apoio,fide 2 · corr – · comp 2 · clar 2,1,0,0,1,0,0,True
+q09_p2_FAQ47,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q09_p2_FAQ48,responder,reprovada,aprovada,inconclusiva,fidelidade = 1; 2 afirmação(ões) parcial; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 2 · clar 2,3,1,2,0,0,0,False
+q09_p2_FAQ49,responder,reprovada,aprovada,provavel_reprovacao_correta,fidelidade = 1; 5 afirmação(ões) sem_apoio,fide 1 · corr – · comp 2 · clar 2,5,0,2,1,2,0,False
+q09_p2_FAQ50,responder,reprovada,aprovada,provavel_reprovacao_correta,fidelidade = 1; 5 afirmação(ões) sem_apoio,fide 1 · corr – · comp 2 · clar 2,5,0,2,3,0,0,False
+q_dev_01,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q_dev_02,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q_dev_03,responder,reprovada,aprovada,revisar_notas,fidelidade = 1; comportamento = 1; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 1 · clar 1,1,0,0,0,1,0,False
+q_dev_04,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,1,False
+q_dev_05,responder,reprovada,aprovada,revisar_notas,correcao = 1; 1 afirmação(ões) parcial; 1 afirmação(ões) sem_apoio,fide 2 · corr 1 · comp 2 · clar 2,2,0,2,0,0,0,True
+q_dev_06,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q_dev_07,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q_dev_08,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q_test_01,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,True
+q_test_02,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q_test_03,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q_test_04,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+q_test_06,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q_test_07,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,False
+q_test_08,responder,aprovada,aprovada,,,fide 2 · corr 2 · comp 2 · clar 2,0,0,0,0,0,0,True
+juris_002,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,1,False
+juris_003,orientar_sem_aconselhar,reprovada,aprovada,revisar_notas,comportamento = 1; 1 afirmação(ões) sem_apoio,fide 2 · corr – · comp 1 · clar 2,1,0,0,1,0,0,False
+juris_004,orientar_sem_aconselhar,reprovada,aprovada,inconclusiva,1 afirmação(ões) sem_apoio,fide 2 · corr – · comp 2 · clar 2,1,0,1,0,0,0,True
+juris_005,responder,reprovada,aprovada,revisar_notas,fidelidade = 1; comportamento = 1; 1 afirmação(ões) parcial; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 1 · clar 1,2,0,1,1,0,0,False
+juris_010,responder,reprovada,aprovada,revisar_notas,fidelidade = 1; comportamento = 1; 1 afirmação(ões) parcial; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 1 · clar 2,2,0,1,1,0,0,False
+juris_011,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,False
+juris_012,responder,reprovada,aprovada,revisar_notas,comportamento = 1; 2 afirmação(ões) sem_apoio,fide 2 · corr – · comp 1 · clar 2,2,0,1,1,0,0,False
+juris_013,responder,reprovada,aprovada,provavel_reprovacao_correta,1 afirmação(ões) sem_apoio,fide 2 · corr – · comp 2 · clar 2,1,0,0,1,0,0,True
+juris_014,responder,reprovada,aprovada,inconclusiva,fidelidade = 1; 1 afirmação(ões) parcial; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 2 · clar 2,2,0,2,0,0,0,False
+juris_017,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,1,True
+juris_019,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,True
+juris_020,responder,reprovada,reprovada,revisar_notas,o modelo reprovou; fidelidade = 1; comportamento = 0; 1 afirmação(ões) sem_apoio,fide 1 · corr – · comp 0 · clar 2,1,0,1,0,0,0,False
+juris_022,responder,reprovada,aprovada,revisar_notas,comportamento = 1; 2 afirmação(ões) parcial,fide 2 · corr – · comp 1 · clar 2,2,0,1,1,0,0,False
+juris_023,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,1,False
+juris_024,responder,aprovada,aprovada,,,fide 2 · corr – · comp 2 · clar 2,0,0,0,0,0,0,True
+juris_026,responder,reprovada,aprovada,revisar_notas,fidelidade = 1; comportamento = 1; 1 afirmação(ões) parcial,fide 1 · corr – · comp 1 · clar 1,1,0,1,0,0,0,False
