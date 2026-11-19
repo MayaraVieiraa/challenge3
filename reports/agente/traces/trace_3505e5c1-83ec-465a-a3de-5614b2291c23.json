@@ -1,0 +1,76 @@
+{
+  "trace_id": "3505e5c1-83ec-465a-a3de-5614b2291c23",
+  "session_id": "bench_TC05",
+  "timestamp": "2026-11-19T10:38:38.808683",
+  "status": "sucesso_cache",
+  "duracao_total_ms": 0.04,
+  "total_spans": 3,
+  "total_tokens_entrada": 0,
+  "total_tokens_saida": 0,
+  "spans": [
+    {
+      "span_id": "514ccbde",
+      "nome": "agente_turn",
+      "tipo": "agent_cycle",
+      "inicio": 2557.925950125,
+      "fim": 2557.92598075,
+      "duracao_ms": 0.03,
+      "inputs": {
+        "pergunta": "Fui demitido sem justa causa com salário de R$ 3.000,00 e tenho um período de férias vencidas pendente que nunca tirei. Quanto receberei?"
+      },
+      "outputs": {
+        "cache": "hit"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "08731b15",
+      "nome": "routing_and_extraction",
+      "tipo": "routing",
+      "inicio": 2557.925953083,
+      "fim": 2557.925969291,
+      "duracao_ms": 0.02,
+      "inputs": {
+        "texto": "Fui demitido sem justa causa com salário de R$ 3.000,00 e tenho um período de férias vencidas pendente que nunca tirei. Quanto receberei?"
+      },
+      "outputs": {
+        "intencao": "CALCULO",
+        "justificativa": "Detectada intenção de cálculo ou apuração de verbas rescisórias.",
+        "fatos": {
+          "salario": 3000.0,
+          "data_admissao": null,
+          "data_demissao": null,
+          "motivo_rescisao": "sem_justa_causa",
+          "horas_extras_habituais": null,
+          "tem_ferias_vencidas": true,
+          "pedidos_mencionados": [
+            "ferias"
+          ]
+        }
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "c22c25be",
+      "nome": "prompt_cache_lookup",
+      "tipo": "cache",
+      "inicio": 2557.9259725,
+      "fim": 2557.925980291,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "status": "HIT"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": true,
+      "erro": null
+    }
+  ]
+}

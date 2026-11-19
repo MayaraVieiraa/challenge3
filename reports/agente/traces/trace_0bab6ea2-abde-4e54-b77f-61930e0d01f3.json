@@ -1,0 +1,150 @@
+{
+  "trace_id": "0bab6ea2-abde-4e54-b77f-61930e0d01f3",
+  "session_id": "bench_TC09",
+  "timestamp": "2026-11-19T10:39:19.121140",
+  "status": "sucesso",
+  "duracao_total_ms": 0.29,
+  "total_spans": 6,
+  "total_tokens_entrada": 850,
+  "total_tokens_saida": 240,
+  "spans": [
+    {
+      "span_id": "e9745233",
+      "nome": "agente_turn",
+      "tipo": "agent_cycle",
+      "inicio": 2598.238412791,
+      "fim": 2598.238694,
+      "duracao_ms": 0.28,
+      "inputs": {
+        "pergunta": "Fazia 2 horas extras todos os dias e a empresa não anotava no cartão de ponto. De quem é a obrigação de provar o horário trabalhado?"
+      },
+      "outputs": {
+        "status": "concluido"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "dbba2ae0",
+      "nome": "routing_and_extraction",
+      "tipo": "routing",
+      "inicio": 2598.238415541,
+      "fim": 2598.238437166,
+      "duracao_ms": 0.02,
+      "inputs": {
+        "texto": "Fazia 2 horas extras todos os dias e a empresa não anotava no cartão de ponto. De quem é a obrigação de provar o horário trabalhado?"
+      },
+      "outputs": {
+        "intencao": "CONSULTA_JURIDICA",
+        "justificativa": "Consulta interpretativa de normas e precedentes trabalhistas.",
+        "fatos": {
+          "salario": null,
+          "data_admissao": null,
+          "data_demissao": null,
+          "motivo_rescisao": null,
+          "horas_extras_habituais": true,
+          "tem_ferias_vencidas": null,
+          "pedidos_mencionados": []
+        }
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "3b94f466",
+      "nome": "prompt_cache_lookup",
+      "tipo": "cache",
+      "inicio": 2598.238439916,
+      "fim": 2598.2384465,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "status": "MISS"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "de00046d",
+      "nome": "context_window_budgeting",
+      "tipo": "context_management",
+      "inicio": 2598.238448958,
+      "fim": 2598.23845625,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "tokens_estimados": 4527,
+        "teto_entrada_disponivel": 14884,
+        "margem_seguranca_tokens": 10357,
+        "ocupacao_janela_pct": 27.6,
+        "total_mensagens": 18
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "d3e9e69f",
+      "nome": "llm_turn_1",
+      "tipo": "llm_call",
+      "inicio": 2598.238458625,
+      "fim": 2598.238553125,
+      "duracao_ms": 0.09,
+      "inputs": {},
+      "outputs": {
+        "role": "assistant",
+        "content": "{\"resposta_direta\": \"As horas que ultrapassarem a jornada normal de trabalho devem ser remuneradas com o adicional de no mínimo 50%. Estabelecimentos com mais de 20 trabalhadores têm obrigatoriedade de registrar o controle de ponto.\", \"fundamentacao_legal\": [\"Art. 7º da CF/88 (Direitos dos Trabalhadores)\", \"Art. 59 da CLT (Duração do trabalho e horas suplementares)\"], \"jurisprudencia_aplicada\": [\"Súmula nº 338 do TST (Ônus da prova e cartões de ponto)\"], \"fatos_extraidos\": {\"salario\": null, \"data_admissao\": null, \"data_demissao\": null, \"motivo_rescisao\": null, \"horas_extras_habituais\": true, \"tem_ferias_vencidas\": null, \"pedidos_mencionados\": []}, \"calculos\": null, \"orientacao_ao_trabalhador\": \"Consulte também a Convenção ou Acordo Coletivo de Trabalho (CCT/ACT) da sua categoria profissional, que pode estabelecer regras mais benéficas.\", \"alertas_e_ressalvas\": [\"Acordos coletivos podem prever adicionais superiores aos mínimos legais previstos na CLT.\"], \"precisa_advogado\": false, \"aviso_legal\": \"Resposta informativa fundamentada na legislação e precedentes do TST.\"}"
+      },
+      "tokens_entrada": 850,
+      "tokens_saida": 240,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "c1715246",
+      "nome": "structured_output_validation",
+      "tipo": "validation",
+      "inicio": 2598.238556375,
+      "fim": 2598.238566416,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "resposta_direta": "As horas que ultrapassarem a jornada normal de trabalho devem ser remuneradas com o adicional de no mínimo 50%. Estabelecimentos com mais de 20 trabalhadores têm obrigatoriedade de registrar o controle de ponto.",
+        "fundamentacao_legal": [
+          "Art. 7º da CF/88 (Direitos dos Trabalhadores)",
+          "Art. 59 da CLT (Duração do trabalho e horas suplementares)"
+        ],
+        "jurisprudencia_aplicada": [
+          "Súmula nº 338 do TST (Ônus da prova e cartões de ponto)"
+        ],
+        "fatos_extraidos": {
+          "salario": null,
+          "data_admissao": null,
+          "data_demissao": null,
+          "motivo_rescisao": null,
+          "horas_extras_habituais": true,
+          "tem_ferias_vencidas": null,
+          "pedidos_mencionados": []
+        },
+        "calculos": null,
+        "orientacao_ao_trabalhador": "Consulte também a Convenção ou Acordo Coletivo de Trabalho (CCT/ACT) da sua categoria profissional, que pode estabelecer regras mais benéficas.",
+        "alertas_e_ressalvas": [
+          "Acordos coletivos podem prever adicionais superiores aos mínimos legais previstos na CLT."
+        ],
+        "precisa_advogado": false,
+        "aviso_legal": "Resposta informativa fundamentada na legislação e precedentes do TST."
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    }
+  ]
+}

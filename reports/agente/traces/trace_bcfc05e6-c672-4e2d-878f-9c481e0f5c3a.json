@@ -1,0 +1,74 @@
+{
+  "trace_id": "bcfc05e6-c672-4e2d-878f-9c481e0f5c3a",
+  "session_id": "bench_TC06",
+  "timestamp": "2026-11-19T10:38:38.809385",
+  "status": "sucesso_cache",
+  "duracao_total_ms": 0.11,
+  "total_spans": 3,
+  "total_tokens_entrada": 0,
+  "total_tokens_saida": 0,
+  "spans": [
+    {
+      "span_id": "726d8520",
+      "nome": "agente_turn",
+      "tipo": "agent_cycle",
+      "inicio": 2557.926582541,
+      "fim": 2557.926682583,
+      "duracao_ms": 0.1,
+      "inputs": {
+        "pergunta": "Fui demitido em 15/06/2023. Qual o prazo para entrar com processo trabalhista cobrando meus direitos?"
+      },
+      "outputs": {
+        "cache": "hit"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "e0ddae8e",
+      "nome": "routing_and_extraction",
+      "tipo": "routing",
+      "inicio": 2557.926585958,
+      "fim": 2557.926664166,
+      "duracao_ms": 0.08,
+      "inputs": {
+        "texto": "Fui demitido em 15/06/2023. Qual o prazo para entrar com processo trabalhista cobrando meus direitos?"
+      },
+      "outputs": {
+        "intencao": "PRESCRICAO",
+        "justificativa": "Detectada dúvida sobre prazo prescricional para ajuizamento de ação.",
+        "fatos": {
+          "salario": null,
+          "data_admissao": null,
+          "data_demissao": "15/06/2023",
+          "motivo_rescisao": "sem_justa_causa",
+          "horas_extras_habituais": null,
+          "tem_ferias_vencidas": null,
+          "pedidos_mencionados": []
+        }
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "7982ed5e",
+      "nome": "prompt_cache_lookup",
+      "tipo": "cache",
+      "inicio": 2557.926668541,
+      "fim": 2557.926682,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "status": "HIT"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": true,
+      "erro": null
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "trace_id": "831f653b-1dd5-4348-90d4-bd504e961877",
+  "session_id": "bench_TC07",
+  "timestamp": "2026-11-19T10:36:11.425456",
+  "status": "sucesso",
+  "duracao_total_ms": 0.35,
+  "total_spans": 6,
+  "total_tokens_entrada": 850,
+  "total_tokens_saida": 240,
+  "spans": [
+    {
+      "span_id": "5e40d46a",
+      "nome": "agente_turn",
+      "tipo": "agent_cycle",
+      "inicio": 2504.558300583,
+      "fim": 2504.558637791,
+      "duracao_ms": 0.34,
+      "inputs": {
+        "pergunta": "Fui dispensado em 10/01/2020. Ainda é possível ajuizar reclamação trabalhista na Justiça do Trabalho ou perdi o prazo?"
+      },
+      "outputs": {
+        "status": "concluido"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "11d3551c",
+      "nome": "routing_and_extraction",
+      "tipo": "routing",
+      "inicio": 2504.558303333,
+      "fim": 2504.558321041,
+      "duracao_ms": 0.02,
+      "inputs": {
+        "texto": "Fui dispensado em 10/01/2020. Ainda é possível ajuizar reclamação trabalhista na Justiça do Trabalho ou perdi o prazo?"
+      },
+      "outputs": {
+        "intencao": "PRESCRICAO",
+        "justificativa": "Detectada dúvida sobre prazo prescricional para ajuizamento de ação.",
+        "fatos": {
+          "salario": null,
+          "data_admissao": "10/01/2020",
+          "data_demissao": null,
+          "motivo_rescisao": null,
+          "horas_extras_habituais": null,
+          "tem_ferias_vencidas": null,
+          "pedidos_mencionados": []
+        }
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "51cf5e11",
+      "nome": "prompt_cache_lookup",
+      "tipo": "cache",
+      "inicio": 2504.558324083,
+      "fim": 2504.558331541,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "status": "MISS"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "ca31cf54",
+      "nome": "context_window_budgeting",
+      "tipo": "context_management",
+      "inicio": 2504.558334041,
+      "fim": 2504.558340375,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "tokens_estimados": 2815,
+        "teto_entrada_disponivel": 14884,
+        "margem_seguranca_tokens": 12069,
+        "ocupacao_janela_pct": 17.2,
+        "total_mensagens": 14
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "b3d53a65",
+      "nome": "llm_turn_1",
+      "tipo": "llm_call",
+      "inicio": 2504.558342791,
+      "fim": 2504.558471041,
+      "duracao_ms": 0.13,
+      "inputs": {},
+      "outputs": {
+        "role": "assistant",
+        "content": "{\"resposta_direta\": \"Considerando a demissão em 10/01/2023, o trabalhador encontra-se com o direito de ação prescrito (prazo bienal esgotado). O prazo limite bienal é 09/01/2025.\", \"fundamentacao_legal\": [\"Art. 7º, XXIX da Constituição Federal (Prazo prescricional de 2 anos após a extinção do contrato)\", \"Art. 11 da CLT (Prescrição bienal e quinquenal trabalhista)\"], \"jurisprudencia_aplicada\": [\"Súmula nº 268 do TST (Interrupção da prescrição)\"], \"fatos_extraidos\": {\"salario\": null, \"data_admissao\": \"10/01/2020\", \"data_demissao\": null, \"motivo_rescisao\": null, \"horas_extras_habituais\": null, \"tem_ferias_vencidas\": null, \"pedidos_mencionados\": []}, \"calculos\": {\"prazo_bienal_limite\": \"09/01/2025\", \"prescrito_bienal\": true, \"data_limite_quinquenal\": \"20/11/2021\", \"dias_restantes_estimados\": 0, \"fundamentacao\": \"Art. 7º, XXIX da Constituição Federal e Art. 11 da CLT (Prescrição bienal de 2 anos e quinquenal de 5 anos).\"}, \"orientacao_ao_trabalhador\": \"Caso pretenda cobrar verbas pendentes, procure assistência de um advogado ou sindicato com brevidade antes de esgotar o prazo bienal.\", \"alertas_e_ressalvas\": [\"A prescrição quinquenal limita a cobrança de créditos apenas aos últimos 5 anos contados da data do ajuizamento da ação.\"], \"precisa_advogado\": true, \"aviso_legal\": \"Orientação com base na legislação constitucional e trabalhista vigente.\"}"
+      },
+      "tokens_entrada": 850,
+      "tokens_saida": 240,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "823c826a",
+      "nome": "structured_output_validation",
+      "tipo": "validation",
+      "inicio": 2504.558474583,
+      "fim": 2504.558487,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "resposta_direta": "Considerando a demissão em 10/01/2023, o trabalhador encontra-se com o direito de ação prescrito (prazo bienal esgotado). O prazo limite bienal é 09/01/2025.",
+        "fundamentacao_legal": [
+          "Art. 7º, XXIX da Constituição Federal (Prazo prescricional de 2 anos após a extinção do contrato)",
+          "Art. 11 da CLT (Prescrição bienal e quinquenal trabalhista)"
+        ],
+        "jurisprudencia_aplicada": [
+          "Súmula nº 268 do TST (Interrupção da prescrição)"
+        ],
+        "fatos_extraidos": {
+          "salario": null,
+          "data_admissao": "10/01/2020",
+          "data_demissao": null,
+          "motivo_rescisao": null,
+          "horas_extras_habituais": null,
+          "tem_ferias_vencidas": null,
+          "pedidos_mencionados": []
+        },
+        "calculos": {
+          "prazo_bienal_limite": "09/01/2025",
+          "prescrito_bienal": true,
+          "data_limite_quinquenal": "20/11/2021",
+          "dias_restantes_estimados": 0,
+          "fundamentacao": "Art. 7º, XXIX da Constituição Federal e Art. 11 da CLT (Prescrição bienal de 2 anos e quinquenal de 5 anos)."
+        },
+        "orientacao_ao_trabalhador": "Caso pretenda cobrar verbas pendentes, procure assistência de um advogado ou sindicato com brevidade antes de esgotar o prazo bienal.",
+        "alertas_e_ressalvas": [
+          "A prescrição quinquenal limita a cobrança de créditos apenas aos últimos 5 anos contados da data do ajuizamento da ação."
+        ],
+        "precisa_advogado": true,
+        "aviso_legal": "Orientação com base na legislação constitucional e trabalhista vigente."
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    }
+  ]
+}

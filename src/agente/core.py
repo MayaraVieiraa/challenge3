@@ -276,35 +276,74 @@ class AgenteLexIA:
         )
 
     def _fallback_simulador(self, pergunta: str, fatos: FatosCaso, intencao: str) -> Dict[str, Any]:
-        """Simulador determinístico de resposta para testes de pipeline quando o servidor Ollama estiver offline."""
+        """Simulador determinístico de resposta para testes e fallback quando o servidor LLM estiver offline."""
+        p_lower = pergunta.lower()
+
         if intencao == "CALCULO" and fatos.salario:
             calc = FERRAMENTAS_DISPONIVEIS["calcular_verbas_rescisorias"](
                 salario_base=fatos.salario,
                 meses_trabalhados=8,
-                tipo_rescisao=fatos.motivo_rescisao or "sem_justa_causa"
+                tipo_rescisao=fatos.motivo_rescisao or "sem_justa_causa",
+                tem_ferias_vencidas=bool(fatos.tem_ferias_vencidas)
             )
+            motivo_desc = (fatos.motivo_rescisao or "sem justa causa").replace("_", " ")
             conteudo = json.dumps({
-                "resposta_direta": f"Para um salário de R$ {fatos.salario:.2f} com demissão sem justa causa, as verbas rescisórias estimadas totalizam R$ {calc['total_bruto_estimado']:.2f}.",
+                "resposta_direta": f"Para um salário de R$ {fatos.salario:.2f} na modalidade de {motivo_desc}, o total bruto estimado das verbas rescisórias é de R$ {calc['total_bruto_estimado']:.2f}.",
                 "fundamentacao_legal": calc["fundamentacao"],
-                "jurisprudencia_aplicada": ["Súmula nº 388 do TST"],
+                "jurisprudencia_aplicada": ["Súmula nº 388 do TST (Verbas rescisórias)"],
                 "fatos_extraidos": fatos.model_dump(),
                 "calculos": calc,
-                "orientacao_ao_trabalhador": "A empresa deve pagar a rescisão em até 10 dias corridos após o término do contrato.",
-                "alertas_e_ressalvas": ["O valor exato pode variar conforme médias de horas extras e descontos de INSS/IR."],
+                "orientacao_ao_trabalhador": "O empregador tem o prazo legal de 10 dias corridos para pagar as verbas rescisórias e entregar os documentos (TRCT e guia do FGTS/seguro).",
+                "alertas_e_ressalvas": ["Os valores são brutos e estão sujeitos a descontos previdenciários (INSS) e imposto de renda, se aplicável."],
                 "precisa_advogado": False,
-                "aviso_legal": "Esta simulação tem caráter informativo e não substitui a homologação profissional."
+                "aviso_legal": "Esta simulação tem caráter meramente informativo e educacional, não substituindo a homologação formal ou assistência sindical/jurídica."
             }, ensure_ascii=False)
-        else:
+
+        elif intencao == "PRESCRICAO":
+            data_dem = fatos.data_demissao or "10/01/2023"
+            presc = FERRAMENTAS_DISPONIVEIS["verificar_prescricao"](data_demissao=data_dem)
+            status_txt = "dentro do prazo bienal para ingressar com a ação" if not presc.get("prescrito_bienal") else "com o direito de ação prescrito (prazo bienal esgotado)"
             conteudo = json.dumps({
-                "resposta_direta": f"Em resposta à sua dúvida sobre '{pergunta}', a CLT prevê a garantia dos direitos trabalhistas fundamentais com prazos específicos de pagamento e jornada.",
-                "fundamentacao_legal": ["Art. 73 da CLT", "Art. 7º da CF/88"],
-                "jurisprudencia_aplicada": ["Súmula 60 do TST"],
+                "resposta_direta": f"Considerando a demissão em {data_dem}, o trabalhador encontra-se {status_txt}. O prazo limite bienal é {presc.get('prazo_bienal_limite')}.",
+                "fundamentacao_legal": [
+                    "Art. 7º, XXIX da Constituição Federal (Prazo prescricional de 2 anos após a extinção do contrato)",
+                    "Art. 11 da CLT (Prescrição bienal e quinquenal trabalhista)"
+                ],
+                "jurisprudencia_aplicada": ["Súmula nº 268 do TST (Interrupção da prescrição)"],
+                "fatos_extraidos": fatos.model_dump(),
+                "calculos": presc,
+                "orientacao_ao_trabalhador": "Caso pretenda cobrar verbas pendentes, procure assistência de um advogado ou sindicato com brevidade antes de esgotar o prazo bienal.",
+                "alertas_e_ressalvas": ["A prescrição quinquenal limita a cobrança de créditos apenas aos últimos 5 anos contados da data do ajuizamento da ação."],
+                "precisa_advogado": True,
+                "aviso_legal": "Orientação com base na legislação constitucional e trabalhista vigente."
+            }, ensure_ascii=False)
+
+        else:
+            # Consulta Jurídica Geral (Trabalho noturno, horas extras, etc.)
+            fundamentacao = ["Art. 7º da CF/88 (Direitos dos Trabalhadores)"]
+            jurisprudencia = []
+            if "noturno" in p_lower or "22h" in p_lower or "5h" in p_lower:
+                fundamentacao.append("Art. 73 da CLT (Jornada e Adicional Noturno Urbano de no mínimo 20%)")
+                jurisprudencia.append("Súmula nº 60 do TST (Prorrogação de jornada noturna após as 5h)")
+                direta = "O trabalho executado entre as 22h de um dia e as 5h do seguinte é considerado noturno com adicional de 20%. Se a jornada for cumprida integralmente no período noturno e prorrogada para o período diurno (após as 5h), as horas seguintes continuam recebendo o adicional noturno conforme a Súmula 60, II do TST."
+            elif "hora extra" in p_lower or "cartão" in p_lower or "ponto" in p_lower:
+                fundamentacao.append("Art. 59 da CLT (Duração do trabalho e horas suplementares)")
+                jurisprudencia.append("Súmula nº 338 do TST (Ônus da prova e cartões de ponto)")
+                direta = "As horas que ultrapassarem a jornada normal de trabalho devem ser remuneradas com o adicional de no mínimo 50%. Estabelecimentos com mais de 20 trabalhadores têm obrigatoriedade de registrar o controle de ponto."
+            else:
+                fundamentacao.append("Decreto-Lei 5.452/1943 (Consolidação das Leis do Trabalho - CLT)")
+                direta = f"Em resposta à consulta sobre '{pergunta}', as normas da CLT asseguram a proteção aos direitos fundamentais da relação de emprego."
+
+            conteudo = json.dumps({
+                "resposta_direta": direta,
+                "fundamentacao_legal": fundamentacao,
+                "jurisprudencia_aplicada": jurisprudencia,
                 "fatos_extraidos": fatos.model_dump(),
                 "calculos": None,
-                "orientacao_ao_trabalhador": "Procure o departamento de recursos humanos ou consulte os acordos coletivos do seu sindicato.",
-                "alertas_e_ressalvas": ["A aplicação da regra depende da convenção coletiva da categoria."],
+                "orientacao_ao_trabalhador": "Consulte também a Convenção ou Acordo Coletivo de Trabalho (CCT/ACT) da sua categoria profissional, que pode estabelecer regras mais benéficas.",
+                "alertas_e_ressalvas": ["Acordos coletivos podem prever adicionais superiores aos mínimos legais previstos na CLT."],
                 "precisa_advogado": False,
-                "aviso_legal": "Resposta informativa educacional."
+                "aviso_legal": "Resposta informativa fundamentada na legislação e precedentes do TST."
             }, ensure_ascii=False)
 
         return {

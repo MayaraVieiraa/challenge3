@@ -1,0 +1,148 @@
+{
+  "trace_id": "9b26ebec-dd66-49f2-8064-ddc43529f1c6",
+  "session_id": "bench_TC10",
+  "timestamp": "2026-11-19T10:39:19.121867",
+  "status": "sucesso",
+  "duracao_total_ms": 0.29,
+  "total_spans": 6,
+  "total_tokens_entrada": 850,
+  "total_tokens_saida": 240,
+  "spans": [
+    {
+      "span_id": "f813cd04",
+      "nome": "agente_turn",
+      "tipo": "agent_cycle",
+      "inicio": 2598.239140166,
+      "fim": 2598.239420583,
+      "duracao_ms": 0.28,
+      "inputs": {
+        "pergunta": "A empresa demitiu e demorou 25 dias para pagar a rescisão. Qual a multa cabível pelo atraso no pagamento?"
+      },
+      "outputs": {
+        "status": "concluido"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "8108e053",
+      "nome": "routing_and_extraction",
+      "tipo": "routing",
+      "inicio": 2598.239142833,
+      "fim": 2598.239162083,
+      "duracao_ms": 0.02,
+      "inputs": {
+        "texto": "A empresa demitiu e demorou 25 dias para pagar a rescisão. Qual a multa cabível pelo atraso no pagamento?"
+      },
+      "outputs": {
+        "intencao": "CONSULTA_JURIDICA",
+        "justificativa": "Consulta interpretativa de normas e precedentes trabalhistas.",
+        "fatos": {
+          "salario": null,
+          "data_admissao": null,
+          "data_demissao": null,
+          "motivo_rescisao": null,
+          "horas_extras_habituais": null,
+          "tem_ferias_vencidas": null,
+          "pedidos_mencionados": []
+        }
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "59057b19",
+      "nome": "prompt_cache_lookup",
+      "tipo": "cache",
+      "inicio": 2598.239164791,
+      "fim": 2598.239171125,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "status": "MISS"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "ec8bc415",
+      "nome": "context_window_budgeting",
+      "tipo": "context_management",
+      "inicio": 2598.239173541,
+      "fim": 2598.239180875,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "tokens_estimados": 4278,
+        "teto_entrada_disponivel": 14884,
+        "margem_seguranca_tokens": 10606,
+        "ocupacao_janela_pct": 26.1,
+        "total_mensagens": 18
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "a60044b1",
+      "nome": "llm_turn_1",
+      "tipo": "llm_call",
+      "inicio": 2598.239183166,
+      "fim": 2598.239280916,
+      "duracao_ms": 0.1,
+      "inputs": {},
+      "outputs": {
+        "role": "assistant",
+        "content": "{\"resposta_direta\": \"Em resposta à consulta sobre 'A empresa demitiu e demorou 25 dias para pagar a rescisão. Qual a multa cabível pelo atraso no pagamento?', as normas da CLT asseguram a proteção aos direitos fundamentais da relação de emprego.\", \"fundamentacao_legal\": [\"Art. 7º da CF/88 (Direitos dos Trabalhadores)\", \"Decreto-Lei 5.452/1943 (Consolidação das Leis do Trabalho - CLT)\"], \"jurisprudencia_aplicada\": [], \"fatos_extraidos\": {\"salario\": null, \"data_admissao\": null, \"data_demissao\": null, \"motivo_rescisao\": null, \"horas_extras_habituais\": null, \"tem_ferias_vencidas\": null, \"pedidos_mencionados\": []}, \"calculos\": null, \"orientacao_ao_trabalhador\": \"Consulte também a Convenção ou Acordo Coletivo de Trabalho (CCT/ACT) da sua categoria profissional, que pode estabelecer regras mais benéficas.\", \"alertas_e_ressalvas\": [\"Acordos coletivos podem prever adicionais superiores aos mínimos legais previstos na CLT.\"], \"precisa_advogado\": false, \"aviso_legal\": \"Resposta informativa fundamentada na legislação e precedentes do TST.\"}"
+      },
+      "tokens_entrada": 850,
+      "tokens_saida": 240,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "2e332809",
+      "nome": "structured_output_validation",
+      "tipo": "validation",
+      "inicio": 2598.23928425,
+      "fim": 2598.23929375,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "resposta_direta": "Em resposta à consulta sobre 'A empresa demitiu e demorou 25 dias para pagar a rescisão. Qual a multa cabível pelo atraso no pagamento?', as normas da CLT asseguram a proteção aos direitos fundamentais da relação de emprego.",
+        "fundamentacao_legal": [
+          "Art. 7º da CF/88 (Direitos dos Trabalhadores)",
+          "Decreto-Lei 5.452/1943 (Consolidação das Leis do Trabalho - CLT)"
+        ],
+        "jurisprudencia_aplicada": [],
+        "fatos_extraidos": {
+          "salario": null,
+          "data_admissao": null,
+          "data_demissao": null,
+          "motivo_rescisao": null,
+          "horas_extras_habituais": null,
+          "tem_ferias_vencidas": null,
+          "pedidos_mencionados": []
+        },
+        "calculos": null,
+        "orientacao_ao_trabalhador": "Consulte também a Convenção ou Acordo Coletivo de Trabalho (CCT/ACT) da sua categoria profissional, que pode estabelecer regras mais benéficas.",
+        "alertas_e_ressalvas": [
+          "Acordos coletivos podem prever adicionais superiores aos mínimos legais previstos na CLT."
+        ],
+        "precisa_advogado": false,
+        "aviso_legal": "Resposta informativa fundamentada na legislação e precedentes do TST."
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    }
+  ]
+}

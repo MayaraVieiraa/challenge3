@@ -1,0 +1,74 @@
+{
+  "trace_id": "780ec063-711c-49a8-933e-889426801be9",
+  "session_id": "bench_TC12_multiturn",
+  "timestamp": "2026-11-19T10:38:38.812407",
+  "status": "sucesso_cache",
+  "duracao_total_ms": 0.04,
+  "total_spans": 3,
+  "total_tokens_entrada": 0,
+  "total_tokens_saida": 0,
+  "spans": [
+    {
+      "span_id": "f8c65f61",
+      "nome": "agente_turn",
+      "tipo": "agent_cycle",
+      "inicio": 2557.929675708,
+      "fim": 2557.929705375,
+      "duracao_ms": 0.03,
+      "inputs": {
+        "pergunta": "E no meu caso, a homologação pelo sindicato ainda é obrigatória?"
+      },
+      "outputs": {
+        "cache": "hit"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "83b0c7dc",
+      "nome": "routing_and_extraction",
+      "tipo": "routing",
+      "inicio": 2557.929678416,
+      "fim": 2557.929694666,
+      "duracao_ms": 0.02,
+      "inputs": {
+        "texto": "E no meu caso, a homologação pelo sindicato ainda é obrigatória?"
+      },
+      "outputs": {
+        "intencao": "CONSULTA_JURIDICA",
+        "justificativa": "Consulta interpretativa de normas e precedentes trabalhistas.",
+        "fatos": {
+          "salario": null,
+          "data_admissao": null,
+          "data_demissao": null,
+          "motivo_rescisao": null,
+          "horas_extras_habituais": null,
+          "tem_ferias_vencidas": null,
+          "pedidos_mencionados": []
+        }
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "e928560a",
+      "nome": "prompt_cache_lookup",
+      "tipo": "cache",
+      "inicio": 2557.929697416,
+      "fim": 2557.929704958,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "status": "HIT"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": true,
+      "erro": null
+    }
+  ]
+}

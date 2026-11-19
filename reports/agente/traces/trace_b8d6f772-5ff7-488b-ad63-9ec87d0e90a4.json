@@ -1,0 +1,152 @@
+{
+  "trace_id": "b8d6f772-5ff7-488b-ad63-9ec87d0e90a4",
+  "session_id": "bench_TC05",
+  "timestamp": "2026-11-19T10:36:11.423473",
+  "status": "sucesso",
+  "duracao_total_ms": 0.3,
+  "total_spans": 6,
+  "total_tokens_entrada": 850,
+  "total_tokens_saida": 240,
+  "spans": [
+    {
+      "span_id": "f05a40c8",
+      "nome": "agente_turn",
+      "tipo": "agent_cycle",
+      "inicio": 2504.556361083,
+      "fim": 2504.556654583,
+      "duracao_ms": 0.29,
+      "inputs": {
+        "pergunta": "Fui demitido sem justa causa com salário de R$ 3.000,00 e tenho um período de férias vencidas pendente que nunca tirei. Quanto receberei?"
+      },
+      "outputs": {
+        "status": "concluido"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "08fef6c9",
+      "nome": "routing_and_extraction",
+      "tipo": "routing",
+      "inicio": 2504.556363875,
+      "fim": 2504.55638225,
+      "duracao_ms": 0.02,
+      "inputs": {
+        "texto": "Fui demitido sem justa causa com salário de R$ 3.000,00 e tenho um período de férias vencidas pendente que nunca tirei. Quanto receberei?"
+      },
+      "outputs": {
+        "intencao": "CONSULTA_JURIDICA",
+        "justificativa": "Consulta interpretativa de normas e precedentes trabalhistas.",
+        "fatos": {
+          "salario": 3000.0,
+          "data_admissao": null,
+          "data_demissao": null,
+          "motivo_rescisao": "sem_justa_causa",
+          "horas_extras_habituais": null,
+          "tem_ferias_vencidas": true,
+          "pedidos_mencionados": [
+            "ferias"
+          ]
+        }
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "8dfe6642",
+      "nome": "prompt_cache_lookup",
+      "tipo": "cache",
+      "inicio": 2504.556385458,
+      "fim": 2504.556393791,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "status": "MISS"
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "b9aec819",
+      "nome": "context_window_budgeting",
+      "tipo": "context_management",
+      "inicio": 2504.556396458,
+      "fim": 2504.556402333,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "tokens_estimados": 2047,
+        "teto_entrada_disponivel": 14884,
+        "margem_seguranca_tokens": 12837,
+        "ocupacao_janela_pct": 12.5,
+        "total_mensagens": 10
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "23c60f00",
+      "nome": "llm_turn_1",
+      "tipo": "llm_call",
+      "inicio": 2504.556404958,
+      "fim": 2504.556505791,
+      "duracao_ms": 0.1,
+      "inputs": {},
+      "outputs": {
+        "role": "assistant",
+        "content": "{\"resposta_direta\": \"Em resposta à consulta sobre 'Fui demitido sem justa causa com salário de R$ 3.000,00 e tenho um período de férias vencidas pendente que nunca tirei. Quanto receberei?', as normas da CLT asseguram a proteção aos direitos fundamentais da relação de emprego.\", \"fundamentacao_legal\": [\"Art. 7º da CF/88 (Direitos dos Trabalhadores)\", \"Decreto-Lei 5.452/1943 (Consolidação das Leis do Trabalho - CLT)\"], \"jurisprudencia_aplicada\": [], \"fatos_extraidos\": {\"salario\": 3000.0, \"data_admissao\": null, \"data_demissao\": null, \"motivo_rescisao\": \"sem_justa_causa\", \"horas_extras_habituais\": null, \"tem_ferias_vencidas\": true, \"pedidos_mencionados\": [\"ferias\"]}, \"calculos\": null, \"orientacao_ao_trabalhador\": \"Consulte também a Convenção ou Acordo Coletivo de Trabalho (CCT/ACT) da sua categoria profissional, que pode estabelecer regras mais benéficas.\", \"alertas_e_ressalvas\": [\"Acordos coletivos podem prever adicionais superiores aos mínimos legais previstos na CLT.\"], \"precisa_advogado\": false, \"aviso_legal\": \"Resposta informativa fundamentada na legislação e precedentes do TST.\"}"
+      },
+      "tokens_entrada": 850,
+      "tokens_saida": 240,
+      "cache_hit": false,
+      "erro": null
+    },
+    {
+      "span_id": "48db3080",
+      "nome": "structured_output_validation",
+      "tipo": "validation",
+      "inicio": 2504.556509291,
+      "fim": 2504.556521208,
+      "duracao_ms": 0.01,
+      "inputs": {},
+      "outputs": {
+        "resposta_direta": "Em resposta à consulta sobre 'Fui demitido sem justa causa com salário de R$ 3.000,00 e tenho um período de férias vencidas pendente que nunca tirei. Quanto receberei?', as normas da CLT asseguram a proteção aos direitos fundamentais da relação de emprego.",
+        "fundamentacao_legal": [
+          "Art. 7º da CF/88 (Direitos dos Trabalhadores)",
+          "Decreto-Lei 5.452/1943 (Consolidação das Leis do Trabalho - CLT)"
+        ],
+        "jurisprudencia_aplicada": [],
+        "fatos_extraidos": {
+          "salario": 3000.0,
+          "data_admissao": null,
+          "data_demissao": null,
+          "motivo_rescisao": "sem_justa_causa",
+          "horas_extras_habituais": null,
+          "tem_ferias_vencidas": true,
+          "pedidos_mencionados": [
+            "ferias"
+          ]
+        },
+        "calculos": null,
+        "orientacao_ao_trabalhador": "Consulte também a Convenção ou Acordo Coletivo de Trabalho (CCT/ACT) da sua categoria profissional, que pode estabelecer regras mais benéficas.",
+        "alertas_e_ressalvas": [
+          "Acordos coletivos podem prever adicionais superiores aos mínimos legais previstos na CLT."
+        ],
+        "precisa_advogado": false,
+        "aviso_legal": "Resposta informativa fundamentada na legislação e precedentes do TST."
+      },
+      "tokens_entrada": null,
+      "tokens_saida": null,
+      "cache_hit": false,
+      "erro": null
+    }
+  ]
+}

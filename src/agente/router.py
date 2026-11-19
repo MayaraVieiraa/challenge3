@@ -33,16 +33,26 @@ class RouterEExtrator:
                 except ValueError:
                     pass
 
-        # 2. Extração de Datas
+        # 2. Extração Inteligente de Datas
         datas = re.findall(cls.PADROES_DATA, texto)
-        data_admissao = datas[0] if len(datas) >= 1 else None
-        data_demissao = datas[1] if len(datas) >= 2 else None
+        data_admissao = None
+        data_demissao = None
+        if len(datas) == 1:
+            if any(term in texto_norm for term in ['demitid', 'dispensad', 'saí', 'saida', 'rescis', 'demiss', 'prazo']):
+                data_demissao = datas[0]
+            else:
+                data_admissao = datas[0]
+        elif len(datas) >= 2:
+            data_admissao = datas[0]
+            data_demissao = datas[1]
 
         # 3. Extração do Motivo da Rescisão
         motivo = None
-        if 'sem justa causa' in texto_norm or 'fui demitido' in texto_norm or 'me mandaram embora' in texto_norm:
+        if 'acordo mútuo' in texto_norm or 'acordo mutuo' in texto_norm or '484-a' in texto_norm:
+            motivo = 'acordo_mutuo'
+        elif 'sem justa causa' in texto_norm or 'fui demitido' in texto_norm or 'me mandaram embora' in texto_norm:
             motivo = 'sem_justa_causa'
-        elif 'com justa causa' in texto_norm or 'por justa causa' in texto_norm:
+        elif 'com justa causa' in texto_norm or 'por justa causa' in texto_norm or 'justa causa' in texto_norm:
             motivo = 'justa_causa'
         elif 'pedi demiss' in texto_norm or 'pedir demiss' in texto_norm or 'pedi para sair' in texto_norm:
             motivo = 'pedido_demissao'
@@ -84,11 +94,18 @@ class RouterEExtrator:
         """
         texto_norm = texto.lower()
 
-        # Roteamento 1: Cálculo rescisório / valores
-        termos_calculo = ['quanto vou receber', 'quanto tenho direito', 'calcular minha rescisão', 'calcular rescisao',
-                          'fazer o cálculo', 'fazer calculo', 'simular rescisão', 'simular rescisao', 'valor a receber']
-        if any(t in texto_norm for t in termos_calculo):
-            return ('CALCULO', 'Detectada intenção explícita de cálculo de verbas rescisórias.')
+        # Roteamento 1: Cálculo rescisório / verbas do término contratual
+        termos_calculo = [
+            'quanto vou receber', 'quanto receberei', 'quanto tenho direito',
+            'calcular minha rescisão', 'calcular rescisao', 'fazer o cálculo', 'fazer calculo',
+            'simular rescisão', 'simular rescisao', 'valor a receber', 'quais verbas',
+            'como fica o aviso', 'tenho direito ao aviso', 'tenho direito ao 13', 'tenho direito a receber'
+        ]
+        tem_salario = bool(re.search(r'(?:r\$\s*|sal[aá]rio|[\d\.,]+\s*(?:reais|por\s+m[eê]s))', texto_norm))
+        tem_rescisao = any(t in texto_norm for t in ['demiss', 'demitid', 'rescis', 'acordo', 'aviso prévio', 'fgts'])
+
+        if any(t in texto_norm for t in termos_calculo) or (tem_salario and tem_rescisao):
+            return ('CALCULO', 'Detectada intenção de cálculo ou apuração de verbas rescisórias.')
 
         # Roteamento 2: Prescrição e prazos para processar
         termos_prescricao = ['quanto tempo tenho para entrar', 'prazo para entrar com processo', 'prazo para processar',
