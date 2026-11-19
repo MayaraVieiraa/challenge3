@@ -9,16 +9,16 @@ Adicionar ao lex_clt.ai uma base de jurisprudência trabalhista, recuperável e 
 ## 2. Estrutura criada
 
 ```
-notebooks/02_jurisprudencia/          (já existia)
-data/raw/jurisprudencia/              ignorada no git
-data/processed/jurisprudencia/        ignorada no git
-data/chunks/jurisprudencia/           ignorada no git
-data/evaluation/jurisprudencia/       versionada
-reports/jurisprudencia/{auditoria,eda,estruturacao,chunking,recuperacao,pgvector,avaliacao}/
-src/jurisprudencia/                   código em módulo (não em notebook)
+avaliacao/notebooks/02_jurisprudencia/          (já existia)
+dados/raw/jurisprudencia/              ignorada no git
+dados/processed/jurisprudencia/        ignorada no git
+dados/chunks/jurisprudencia/           ignorada no git
+avaliacao/dados/jurisprudencia/       versionada
+dados/relatorios/jurisprudencia/{auditoria,eda,estruturacao,chunking,recuperacao,pgvector,avaliacao}/
+worker/ingestao/jurisprudencia/                   código em módulo (não em notebook)
 ```
 
-Também foi adicionado `/data/raw/jurisprudencia/` ao `.gitignore`. Pastas vazias versionadas têm `.gitkeep`.
+Também foi adicionado `/dados/raw/jurisprudencia/` ao `.gitignore`. Pastas vazias versionadas têm `.gitkeep`.
 
 Ainda por criar: `tests/test_jurisprudencia_*.py` e esta documentação ampliada.
 
@@ -26,7 +26,7 @@ Ainda por criar: `tests/test_jurisprudencia_*.py` e esta documentação ampliada
 
 | Parte | Problema | Proposta |
 |---|---|---|
-| `src/storage/pgvector_store.py` | `MODEL`, `STRATEGY='A_artigo'` e a coluna `article_id` fixos | Mesmo container e schema; coluna `corpus` em `vector_datasets` e metadados em `jsonb` (ou tabelas próprias) |
+| `worker/evidencia/indices/pgvector_store.py` | `MODEL`, `STRATEGY='A_artigo'` e a coluna `article_id` fixos | Mesmo container e schema; coluna `corpus` em `vector_datasets` e metadados em `jsonb` (ou tabelas próprias) |
 | Metadados | Legislação: artigo, parágrafo, inciso | Jurisprudência: tribunal, tipo (acórdão, súmula, OJ, tese), nº do processo, relator, órgão julgador, data, situação |
 | Chunking | Acórdãos são longos e seccionados | Busca na ementa/fundamentação, contexto na decisão inteira (mesma ideia D→A). Súmula, OJ e tese: 1 chunk |
 | Vigência | Súmulas são canceladas ou revisadas | Campos `situacao` e `data_vigencia`; filtro na busca |
@@ -38,11 +38,11 @@ Ainda por criar: `tests/test_jurisprudencia_*.py` e esta documentação ampliada
 - **Dois índices e dois retrievers** (legislação e jurisprudência), unidos depois por fusão ou roteamento.
 - Não misturar os dois corpora no mesmo RRF e reranker: scores e tamanhos de trecho não são comparáveis, e a distinção lei/decisão se perderia.
 - Mesmo modelo de embedding (BGE-M3, 1.024 dimensões) e mesmo PostgreSQL.
-- Código novo em `src/jurisprudencia/` desde o início, para não repetir o acoplamento a notebooks.
+- Código novo em `worker/ingestao/jurisprudencia/` desde o início, para não repetir o acoplamento a notebooks.
 
 ## 5. Etapas sugeridas
 
-1. **Fonte e auditoria:** escolher a origem, registrar commit/data/licença em `data/README.md`, auditar arquivos e hashes.
+1. **Fonte e auditoria:** escolher a origem, registrar commit/data/licença em `corpus/README_lawcodex.md`, auditar arquivos e hashes.
 2. **EDA:** formatos, campos ausentes, duplicatas, distribuição por tribunal, tipo e ano.
 3. **Estruturação:** esquema de documento e chunk com metadados e vigência.
 4. **Chunking:** testar 2–3 estratégias, medir em perguntas de desenvolvimento.

@@ -80,12 +80,12 @@ Os tempos e decisões acima são observações de duas execuções de desenvolvi
 
 ## Evidências e reprodução
 
-- [Notebook de execução no Kaggle](../notebooks/04_multiagentes/02_execucao_kaggle_multiagentes.ipynb).
+- [Notebook de execução no Kaggle](../avaliacao/notebooks/04_multiagentes/02_execucao_kaggle_multiagentes.ipynb).
 - [Instruções de execução](execucao_multiagentes_kaggle.md).
 - [Arquitetura e comandos](sistema_multiagentes.md).
 - [Notebook privado na conta autorizada](https://www.kaggle.com/code/withysphinx/lexia-multiagentes-gpu-20261117-154606).
 
-Os arquivos detalhados ficam em `output/kaggle/multiagentes/envio-20261117-154606/`, ignorado pelo Git:
+Os arquivos detalhados ficam em `dados/output/kaggle/multiagentes/envio-20261117-154606/`, ignorado pelo Git:
 
 - Primeira execução completa: `resultados-v6/multiagentes/kaggle-corpus-20261117-204403-46af53/`.
 - Execução aprovada: `resultados-v7/dados/kaggle-corpus-20261119-114147-f369a1/`.

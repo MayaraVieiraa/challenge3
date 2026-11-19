@@ -6,7 +6,7 @@
 
 ## Resumo executivo
 
-O projeto está em fase de pesquisa e validação técnica, organizado em três frentes: preparação da base de legislação, preparação da base de jurisprudência e integração de recuperação, guardrails, geração e avaliação. Há código reutilizável em `src/`, 16 notebooks, relatórios experimentais e testes automatizados.
+O projeto está em fase de pesquisa e validação técnica, organizado em três frentes: preparação da base de legislação, preparação da base de jurisprudência e integração de recuperação, guardrails, geração e avaliação. O código está organizado em `worker/`, `backend/` e `avaliacao/`, com notebooks, relatórios experimentais e testes automatizados.
 
 A recuperação e o fluxo integrado já têm resultados documentados. O fluxo também conta com extração/roteamento determinístico, saída estruturada validada, limite de contexto fail-closed e observabilidade minimizada. A avaliação registrada aponta oportunidades de melhoria, especialmente na relevância da recuperação de jurisprudência, no comportamento de alguns guardrails e no suporte factual das respostas. Ainda não há uma aplicação de usuário com API e interface no repositório; esses itens permanecem no escopo planejado.
 
@@ -26,22 +26,22 @@ O estado foi conferido no código e no Git em 19/11/2026. Os resultados de model
 | Frente | Situação observada |
 |---|---|
 | Legislação | Pipeline de preparação e recuperação implementado, com dados estruturados, chunks, conjunto de avaliação, relatórios e persistência pgvector documentados. |
-| Jurisprudência | Seis notebooks cobrem auditoria, EDA, estruturação, chunking, preparação do recorte e embeddings/indexação. Há código reutilizável em `src/jurisprudencia/`; os dados brutos não são versionados. |
-| Integração | Quatro notebooks e módulos em `src/integracao/` cobrem recuperação conjunta, guardrails, geração e avaliação por juiz. Agora inclui Stracting determinístico, JSON Schema validado, orçamento de contexto e observabilidade sem prompts/respostas. Resultados e limitações estão registrados em `docs/estado_integracao.md`. |
+| Jurisprudência | Seis notebooks cobrem auditoria, EDA, estruturação, chunking, preparação do recorte e embeddings/indexação. Há código reutilizável em `worker/ingestao/jurisprudencia/`; os dados brutos não são versionados. |
+| Integração | Quatro notebooks e módulos em `worker/evidencia/` cobrem recuperação conjunta, guardrails, geração e avaliação por juiz. Agora inclui Stracting determinístico, JSON Schema validado, orçamento de contexto e observabilidade sem prompts/respostas. Resultados e limitações estão registrados em `docs/estado_integracao.md`. |
 | Aplicação de usuário | API, interface, ingestão de documentos de usuários e OCR aparecem como escopo planejado no README, mas não estão presentes como componentes implementados na raiz atual. |
 | Testes | 119 testes passaram na execução local da suíte documentada após a migração de capacidades. |
 
 ### Legislação
 
-- O repositório contém seis notebooks em `notebooks/01_legislacao/`.
+- O repositório contém seis notebooks em `avaliacao/notebooks/01_legislacao/`.
 - A documentação descreve 5.284 artigos estruturados e duas representações de chunks: artigo completo para contexto e parágrafo para busca.
 - A recuperação usa embeddings BGE-M3, busca lexical, fusão de resultados e reranking; a configuração e os resultados estão registrados nos relatórios de legislação.
 - A antiga integração exclusiva de legislação foi retirada do fluxo ativo para ser refeita junto com jurisprudência. A tag `rag-legislacao-v1` preserva a versão anterior.
-- As condições de reutilização da fonte de dados ainda precisam ser confirmadas, conforme `data/README.md`.
+- As condições de reutilização da fonte de dados ainda precisam ser confirmadas, conforme `corpus/README_lawcodex.md`.
 
 ### Jurisprudência
 
-- Há seis notebooks em `notebooks/02_jurisprudencia/` e módulos de preparação em `src/jurisprudencia/`.
+- Há seis notebooks em `avaliacao/notebooks/02_jurisprudencia/` e módulos de preparação em `worker/ingestao/jurisprudencia/`.
 - O README documenta uma base reduzida de 179.812 registros, com dados do TST, de três TRTs e do STF em recorte trabalhista.
 - A documentação do pipeline registra um recorte de indexação de 20.000 documentos, com 303.257 chunks e embeddings BGE-M3.
 - A base bruta e os dados processados são externos ou ignorados pelo Git. O diretório de avaliação versionado existe, mas ainda não contém um conjunto aprovado de jurisprudência.
@@ -101,4 +101,4 @@ O comando `pytest` não está instalado no ambiente virtual local. O runner `uni
 - [docs/estado_integracao.md](./estado_integracao.md) — resultados e decisões do fluxo integrado.
 - [docs/jurisprudencia_planejamento.md](./jurisprudencia_planejamento.md) — decisões em aberto para a base de jurisprudência.
 - [docs/estrutura_do_projeto.md](./estrutura_do_projeto.md) — mapa do repositório, com trechos que precisam de atualização.
-- [data/README.md](../data/README.md) — fonte registrada e pendência de licença.
+- [README_LawCodex](../corpus/README_lawcodex.md) — fonte registrada e pendência de licença.

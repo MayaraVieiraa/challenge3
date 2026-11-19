@@ -2,7 +2,7 @@
 
 **Data:** 17/11/2026
 **Finalidade:** orientar a implementação, a documentação e a demonstração da atividade da semana.
-**Situação:** guia de planejamento com primeira implementação disponível. Analista, Validador, orquestrador, ferramentas, CLI e testes estão em `src/multiagentes/`. O estado atual e os comandos efetivos estão em [Sistema multiagentes](sistema_multiagentes.md). Este guia não registra inferência Qwen/Gemma concluída.
+**Situação:** guia de planejamento com primeira implementação disponível. Analista, Validador, orquestrador, ferramentas, CLI e testes estão em `worker/evidencia/langgraph/`. O estado atual e os comandos efetivos estão em [Sistema multiagentes](sistema_multiagentes.md). Este guia não registra inferência Qwen/Gemma concluída.
 
 **Framework escolhido para o plano:** LangGraph em Python, usando `StateGraph` para organizar estado, ferramentas, agentes e retorno de revisão.
 
@@ -31,11 +31,11 @@ O projeto já tem recuperação, geração e avaliação por modelos. A entrega 
 
 | Componente existente | Como reaproveitar | Trabalho novo |
 |---|---|---|
-| `src/integracao/recuperacao.py` | `Recuperador.buscar()` consulta legislação e jurisprudência | Expor como ferramenta restrita ao Analista |
-| `src/integracao/geracao.py` | `fonte_para_prompt()`, respostas fixas e opções do Qwen | Separar busca, redação e revisão; criar pedidos por etapa |
-| `src/integracao/prompt_juridico.py` | Prompt jurídico do grupo e `build_rag_prompt()` | Acrescentar instruções de papel e contrato estruturado sem alterar o prompt original |
-| `src/integracao/guardrails.py` | Classificação, mascaramento e verificação das respostas | Integrar os resultados ao controle de liberação |
-| `src/integracao/juiz.py` | Critérios de fidelidade, clareza e comportamento | Criar contrato de feedback com revisão e validação rígida |
+| `worker/evidencia/recuperador.py` | `Recuperador.buscar()` consulta legislação e jurisprudência | Expor como ferramenta restrita ao Analista |
+| `worker/evidencia/explicador.py` | `fonte_para_prompt()`, respostas fixas e opções do Qwen | Separar busca, redação e revisão; criar pedidos por etapa |
+| `worker/evidencia/prompts.py` | Carregamento de prompts e metadados de versão | Acrescentar instruções de papel e contrato estruturado sem alterar o prompt original |
+| `worker/evidencia/guardas.py` | Classificação, mascaramento e verificação das respostas | Integrar os resultados ao controle de liberação |
+| `avaliacao/juiz.py` | Critérios de fidelidade, clareza e comportamento | Criar contrato de feedback com revisão e validação rígida |
 | Scripts locais e do Kaggle | Transporte dos pedidos e resultados de inferência | Criar execução das etapas com estado e encaminhamento do feedback |
 
 **Atenção às APIs atuais:** `montar_pedido()` já executa a busca; chamá-lo depois da ferramenta duplicaria a recuperação. A classe `Juiz` atualmente usa a API DeepSeek; ela não é um cliente local do Gemma. O validador de JSON atual verifica apenas campos e veredito: os contratos novos devem verificar também tipos, valores e referências.
@@ -129,7 +129,7 @@ Implementar uma lista de ferramentas permitidas com apenas `buscar_evidencias`. 
 Usar explicitamente esta configuração existente:
 
 ```python
-from src.integracao.recuperacao import Configuracao
+from worker.evidencia.recuperador import Configuracao
 
 config = Configuracao(
     entrega_por_fonte={"legislacao": 3, "jurisprudencia": 3},
@@ -197,7 +197,7 @@ Executar na raiz do repositório. Os comandos desta subseção já correspondem 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt -r requirements-chunking-jurisprudencia.txt
+python -m pip install -r docs/legado/requirements/requirements.txt -r docs/legado/requirements/requirements-chunking-jurisprudencia.txt
 ```
 
 No Windows, criar o ambiente com `python -m venv .venv` e ativar com `.venv/Scripts/Activate.ps1`.
@@ -208,14 +208,14 @@ No Windows, criar o ambiente com `python -m venv .venv` e ativar com `.venv/Scri
 python -m pip install langgraph
 ```
 
-A primeira implementação foi testada com Python 3.14.6 e declara LangGraph 1.2.22 em `requirements-multiagentes.txt`. Para reproduzir essa configuração, usar `python -m pip install -r requirements-multiagentes.txt`.
+A primeira implementação foi testada com Python 3.14.6 e declara LangGraph 1.2.22 em `docs/legado/requirements/requirements-multiagentes.txt`. Para reproduzir essa configuração, usar `python -m pip install -r docs/legado/requirements/requirements-multiagentes.txt`.
 
 ### 7.3 Preparar o banco para o modo real
 
 Com Docker iniciado:
 
 ```bash
-python scripts/configure_local_pgvector.py
+python worker/ingestao/scripts/configure_local_pgvector.py
 docker compose --env-file .env.pgvector.local -f compose.pgvector.yaml up -d
 ```
 
@@ -227,8 +227,8 @@ Verificar a recuperação antes de implementar os agentes:
 
 ```python
 from pathlib import Path
-from src.storage.pgvector_store import load_database_url
-from src.integracao.recuperacao import Recuperador, Configuracao
+from worker.evidencia.indices.pgvector_store import load_database_url
+from worker.evidencia.recuperador import Recuperador, Configuracao
 
 database_url = load_database_url(Path(".env.pgvector.local"))
 recuperador = Recuperador(database_url, device="cpu")
@@ -267,15 +267,15 @@ Os caminhos abaixo organizam a implementação inicial. Consulte o [relatório d
 
 | Ordem | Arquivo ou entrega nova | Conteúdo e condição para avançar |
 |---|---|---|
-| 1 | `src/multiagentes/contratos.py` e `__init__.py` | Estado, decisões, snapshots e validação das mensagens |
-| 2 | `src/multiagentes/cliente_llm.py` | Adaptador Ollama com timeout, formato estruturado e registro de consumo |
-| 3 | `src/multiagentes/ferramentas.py` | Ferramenta de busca real e alternativa sintética com a mesma interface |
-| 4 | `src/multiagentes/analista.py` | Escolha da consulta, redação e revisão com feedback |
-| 5 | `src/multiagentes/validador.py` | Verificação com fontes, critérios e decisões estruturadas |
-| 6 | `src/multiagentes/orquestrador.py` | `StateGraph` com estado tipado, nós Python, arestas condicionais, uma revisão e regras de término |
-| 7 | `scripts/executar_multiagentes.py` | CLI para uma pergunta e seleção explícita do modo |
+| 1 | `worker/evidencia/langgraph/contratos.py` e `__init__.py` | Estado, decisões, snapshots e validação das mensagens |
+| 2 | `worker/evidencia/langgraph/cliente_llm.py` | Adaptador Ollama com timeout, formato estruturado e registro de consumo |
+| 3 | `worker/evidencia/langgraph/ferramentas.py` | Ferramenta de busca real e alternativa sintética com a mesma interface |
+| 4 | `worker/evidencia/langgraph/analista.py` | Escolha da consulta, redação e revisão com feedback |
+| 5 | `worker/evidencia/langgraph/validador.py` | Verificação com fontes, critérios e decisões estruturadas |
+| 6 | `worker/evidencia/langgraph/orquestrador.py` | `StateGraph` com estado tipado, nós Python, arestas condicionais, uma revisão e regras de término |
+| 7 | `worker/evidencia/scripts/executar_multiagentes.py` | CLI para uma pergunta e seleção explícita do modo |
 | 8 | `tests/test_multiagentes.py` | Testes de transição, contratos, fontes e bloqueio de saída |
-| 9 | `notebooks/04_multiagentes/01_demonstracao_multiagentes.ipynb` | Execução legível, mensagens entre agentes e comparação das versões |
+| 9 | `avaliacao/notebooks/04_multiagentes/01_demonstracao_multiagentes.ipynb` | Execução legível, mensagens entre agentes e comparação das versões |
 | 10 | `docs/sistema_multiagentes.md` | Arquitetura, responsabilidades, comandos e limitações observadas |
 
 Os prompts podem ficar como constantes nos módulos dos agentes ou em arquivos próprios versionados. O notebook e a CLI devem chamar o mesmo grafo compilado, evitando duplicar o fluxo. Instanciar clientes e conexões como recursos de execução; não gravar conexões, senhas ou objetos de modelos no estado serializado.
@@ -291,8 +291,8 @@ Falha de banco, timeout ou contrato inválido deve gerar status de **falha técn
 A CLI está disponível na implementação inicial:
 
 ```bash
-python scripts/executar_multiagentes.py --modo real --pergunta "Quais são as regras gerais sobre férias?"
-python scripts/executar_multiagentes.py --modo sintetico --caso revisao_controlada
+python worker/evidencia/scripts/executar_multiagentes.py --modo real --pergunta "Quais são as regras gerais sobre férias?"
+python worker/evidencia/scripts/executar_multiagentes.py --modo sintetico --caso revisao_controlada
 python -m unittest discover -s tests -p "test_multiagentes.py" -v
 ```
 
@@ -300,7 +300,7 @@ Definir saída por `run_id`, contendo manifesto, eventos, fontes, versões da re
 
 ## 9. Alternativa de execução no Kaggle
 
-**Ambiente escolhido para a primeira demonstração:** Kaggle. A implementação inicial oferece um notebook que executa o grafo inteiro na GPU, com uma busca lexical em um corpus portátil da legislação disponível no projeto. Prepare o pacote com `python scripts/preparar_multiagentes_kaggle.py --tema ferias` e siga o [roteiro do Kaggle](execucao_multiagentes_kaggle.md).
+**Ambiente escolhido para a primeira demonstração:** Kaggle. A implementação inicial oferece um notebook que executa o grafo inteiro na GPU, com uma busca lexical em um corpus portátil da legislação disponível no projeto. Prepare o pacote com `python avaliacao/scripts/preparar_multiagentes_kaggle.py --tema ferias` e siga o [roteiro do Kaggle](execucao_multiagentes_kaggle.md).
 
 O pacote não inclui o banco pgvector nem os embeddings. Para usar especificamente a busca do banco local com inferência remota, o fluxo em lotes abaixo permanece uma alternativa de evolução; essa coordenação remota não foi implementada.
 
@@ -382,12 +382,12 @@ Em equipe, distribuir contratos/orquestração, Analista/ferramenta e Validador/
 
 - [Estado atual da integração](estado_integracao.md).
 - [Implementação multiagentes](sistema_multiagentes.md) e [execução no Kaggle](execucao_multiagentes_kaggle.md).
-- [Recuperação conjunta](../src/integracao/recuperacao.py).
-- [Geração e conversão de fontes](../src/integracao/geracao.py).
-- [Prompt jurídico preservado](../src/integracao/prompt_juridico.py).
-- [Guardrails](../src/integracao/guardrails.py).
-- [Juiz e rubrica atuais](../src/integracao/juiz.py).
-- [Preparação do PostgreSQL/pgvector](pgvector.md).
+- [Recuperação conjunta](../worker/evidencia/recuperador.py).
+- [Geração e conversão de fontes](../worker/evidencia/explicador.py).
+- [Prompts versionados](../worker/evidencia/prompts.py).
+- [Guardas](../worker/evidencia/guardas.py).
+- [Juiz e rubrica atuais](../avaliacao/juiz.py).
+- [Preparação do PostgreSQL/pgvector](./legado/pgvector.md).
 - [Base e índice de jurisprudência](../README.md#notebook-05-e-índice-de-busca).
 - [LangGraph — visão geral](https://docs.langchain.com/oss/python/langgraph/overview) e [Graph API](https://docs.langchain.com/oss/python/langgraph/graph-api): framework adotado para a orquestração.
 - [Google ADK — modelos Ollama](https://github.com/google/adk-docs/blob/main/docs/agents/models/ollama.md): alternativa considerada.

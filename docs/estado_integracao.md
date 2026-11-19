@@ -2,9 +2,17 @@
 
 Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-19.
 
+## Integração local do repositório final Lexai
+
+A branch local `integracao/lexai-final-local` foi reorganizada para usar o layout da referência `final/entrega-multiagente` (`506d483076ede331987b4db6031d2bb46106aa3d`). Os arquivos do projeto anterior foram migrados e combinados quando necessário, sem manter cópias paralelas nas pastas antigas. A implementação LangGraph em `worker/evidencia/langgraph/` e o protótipo em `worker/evidencia/agentes/` coexistem, sem substituição.
+
+Foram integrados a estrutura de backend/worker, contratos Pydantic, frontend, infraestrutura, prompts, avaliação, documentação e protótipo multiagente do repositório final. As configurações Kaggle existentes neste checkout não foram alteradas. Os manifestos DVC foram importados, mas não houve download de dados: o remoto de origem apontava para `../../lexai-dvc-remote`, diretório ausente neste ambiente, então essa configuração local não foi transportada.
+
+Por privacidade, `avaliacao/dados/legislacao/feedback_pos_teste/**/respostas_reais_e_feedback.jsonl` fica apenas no disco local e é ignorado pelo Git. Nenhum commit ou push foi feito para o repositório final ou para os demais remotos.
+
 ## Extensão multiagentes
 
-A primeira implementação com LangGraph está em `src/multiagentes/`: Analista Qwen3 8B, Validador Gemma 3 12B, ferramenta de busca e uma revisão máxima com feedback. Há CLI, contratos, registros locais e testes de controle. A primeira execução completa dos modelos ocorreu no Kaggle; os artefatos foram conferidos na retomada de 19/11/2026.
+A primeira implementação com LangGraph está em `worker/evidencia/langgraph/`: Analista Qwen3 8B, Validador Gemma 3 12B, ferramenta de busca e uma revisão máxima com feedback. Há CLI, contratos, registros locais e testes de controle. A primeira execução completa dos modelos ocorreu no Kaggle; os artefatos foram conferidos na retomada de 19/11/2026.
 
 A demonstração usa o Kaggle com corpus portátil de legislação e busca lexical, sem o banco local. O adaptador da busca híbrida no pgvector continua disponível como outro modo. Consulte [Sistema multiagentes](sistema_multiagentes.md), [Execução no Kaggle](execucao_multiagentes_kaggle.md) e [Resultados observados](resultados_multiagentes.md). A integração descrita nas seções seguintes permanece como registro do fluxo anterior.
 
@@ -27,28 +35,28 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
 
   O Qwen fica como gerador principal.
 - **Guardrails × juiz:** os guardrails aprovaram as 111 respostas do Qwen, mas a regra do juiz reprova 44. Essas 44 são as primeiras a revisar à mão e podem compor a validação com 20 a 30 respostas rotuladas por pessoa.
-- **Importar sem os pedidos locais:** quando `output/kaggle/juiz_27b*/dataset/` não existe na máquina, baixe os pedidos do dataset privado (`lexia-juiz-27b-pedidos` ou `lexia-juiz-27b-llama-pedidos`) para essa pasta e as saídas do kernel para `resultados/`. Depois rode o `importar_juiz_kaggle.py --sem-download --27b`, com `--llama` para o Llama.
+- **Importar sem os pedidos locais:** quando `dados/output/kaggle/juiz_27b*/dataset/` não existe na máquina, baixe os pedidos do dataset privado (`lexia-juiz-27b-pedidos` ou `lexia-juiz-27b-llama-pedidos`) para essa pasta e as saídas do kernel para `resultados/`. Depois rode o `importar_juiz_kaggle.py --sem-download --27b`, com `--llama` para o Llama.
 - **Token do Kaggle no Windows:** o arquivo `~/.kaggle/access_token` precisa ficar sem extensão; o Bloco de Notas salva como `.txt`.
 
 ## Atualização de 2026-11-17 (tarde, no Mac)
 
-- **Geração concluída no Kaggle:** 111 de 111 respostas válidas (Qwen3 8B, média de 36,8 s). Os guardrails não bloquearam nenhuma; 79 deixam a maioria das frases jurídicas sem `[Fonte N]`. Notebook `notebooks/03_integracao/03_geracao.ipynb`.
+- **Geração concluída no Kaggle:** 111 de 111 respostas válidas (Qwen3 8B, média de 36,8 s). Os guardrails não bloquearam nenhuma; 79 deixam a maioria das frases jurídicas sem `[Fonte N]`. Notebook `avaliacao/notebooks/03_integracao/03_geracao.ipynb`.
 - **Guardrail corrigido:** `sem_fontes` reprovava as respostas fixas de recusa; agora vale só para ações com busca. A concordância com a revisora continua 9 de 9.
 - **Fallback (LLM B = Llama 3.1 8B):** `geracao.gerar_com_fallback` (tempo real) e `escolher_resposta` (lote). Gatilhos: falha técnica ou guardrail bloqueante; se a B falhar, resposta segura. Não foi acionado nesta rodada. O Llama gerou as mesmas 111 respostas para comparação: todas válidas, 22,8 s em média, mas cita menos as fontes (2,3 × 3,6 citações por resposta).
 - **Juiz:** o Gemma 3 12B foi descartado (aprovou as 3 respostas que a revisora reprovou). O **Gemma 3 27B** (2 GPUs T4) com a regra fixa `juiz.veredito_regra` acertou 8 de 9 e detectou as 3 reprovadas, mas parte das notas contradiz a justificativa. Adotado com cautela; falta validar com 20–30 respostas novas rotuladas por pessoa.
-- **Sem a pasta `avaliacao_09`** nesta máquina: as referências da curadoria vêm de `data/evaluation/legislacao/perguntas_consolidadas_pre09.csv` (cópia de um backup antigo, fora do Git; só as FAQ têm resposta).
+- **Sem a pasta `avaliacao_09`** nesta máquina: as referências da curadoria vêm de `avaliacao/dados/legislacao/perguntas_consolidadas_pre09.csv` (cópia de um backup antigo, fora do Git; só as FAQ têm resposta).
 - **Mac:** `.venv` com Python 3.14, token do Kaggle em `~/.kaggle/access_token`. O executor de notebooks agora aceita o estado gravado com caminhos do Windows.
 
 ## O que está pronto
 
 | Etapa | Onde | Situação |
 |---|---|---|
-| Recuperação conjunta | `notebooks/03_integracao/01_recuperacao_conjunta.ipynb`, `src/integracao/recuperacao.py` | concluída |
-| Guardrails de entrada e saída | `notebooks/03_integracao/02_guardrails.ipynb`, `src/integracao/guardrails.py` | concluída |
-| Geração estruturada (Qwen3 8B) | `src/integracao/geracao.py`, `scripts/*geracao*`, `notebooks/03_integracao/03_geracao.ipynb` | integração v2 em validação; saídas em `geracao_v2` |
-| Juiz (Gemma 3 27B) | `src/integracao/juiz.py`, `scripts/*juiz*`, `reports/integracao/juiz/*_27b*.csv` | avaliação histórica importada; falta validação humana adicional |
-| Sistema multiagentes | `src/multiagentes/`, `notebooks/04_multiagentes/` | implementação e testes recebidos da branch remota |
-| Buscador local | `src/multiagentes/buscador_local.py`, `scripts/consultar_buscador_local.py` | busca local implementada; avaliação jurídica não substituída |
+| Recuperação conjunta | `avaliacao/notebooks/03_integracao/01_recuperacao_conjunta.ipynb`, `worker/evidencia/recuperador.py` | concluída |
+| Guardas de entrada e saída | `avaliacao/notebooks/03_integracao/02_guardrails.ipynb`, `worker/evidencia/guardas.py` | concluída |
+| Geração estruturada (Qwen3 8B) | `worker/evidencia/explicador.py`, `avaliacao/scripts/`, `avaliacao/notebooks/03_integracao/03_geracao.ipynb` | integração v2 em validação; saídas em `dados/output/kaggle/geracao_v2/` |
+| Juiz (Gemma 3 27B) | `avaliacao/juiz.py`, `avaliacao/scripts/`, `dados/relatorios/integracao/juiz/` | avaliação histórica importada; falta validação humana adicional |
+| Sistema multiagentes | `worker/evidencia/langgraph/`, `avaliacao/notebooks/04_multiagentes/` | implementação e testes recebidos da branch remota |
+| Buscador local | `worker/evidencia/langgraph/buscador_local.py`, `worker/evidencia/scripts/consultar_buscador_local.py` | busca local implementada; avaliação jurídica não substituída |
 
 ## Resultados e decisões
 
@@ -88,7 +96,7 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
 - **Volume:** 137 perguntas da base.
   - 111 vão para a LLM: 99 `responder` e 12 `orientar_sem_aconselhar`.
   - 26 recebem resposta fixa, sem LLM: institucional, consulta individual, fora do escopo e outra jurisdição.
-- **Prompt de sistema:** `SYSTEM_PROMPT_LEGAL` do grupo, sem alteração (`src/integracao/prompt_juridico.py`).
+- **Prompt de sistema:** os prompts são carregados pelo módulo `worker/evidencia/prompts.py`.
 
 ### Juiz e Avaliação Final
 
@@ -100,9 +108,9 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
 
 ## Comandos executados
 
-1. Geração importada e validada via `scripts/importar_geracao_kaggle.py`.
-2. Julgamento importado e cruzado via `scripts/importar_juiz_kaggle.py`.
-3. Notebooks 03 e 04 gerados e executados via `scripts/executar_notebook_integracao.py`.
+1. Geração importada e validada via `avaliacao/scripts/importar_geracao_kaggle.py`.
+2. Julgamento importado e cruzado via `avaliacao/scripts/importar_juiz_kaggle.py`.
+3. Notebooks 03 e 04 gerados e executados via `avaliacao/scripts/executar_notebook_integracao.py`.
 
 Como o contrato mudou, esses resultados históricos não validam a saída estruturada v2. Antes de concluir uma nova avaliação, executar novamente os fluxos v2 e revisar manualmente respostas amostradas; não enviar dados sensíveis para repositórios públicos.
 
@@ -110,16 +118,16 @@ Use caminhos absolutos no `kaggle datasets create` e no `kaggle kernels push`. C
 
 ## Atualização do fluxo de geração (v2)
 
-O fluxo agora prepara novas execuções em `output/kaggle/geracao_v2/` e `output/kaggle/juiz_v2/`. Os dados antigos em `output/kaggle/geracao/` e `output/kaggle/juiz/` não são sobrescritos. Os datasets e kernels Kaggle usam sufixo `-v2`.
+O fluxo agora prepara novas execuções em `dados/output/kaggle/geracao_v2/` e `dados/output/kaggle/juiz_v2/`. Os dados antigos em `dados/output/kaggle/geracao/` e `dados/output/kaggle/juiz/` não são sobrescritos. Os datasets e kernels Kaggle usam sufixo `-v2`.
 
-- **Stracting:** `src/integracao/stracting.py` extrai fatos explicitamente mencionados e classifica a intenção (`CALCULO`, `PRESCRICAO`, `TRIAGEM` ou `CONSULTA_JURIDICA`). A classificação é determinística, não executa cálculos e não substitui os guardrails. Fatos ambíguos ou ausentes não são completados.
+- **Stracting:** `worker/evidencia/stracting.py` extrai fatos explicitamente mencionados e classifica a intenção (`CALCULO`, `PRESCRICAO`, `TRIAGEM` ou `CONSULTA_JURIDICA`). A classificação é determinística, não executa cálculos e não substitui os guardrails. Fatos ambíguos ou ausentes não são completados.
 - **Saída estruturada:** os pedidos para o modelo de geração solicitam JSON Schema com `resposta_direta`, `fundamentacao` e `ressalvas`. A importação valida chaves e tipos antes de renderizar o texto para os guardrails de saída.
-- **Janela de contexto:** `src/integracao/context_window.py` estima tokens com `cl100k_base`, aplica margem de 25% e reserva 1.200 tokens para geração (2.500 para o juiz) e 512 para segurança dentro do `num_ctx` de 16.384. A estimativa não é o tokenizer exato do Qwen/Gemma. Se o limite estimado for excedido, o pedido não é truncado nem enviado; fica marcado como erro de contexto. O fluxo atual é de uma pergunta por pedido, sem histórico de conversa para janela deslizante.
+- **Janela de contexto:** `worker/evidencia/context_window.py` estima tokens com `cl100k_base`, aplica margem de 25% e reserva 1.200 tokens para geração (2.500 para o juiz) e 512 para segurança dentro do `num_ctx` de 16.384. A estimativa não é o tokenizer exato do Qwen/Gemma. Se o limite estimado for excedido, o pedido não é truncado nem enviado; fica marcado como erro de contexto. O fluxo atual é de uma pergunta por pedido, sem histórico de conversa para janela deslizante.
 - **Observabilidade:** preparação, inferência e validação registram duração, contagem de tokens, tentativas, status e tipo de erro. Os registros usam hash do identificador da pergunta e não incluem pergunta, prompt, fontes ou resposta.
 - **Prompt caching:** não foi adicionado cache de respostas do agente. O cache existente de julgamentos idênticos do juiz foi mantido.
 - **Escopo deliberado:** tool calling e cálculos automáticos do agente não foram migrados. Perguntas identificadas como cálculo recebem instrução para não estimar valores individualizados e para explicitar fatos faltantes.
 
-Como o contrato mudou, os resultados antigos em texto livre não servem como validação do novo schema. Para uma nova execução, use `scripts/preparar_geracao_kaggle.py`, o kernel configurado em `output/kaggle/geracao_v2/kernel/`, e depois `scripts/importar_geracao_kaggle.py`. A avaliação atualizada do juiz usa os artefatos v2 correspondentes.
+Como o contrato mudou, os resultados antigos em texto livre não servem como validação do novo schema. Para uma nova execução, use `avaliacao/scripts/preparar_geracao_kaggle.py`, o kernel configurado em `dados/output/kaggle/geracao_v2/kernel/`, e depois `avaliacao/scripts/importar_geracao_kaggle.py`. A avaliação atualizada do juiz usa os artefatos v2 correspondentes.
 
 ## Para retomar em outra máquina
 
@@ -131,7 +139,7 @@ Os itens abaixo não estão no GitHub e precisam ser recriados ou copiados.
   - criar as visões lexicais com `Recuperador.preparar_lexico()`.
 - **Modelos do Hugging Face** em cache local: `BAAI/bge-m3` (revisão `5617a9f`) e `BAAI/bge-reranker-v2-m3`.
 - **Token do Kaggle** em `~/.kaggle`.
-- **Pedidos e respostas antigos** em `output/kaggle/geracao/` e `output/kaggle/juiz/`; novos artefatos estruturados ficam em `output/kaggle/geracao_v2/` e `output/kaggle/juiz_v2/`. Todos estão fora do Git porque podem conter trechos de decisões e perguntas protegidas.
+- **Pedidos e respostas antigos** em `dados/output/kaggle/geracao/` e `dados/output/kaggle/juiz/`; novos artefatos estruturados ficam em `dados/output/kaggle/geracao_v2/` e `dados/output/kaggle/juiz_v2/`. Todos estão fora do Git porque podem conter trechos de decisões e perguntas protegidas.
   - Os pedidos novos são destinados aos datasets privados `laisapaiva93/lexia-geracao-pedidos-v2` e `laisapaiva93/lexia-juiz-pedidos-v2`.
 - **Histórico da branch remota:** datasets privados antigos `lexia-geracao-pedidos`, `lexia-juiz-27b-pedidos` e `lexia-juiz-27b-llama-pedidos`; novos datasets usam nomes com sufixo `-v2`.
 - **Regra do repositório:** commits sem a linha de atribuição do Claude.
