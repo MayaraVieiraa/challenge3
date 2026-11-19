@@ -23,8 +23,8 @@ MODELO_EMBEDDINGS = 'BAAI/bge-m3'
 REVISAO_EMBEDDINGS = '5617a9f61b028005a4858fdac845db406aefb181'
 VERSAO_CACHE = 'buscador-local-v1'
 BASE_RELATIVA = Path('dados/processed/legislacao/legislacao_artigos_completos.json')
-BASE_ALTERNATIVA = Path('dados/processed/legislacao/legislacao_artigos_completos.json')
-ROOT = Path(__file__).resolve().parents[2]
+BASE_ALTERNATIVA = Path('data/processed/legislacao/legislacao_artigos_completos.json')
+ROOT = Path(__file__).resolve().parents[3]
 _CAMPOS_TEXTO = ('caminho_relativo', 'identificador_artigo', 'caminho_hierarquico',
                  'status_declarado', 'source', 'date', 'retrieved', 'sha256_fonte')
 
@@ -35,14 +35,14 @@ def _json(valor):
 
 
 def resolver_corpus(root=None):
-    """Prefere o caminho da issue; aceita a estrutura ``data/`` deste checkout."""
+    """Prefere o layout atual e aceita ``data/`` como caminho legado."""
     root = Path(root) if root is not None else ROOT
     for relativo in (BASE_RELATIVA, BASE_ALTERNATIVA):
         caminho = root / relativo
         if caminho.is_file():
             return caminho
     raise FileNotFoundError(
-        'Base de legislação ausente em dados/processed/ ou dados/processed/. '
+        'Base de legislação ausente em dados/processed/ ou data/processed/. '
         'Informe o caminho do JSON; em um clone com DVC configurado, obtenha os dados com dvc pull.'
     )
 
