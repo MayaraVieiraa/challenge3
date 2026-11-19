@@ -154,7 +154,8 @@ def verificar_entrada(pergunta):
 
 
 # --- saída ------------------------------------------------------------------------------------------------------
-CITACAO = re.compile(r'\[?\(?Fonte\s+(\d+)\)?\]?', re.IGNORECASE)
+CITACAO = re.compile(r'\[?\(?Fonte\s*(\d+)\)?\]?', re.IGNORECASE)
+CITACOES_POSPOSTAS = re.compile(r'(?:(?:\[Fonte[ \t]*\d+\]|\(Fonte[ \t]*\d+\))[ \t]*)+', re.IGNORECASE)
 ARTIGO = re.compile(r'\bart(?:igo)?\.?\s*(\d+(?:-[A-Z])?)(?:\s*[ºo°])?', re.IGNORECASE)
 PARAGRAFO = re.compile(r'§\s*(\d+)\s*[ºo°]?|par[áa]grafo\s+([úu]nico|\d+)', re.IGNORECASE)
 CAPUT = re.compile(r'\bcaput\b', re.IGNORECASE)
@@ -190,9 +191,27 @@ def _artigos_nas_fontes(fontes):
 
 
 def frases(texto):
-    """Divide em frases sem quebrar em abreviações jurídicas ('Art. 73', 'nº', 'inc.')."""
+    """Preserva abreviações jurídicas e associa citações após a pontuação à frase anterior.
+
+    Apenas o bloco inicial de citações é anexado, dentro do mesmo parágrafo.
+    O texto que vier depois dele continua sendo outra frase, sem herdar fontes.
+    """
     protegido = ABREVIACOES.sub(lambda m: m.group(1) + '․', texto)
-    return [f.replace('․', '.') for f in re.split(r'(?<=[.!?:])\s+|\n+', protegido) if len(f.strip()) > 20]
+    partes = []
+    for paragrafo in re.split(r'\r?\n[ \t]*\r?\n', protegido):
+        frases_paragrafo = []
+        for parte in re.split(r'(?<=[.!?:])\s+|\n+', paragrafo):
+            parte = parte.strip()
+            if (frases_paragrafo and frases_paragrafo[-1].endswith(('.', '!', '?'))
+                    and not re.fullmatch(r'\d+\.', frases_paragrafo[-1])):
+                citacoes = CITACOES_POSPOSTAS.match(parte)
+                if citacoes:
+                    frases_paragrafo[-1] += ' ' + citacoes.group().rstrip()
+                    parte = parte[citacoes.end():].strip()
+            if parte:
+                frases_paragrafo.append(parte)
+        partes.extend(frases_paragrafo)
+    return [f.replace('․', '.') for f in partes if len(f) > 20]
 
 
 def _normaliza_artigo(valor):

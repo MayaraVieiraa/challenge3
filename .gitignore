@@ -75,6 +75,14 @@ Desktop.ini
 /output/kaggle/fallback/
 /output/kaggle/juiz_llama/
 
+# Evidências e mensagens das execuções multiagentes; podem conter dados privados.
+/output/multiagentes/
+/output/kaggle/multiagentes/
+
+# Corpus obtido por DVC na estrutura da equipe e cache semântico local.
+/dados/processed/
+/dados/output/
+
 # Perguntas e evidências locais de jurisprudência; publicar apenas esquema/documentação.
 /data/evaluation/jurisprudencia/perguntas_suporte.jsonl
 /data/evaluation/jurisprudencia/candidatas_legislacao/

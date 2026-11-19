@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="920" viewBox="0 0 1320 920" role="img" aria-labelledby="titulo descricao">
+  <title id="titulo">Arquitetura proposta: dois agentes especializados do lex_clt.ai</title>
+  <desc id="descricao">O orquestrador aplica o controle de entrada e encaminha a pergunta ao Analista. O Analista consulta a ferramenta de busca e produz uma resposta. Os guardrails preparam o candidato e o Validador aprova, pede uma revisão ou informa insuficiência. O fluxo mantém um histórico por execução.</desc>
+  <defs>
+    <marker id="seta" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#516274"/></marker>
+    <marker id="setaRevisao" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#a64b0b"/></marker>
+    <style>
+      text{font-family:Arial,Helvetica,sans-serif;fill:#183246}
+      .titulo{font-size:31px;font-weight:700}
+      .subtitulo{font-size:18px;fill:#516274}
+      .rotulo{font-size:22px;font-weight:700}
+      .detalhe{font-size:18px}
+      .linha{fill:none;stroke:#516274;stroke-width:2.5}
+      .caixa{stroke:#c8d3db;stroke-width:1.5;fill:#fff}
+      .agente{stroke:#198174;stroke-width:2;fill:#edf8f4}
+      .nota{font-size:17px;fill:#516274}
+    </style>
+  </defs>
+  <rect width="1320" height="920" fill="#f5f8fa"/>
+  <text class="titulo" x="48" y="55">lex_clt.ai · primeiro sistema multiagentes</text>
+  <text class="subtitulo" x="48" y="88">Proposta de execução · Analista + Validador · uma revisão máxima</text>
+  <rect class="caixa" x="465" y="120" width="390" height="68" rx="12"/>
+  <text class="rotulo" x="660" y="163" text-anchor="middle">Pergunta do usuário</text>
+  <path class="linha" d="M660 188V222"/>
+  <rect class="caixa" x="415" y="225" width="490" height="86" rx="12"/>
+  <text class="rotulo" x="660" y="260" text-anchor="middle">Orquestrador LangGraph · Python</text>
+  <text class="detalhe" x="660" y="288" text-anchor="middle">Estado, orçamento e guardrail de entrada</text>
+  <path class="linha" d="M415 268H350"/>
+  <rect class="caixa" x="40" y="225" width="305" height="86" rx="12"/>
+  <text class="rotulo" x="192" y="260" text-anchor="middle">Resposta fixa</text>
+  <text class="detalhe" x="192" y="288" text-anchor="middle">Ações previstas sem busca</text>
+  <path class="linha" d="M660 311V354"/>
+  <rect class="agente" x="430" y="357" width="460" height="112" rx="12"/>
+  <text class="rotulo" x="660" y="392" text-anchor="middle">Agente Analista · Qwen3 8B</text>
+  <text class="detalhe" x="660" y="421" text-anchor="middle">Escolhe consulta, redige e revisa</text>
+  <text class="detalhe" x="660" y="447" text-anchor="middle">Explicação acessível com fontes</text>
+  <path class="linha" d="M890 389H947"/>
+  <path class="linha" d="M947 438H890"/>
+  <rect class="caixa" x="950" y="357" width="330" height="112" rx="12"/>
+  <text class="rotulo" x="1115" y="392" text-anchor="middle">Ferramenta de busca</text>
+  <text class="detalhe" x="1115" y="421" text-anchor="middle">Legislação + jurisprudência</text>
+  <text class="detalhe" x="1115" y="447" text-anchor="middle">pgvector · fontes congeladas</text>
+  <path class="linha" d="M660 469V511"/>
+  <rect class="caixa" x="430" y="514" width="460" height="80" rx="12"/>
+  <text class="rotulo" x="660" y="548" text-anchor="middle">Preparar texto candidato</text>
+  <text class="detalhe" x="660" y="575" text-anchor="middle">Guardrails, mascaramento e aviso</text>
+  <path class="linha" d="M660 594V637"/>
+  <rect class="agente" x="430" y="640" width="460" height="110" rx="12"/>
+  <text class="rotulo" x="660" y="676" text-anchor="middle">Agente Validador · Gemma 3 12B</text>
+  <text class="detalhe" x="660" y="705" text-anchor="middle">Confere o candidato e as mesmas fontes</text>
+  <text class="detalhe" x="660" y="731" text-anchor="middle">Aprova, pede revisão ou limita</text>
+  <path d="M430 693H292V413H430" fill="none" stroke="#a64b0b" stroke-width="2.5"/>
+  <text x="272" y="552" text-anchor="middle" transform="rotate(-90 272 552)" style="font-size:19px;fill:#a64b0b;font-weight:700">Feedback · no máximo uma revisão</text>
+  <path class="linha" d="M570 750V784H342V805"/>
+  <path class="linha" d="M760 750V784H997V805"/>
+  <rect class="caixa" x="150" y="808" width="385" height="75" rx="12"/>
+  <text class="rotulo" x="342" y="840" text-anchor="middle">Resposta final com fontes</text>
+  <text class="detalhe" x="342" y="866" text-anchor="middle">Validador e controles aprovados</text>
+  <rect class="caixa" x="805" y="808" width="385" height="75" rx="12"/>
+  <text class="rotulo" x="997" y="840" text-anchor="middle">Resposta de limitação</text>
+  <text class="detalhe" x="997" y="866" text-anchor="middle">Sem suporte ou falha persistente</text>
+  <rect class="caixa" x="950" y="537" width="330" height="182" rx="12" stroke-dasharray="5 5"/>
+  <text class="rotulo" x="1115" y="573" text-anchor="middle">Registro por execução</text>
+  <text class="detalhe" x="1115" y="608" text-anchor="middle">Consulta e fontes</text>
+  <text class="detalhe" x="1115" y="637" text-anchor="middle">Rascunho, feedback e revisão</text>
+  <text class="detalhe" x="1115" y="666" text-anchor="middle">Decisões, tempo e modelos</text>
+  <text class="nota" x="1115" y="695" text-anchor="middle">Sem raciocínio interno</text>
+  <path d="M1115 469V531" fill="none" stroke="#8b9aa6" stroke-width="2" stroke-dasharray="5 5"/>
+  <g fill="#516274">
+    <path d="M660 222L653 210H667Z"/>
+    <path d="M350 268L362 261V275Z"/>
+    <path d="M660 354L653 342H667Z"/>
+    <path d="M947 389L935 382V396Z"/>
+    <path d="M890 438L902 431V445Z"/>
+    <path d="M660 511L653 499H667Z"/>
+    <path d="M660 637L653 625H667Z"/>
+    <path d="M342 805L335 793H349Z"/>
+    <path d="M997 805L990 793H1004Z"/>
+    <path d="M1115 531L1108 519H1122Z"/>
+  </g>
+  <path d="M430 413L418 406V420Z" fill="#a64b0b"/>
+</svg>
