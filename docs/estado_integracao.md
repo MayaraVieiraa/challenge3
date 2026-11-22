@@ -2,6 +2,48 @@
 
 Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-22.
 
+**Próximos passos, em ordem:**
+1. Notebook 06 de correções em `03_integracao`. Começar pelo teste do contexto ideal: montar à mão o contexto de 5 respostas reprovadas pelo advogado (q09_p1_JUS-007, JUS-018, juris_017, JUS-001, JUS-043) e gerar de novo, para separar falha de recuperação de falha de geração.
+2. Critérios novos do juiz, detectáveis por regra: norma citada fora das fontes, lei sustentada só por acórdão, resposta normativa sem `[Fonte N]`. Junto, a regra de citação no prompt e o validador depois da geração.
+3. Base de precedentes (`notebooks/05_precedentes/`), quando a usuária enviar os documentos do TST.
+4. Teste de cotas de entrega (2+2 × 3+3 × 5+5) e repetir básico + decisões × híbrido nas 111 perguntas.
+
+## Atualização de 2026-11-22 (Windows): validação com advogado revisor e notebook 04
+
+Um advogado revisor avaliou às cegas 25 das 111 respostas do Qwen (sorteadas com semente fixa: 15 aprovadas e 10 reprovadas pela regra), numa página local gerada por `scripts/montar_revisao_juiz_html.py`. Ele não viu nada do juiz. O notebook `notebooks/03_integracao/04_avaliacao.ipynb` foi reescrito com o juiz 27B e as seções novas 7 (validação com especialista), 8 (diagnóstico) e 9 (por onde corrigir). Commit `64851a0`.
+
+| | Advogado | Regra fixa | Veredito do modelo |
+|---|---|---|---|
+| Aprovadas (de 25) | 0 | 15 | 25 |
+| Concordância com o advogado | — | 10 de 25 (40%) | 0 de 25 |
+
+- **Vereditos:** 15 foram marcados na página. Os outros 10 foram lidos nas observações (`INFERIDO` no importador), e 4 dessas leituras são incertas. Só com as 15 marcadas, a regra concorda em 5.
+- **Leitura:** o juiz é brando diante de um especialista. A aprovação do juiz (67 de 111 pela regra) deve ser lida como um teto otimista. O veredito do próprio modelo fica descartado de vez. Como não houve nenhuma aprovação humana, não se mede se a regra reprova respostas boas.
+- **Cuidados:** os critérios são diferentes. O juiz confere contra as fontes e a referência; o advogado, contra o direito inteiro. Há um revisor só, e as observações têm sinais de apoio de IA (restos de citação de sites; a observação da FAQ13 trata de outro assunto). Vale pedir ao revisor que confirme os 10 vereditos em branco.
+- **Diagnóstico** (classificação manual das 25 observações, em `DIAGNOSTICO` no importador):
+  - geração em 24 respostas: citação errada 18, regra distorcida 17, conteúdo de memória 11, abertura contraditória 7, escopo ou fonte ignorada 5;
+  - recuperação em 19: fonte por palavra solta 14, norma central ausente 13;
+  - corpus em 13: falta súmula ou tema do TST 8, fora do corpus ou produto 5.
+- **O juiz não enxerga essas falhas:** nas 11 respostas com conteúdo de memória, deu fidelidade média 2,00 e marcou afirmação sem apoio em só 3. Entre as 15 aprovadas pela regra, 10 têm citação errada.
+- **Marcação de fontes:** 28 das 111 respostas da geração (8 das 25) não têm nenhum `[Fonte N]`.
+- **Exemplo de falha de geração:** na pergunta do saque do FGTS (q09_p1_JUS-007), o art. 20-A, § 2º, II, da Lei 8.036 estava nas fontes e diz que o saque-aniversário não libera o saldo na demissão. A resposta omitiu essa regra e falou de "poupança digital", que não está nas fontes. Já o art. 20 chegou inteiro, com 16 mil caracteres, e a regra da rescisão ficou diluída.
+
+**Decisões da usuária nesta sessão:**
+
+- **Juiz:** continua o Gemma 3 27B com a regra fixa. Não testar o Llama como juiz. Na comparação como gerador, o Llama foi mais rápido (22,8 s × 36,8 s), mas pior: 66 × 44 reprovadas e correção 1,46 × 1,71.
+- **Número de fontes:** não reduzir para 1 fonte no contexto do modelo. O Hit@1 dos artigos é só 0,39–0,42, contra 0,58 de Hit@3. Exibir uma fonte principal ao usuário continua como opção. A cota deve ser ajustada por teste (2+2 × 3+3 × 5+5).
+- **Base de precedentes:** súmulas, OJs e temas de recursos repetitivos do TST vão para uma **terceira base**, `lex_precedentes`, e não para a de jurisprudência.
+  - **Teste de ranking com BGE-M3:** misturada aos 303 mil chunks de acórdãos, a súmula certa ficou além da 100ª posição em 4 de 5 perguntas. Os textos das súmulas foram digitados de memória, só para o teste.
+  - **Por que separar:** anexar também exigiria validar de novo o dataset congelado e quebraria a reprodutibilidade dos notebooks 01, 04 e 05.
+  - **Pasta:** `notebooks/05_precedentes/`, com 01 auditoria, 02 EDA, 03 limpeza e estruturação, 04 chunking, 05 embeddings e indexação, 06 avaliação da recuperação. Não renumerar as pastas 03 e 04.
+  - **Aguardando:** a usuária vai procurar e enviar os documentos oficiais do TST, que vão em `data/raw/precedentes/`, como baixados.
+
+**Como reproduzir:**
+
+1. Colocar o JSON exportado pelo revisor (`avaliacao_respostas_marcacoes_<nome>.json`) em `output/integracao/revisao_juiz/`, pasta que fica fora do Git.
+2. Rodar `python scripts/importar_revisao_juiz.py`. Ele grava em `reports/integracao/juiz/` os arquivos `concordancia_humano_27b.csv`, `diagnostico_especialista_27b.csv` e `marcacao_fontes_geracao.csv`, só com identificadores, vereditos e marcações. O nome do revisor fica só no JSON.
+3. Rodar `python scripts/criar_notebook_integracao_04.py` e depois `python scripts/executar_notebook_integracao.py notebooks/03_integracao/04_avaliacao.ipynb`.
+
 ## Atualização de 2026-11-22 (Windows): notebook 05, comparação RAG × LLM
 
 `notebooks/03_integracao/05_comparacao_rag_llm.ipynb` é o validador e observador da qualidade: responde às 40 perguntas JUS da curadoria que seguem para a busca de cinco formas e mede todas com as mesmas métricas (recuperação, tríade do RAG e qualidade do LLM), com um painel de limites mínimos (validador) e o diagnóstico da etapa em que cada resposta reprovada falha (observador). Commit `53c8547`.
@@ -88,7 +130,10 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
 | Recuperação conjunta | `notebooks/03_integracao/01_recuperacao_conjunta.ipynb`, `src/integracao/recuperacao.py` | concluída |
 | Guardrails de entrada e saída | `notebooks/03_integracao/02_guardrails.ipynb`, `src/integracao/guardrails.py` | concluída |
 | Geração estruturada (Qwen3 8B) | `src/integracao/geracao.py`, `scripts/*geracao*`, `notebooks/03_integracao/03_geracao.ipynb` | integração v2 em validação; saídas em `geracao_v2` |
-| Juiz (Gemma 3 27B) | `src/integracao/juiz.py`, `scripts/*juiz*`, `reports/integracao/juiz/*_27b*.csv` | avaliação histórica importada; falta validação humana adicional |
+| Juiz (Gemma 3 27B) | `src/integracao/juiz.py`, `scripts/*juiz*`, `reports/integracao/juiz/*_27b*.csv` | validado com advogado revisor (25 respostas): concorda em 10 de 25, brando diante do especialista; faltam critérios novos detectáveis por regra |
+| Avaliação e diagnóstico (notebook 04) | `notebooks/03_integracao/04_avaliacao.ipynb`, `scripts/criar_notebook_integracao_04.py`, `scripts/importar_revisao_juiz.py` | concluída com juiz 27B, validação com especialista e prioridades de correção |
+| Correções (notebook 06) | `notebooks/03_integracao/06_correcoes.ipynb` (a criar) | planejado: teste do contexto ideal, critérios novos do juiz, regra de citação e validador |
+| Base de precedentes do TST | `notebooks/05_precedentes/` (a criar), schema `lex_precedentes` | planejada; aguardando os documentos oficiais |
 | Comparação RAG × LLM (notebook 05) | `notebooks/03_integracao/05_comparacao_rag_llm.ipynb`, `scripts/comparacao_rag_basico.py`, `reports/integracao/comparacao/` | concluída com 5 configurações; falta repetir básico + decisões × híbrido em mais perguntas |
 | Sistema multiagentes | `src/multiagentes/`, `notebooks/04_multiagentes/` | implementação e testes recebidos da branch remota |
 | Buscador local | `src/multiagentes/buscador_local.py`, `scripts/consultar_buscador_local.py` | busca local implementada; avaliação jurídica não substituída |
@@ -177,6 +222,7 @@ Os itens abaixo não estão no GitHub e precisam ser recriados ou copiados.
 - **Token do Kaggle** em `~/.kaggle`.
 - **Pedidos e respostas antigos** em `output/kaggle/geracao/` e `output/kaggle/juiz/`; novos artefatos estruturados ficam em `output/kaggle/geracao_v2/` e `output/kaggle/juiz_v2/`. Todos estão fora do Git porque podem conter trechos de decisões e perguntas protegidas.
   - Os pedidos novos são destinados aos datasets privados `laisapaiva93/lexia-geracao-pedidos-v2` e `laisapaiva93/lexia-juiz-pedidos-v2`.
+- **Revisão do advogado:** página e JSON exportado em `output/integracao/revisao_juiz/` (fora do Git, com as observações e o nome do revisor). Sem o JSON, o notebook 04 continua executável pelos resumos em `reports/integracao/juiz/`.
 - **Comparação do notebook 05:** pedidos e respostas em `output/kaggle/comparacao/` (fora do Git). Datasets privados `lexia-comparacao-{isolado,juiz,rag-basico,juiz-basico,rag-basico-jur,juiz-basico-jur}-pedidos`; o `importar` baixa as saídas dos kernels de mesmo nome.
 - **Histórico da branch remota:** datasets privados antigos `lexia-geracao-pedidos`, `lexia-juiz-27b-pedidos` e `lexia-juiz-27b-llama-pedidos`; novos datasets usam nomes com sufixo `-v2`.
 - **Regra do repositório:** commits sem a linha de atribuição do Claude.
