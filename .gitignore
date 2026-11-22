@@ -119,3 +119,5 @@ Desktop.ini
 # Correções (notebook 06): geração e julgamento com o prompt v3
 /output/kaggle/geracao_v3/
 /output/kaggle/juiz_v3*/
+# Geração v3.1: prompt v3 com regra 24 e legislação atualizada (EC 141/2026)
+/output/kaggle/geracao_v3_1/

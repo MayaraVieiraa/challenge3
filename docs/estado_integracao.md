@@ -8,6 +8,31 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
 3. Base de precedentes (`notebooks/05_docs_precedentes/`): 00 a 03 prontos (JSONL único com 1.493 registros); faltam 04 chunking, 05 embeddings e 06 avaliação.
 4. Teste de cotas de entrega (2+2 × 3+3 × 5+5) e repetir básico + decisões × híbrido nas 111 perguntas.
 
+## Atualização de 2026-11-22: geração v3 medida (notebook 06, seção 6)
+
+A geração `lexia-geracao-qwen3-v3` terminou: 111 de 111 respostas válidas, com média de 27 s por resposta. O hash de cada resposta confere com o do pedido v3. As respostas ficam em `output/kaggle/geracao_v3/resultados/`, fora do Git.
+
+| Validador v3 | v1 | v3 |
+|---|---|---|
+| Bloqueadas | 34 | 8 |
+| Norma fora das fontes | 14 | 4 (as 4 conferidas: erros reais) |
+| Sem [Fonte N] | 21 | 1 |
+| Lei sustentada só por decisão | 30 | 35 (ponto fraco que sobra) |
+| Abertura condicionada | 28 | 20 |
+
+- O CSV está em `reports/integracao/correcoes/validador_v3_respostas_v3.csv`.
+- **O juiz 27B nas respostas v3 fica para a usuária fazer depois.** Não rodar.
+- Os pedidos v3 usam a legislação antiga e as regras 16 a 23.
+
+**Geração v3.1 (`lexia-geracao-qwen3-v3-1`, notebook 06, seção 6b):**
+- **Configuração:** legislação `ec141_2026_notas` e prompt v3 com a regra 24. As decisões judiciais são as mesmas da v3.
+- **Controle:** a versão `original` reproduziu as fontes de legislação dos 111 pedidos.
+- **Script:** `scripts/preparar_geracao_v3_1.py`. As trocas estão em `reports/integracao/correcoes/geracao_v3_1_fontes_trocadas.csv`.
+- **Validador v3:** 13 bloqueadas, contra 8 na v3. É variação do modelo: só 1 resposta saiu idêntica à v3, e os bloqueios se cruzam (5 nas duas, 3 só na v3, 8 só na v3.1).
+- **Efeito da EC 141:** a legislação mudou em só 4 pedidos, e nenhum deles é sobre jornada.
+- **Pergunta 5x2 (FAQ40):** continua citando 44 h de memória, porque a busca não entrega o art. 7º da CF.
+- **Testes da EC 141 e da regra 24:** decisão da usuária (2026-11-22) de fazê-los depois, num conjunto maior de perguntas, junto do diagnóstico da busca por jornada semanal. Não criar testes avulsos antes disso.
+
 ## Atualização de 2026-11-22: legislação com a EC 141/2026 (jornada de 40 horas e dois dias de repouso)
 
 A Emenda Constitucional nº 141, de 16/10/2026, mudou o art. 7º da CF. A base de legislação **não foi sobrescrita**: foram criadas versões novas dos dois datasets, e as antigas continuam no banco.
