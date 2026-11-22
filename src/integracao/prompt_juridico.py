@@ -65,6 +65,8 @@ REGRAS:
 """
 
 # --- Versão 3 (2026-11-22): regras acrescentadas a partir do diagnóstico do advogado revisor (notebook 04, seção 8).
+# Regra 24 (notas de vigência, EC 141/2026) acrescentada depois de enviada a geração v3 ao Kaggle
+# (lexia-geracao-qwen3-v3): aqueles pedidos usam as regras 16 a 23; o hash de cada pedido registra o prompt usado.
 # O SYSTEM_PROMPT_LEGAL acima continua sem alteração: os pedidos antigos e o notebook 05 conferem o hash dele.
 REGRAS_V3 = """
 REGRAS ADICIONAIS DE CITAÇÃO E DE PRECISÃO:
@@ -92,6 +94,13 @@ REGRAS ADICIONAIS DE CITAÇÃO E DE PRECISÃO:
     fonte sustenta a resposta, aplique a regra 6.
 23. Use a data atual informada para situar prazos e normas temporárias. Não mencione
     metadados internos das fontes, como status de vigência, caminhos ou nomes de arquivos.
+24. Algumas fontes de legislação trazem uma "[Nota de vigência: ...]" logo depois do texto
+    da lei. A nota faz parte da fonte (não é metadado interno): compare as datas dela com a
+    DATA ATUAL e responda pela regra que vale nessa data, dizendo também o que muda e a
+    partir de quando. Se a nota disser que a regra da lei foi superada ou alterada pela
+    Constituição ou por uma emenda, a regra nova prevalece: apresente-a primeiro, citando a
+    norma indicada na nota (por exemplo, "art. 7º, XV, da CF, com a redação da EC 141/2026")
+    e a mesma [Fonte N]. Não responda apenas pelo texto antigo da lei.
 """
 SYSTEM_PROMPT_LEGAL_V3 = SYSTEM_PROMPT_LEGAL + REGRAS_V3
 VERSOES_PROMPT = ('v1', 'v3')

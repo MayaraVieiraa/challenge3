@@ -36,6 +36,18 @@ class TestPromptV3(unittest.TestCase):
         self.assertIn('Tipo de fonte: legislação', usuario)
         self.assertNotIn('in_force', usuario)
 
+    def test_v3_tem_regra_de_nota_de_vigencia(self):
+        self.assertIn('24. Algumas fontes de legislação trazem uma "[Nota de vigência', SYSTEM_PROMPT_LEGAL_V3)
+        self.assertNotIn('Nota de vigência', SYSTEM_PROMPT_LEGAL)
+
+    def test_cf_citada_a_partir_da_nota_nao_e_fora_das_fontes(self):
+        nota = ('Todo empregado tem direito ao repouso semanal remunerado de vinte e quatro horas consecutivas. '
+                '[Nota de vigência: a partir de 16/12/2026, o art. 7º, XV, da CF, na redação da Emenda Constitucional '
+                'nº 141, de 2026, assegura repouso semanal remunerado de 2 (dois) dias.]')
+        fontes = [dict(texto=nota, artigo_ref='Art. 1º', tipo='legislacao', caminho='leis/1949/lei-605-1949.md')]
+        resposta = 'A partir de 16/12/2026, o art. 7º, XV, da CF garante 2 dias de repouso semanal [Fonte 1].'
+        self.assertNotIn('norma_fora_das_fontes', codigos(resposta, fontes))
+
     def test_v3_exige_data(self):
         with self.assertRaises(ValueError):
             build_rag_prompt('O que é FGTS?', self.fontes, versao='v3')

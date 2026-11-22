@@ -21,8 +21,22 @@ import time
 
 import numpy as np
 
-LEGISLACAO_D = '036e49f3a30a99ea706fce9be2f8301aabf5817c81e9f700535753b046657313'  # D_paragrafo_completo
-LEGISLACAO_A = '508abda2246b7cc1db28bd9b0bf762bddfb2a5696f6681ec22e99b60108876f9'  # A_artigo
+# Versões da base de legislação (D_paragrafo_completo, A_artigo). As antigas continuam no banco para reproduzir os
+# notebooks publicados antes da atualização; a busca usa VERSAO_LEGISLACAO, salvo pedido explícito.
+VERSOES_LEGISLACAO = {
+    'original': ('036e49f3a30a99ea706fce9be2f8301aabf5817c81e9f700535753b046657313',
+                 '508abda2246b7cc1db28bd9b0bf762bddfb2a5696f6681ec22e99b60108876f9'),
+    # EC 141/2026: art. 7º da CF (jornada de 40 h progressiva e dois dias de repouso) + os 10 artigos da emenda.
+    # scripts/atualizar_legislacao_ec141.py; reports/legislacao/atualizacoes/ec_141_2026.json
+    'ec141_2026': ('2f1ab3f092e990cdf549adb0e825381dffd66aa0f5b1f7b3c4d557c3b2015299',
+                   '4cbd00716aff870627506f32993a01c8e9300915a7d6b2bf2b07f0456a793bcb'),
+    # ec141_2026 + notas de vigência: LC 150/2015 arts. 2º (44 h) e 16, Lei 605/1949 art. 1º e CLT arts. 67 e 385 (repouso de 24 h).
+    # scripts/atualizar_legislacao_notas_ec141.py; reports/legislacao/atualizacoes/ec_141_2026_notas.json
+    'ec141_2026_notas': ('dca7b51d5efa82bb000a427de92bd92aab4d162f9a7881a4d0ff9cad948692e5',
+                         'd61d07a50919f1f423b26726d22085519b17fb1429f858bbef12dd969179c62d'),
+}
+VERSAO_LEGISLACAO = 'ec141_2026_notas'
+LEGISLACAO_D, LEGISLACAO_A = VERSOES_LEGISLACAO[VERSAO_LEGISLACAO]  # D_paragrafo_completo, A_artigo
 MODELO = 'BAAI/bge-m3'
 REVISAO = '5617a9f61b028005a4858fdac845db406aefb181'
 RERANKER = 'BAAI/bge-reranker-v2-m3'
@@ -72,7 +86,8 @@ class Configuracao:
 
 
 class Recuperador:
-    def __init__(self, database_url, device='cpu', carregar_reranker=True, reranker_max_length=512):
+    def __init__(self, database_url, device='cpu', carregar_reranker=True, reranker_max_length=512,
+                 versao_legislacao=VERSAO_LEGISLACAO):
         os.environ.setdefault('HF_HUB_OFFLINE', '1')
         os.environ.setdefault('TRANSFORMERS_OFFLINE', '1')
         import psycopg
@@ -80,6 +95,8 @@ class Recuperador:
         from sentence_transformers import SentenceTransformer
         self.conexao = psycopg.connect(database_url, connect_timeout=10, autocommit=True)
         register_vector(self.conexao)
+        self.versao_legislacao = versao_legislacao
+        self.legislacao_d, self.legislacao_a = VERSOES_LEGISLACAO[versao_legislacao]
         self.dataset_jurisprudencia = self._dataset_jurisprudencia()
         self._df = {}   # frequência de documentos por (fonte, lexema), usada no IDF da busca lexical
         self.encoder = SentenceTransformer(MODELO, revision=REVISAO, device=device, local_files_only=True)
@@ -89,6 +106,16 @@ class Recuperador:
             from sentence_transformers import CrossEncoder
             self.reranker = CrossEncoder(RERANKER, max_length=reranker_max_length, device=device, local_files_only=True)
             self._max_length_original = self.reranker.max_length
+        if self._lexico_legislacao_de_outra_versao():
+            self.preparar_lexico()
+
+    def _lexico_legislacao_de_outra_versao(self):
+        """True se a visão lexical da legislação existe mas foi criada para outra versão (o comentário guarda o ID)."""
+        if not self.conexao.execute("SELECT to_regclass('lex_integracao.lexico_legislacao')").fetchone()[0]:
+            return False
+        comentario = self.conexao.execute(
+            "SELECT obj_description('lex_integracao.lexico_legislacao'::regclass, 'pg_class')").fetchone()[0]
+        return comentario != self.legislacao_d
 
     # --- preparação -------------------------------------------------------------------------------------
     def _dataset_jurisprudencia(self):
@@ -101,12 +128,17 @@ class Recuperador:
     def preparar_lexico(self):
         """Cria (uma vez) as visões materializadas e os índices GIN da busca lexical."""
         import re
-        ids = dict(d=LEGISLACAO_D, j=self.dataset_jurisprudencia)
+        ids = dict(d=self.legislacao_d, j=self.dataset_jurisprudencia)
         if not all(re.fullmatch(r'[0-9a-f]{64}', v) for v in ids.values()):
             raise ValueError('Identificador de dataset inválido.')
+        # A visão lexical da legislação é de uma versão só: se foi criada para outra, é recriada para a atual.
+        if self._lexico_legislacao_de_outra_versao():
+            self.conexao.execute('DROP MATERIALIZED VIEW lex_integracao.lexico_legislacao')
         # DDL não aceita parâmetros: os IDs, já validados como hexadecimais, entram como literais.
         for comando in filter(str.strip, DDL_LEXICO.split(';')):
             self.conexao.execute(comando.replace('%(d)s', f"'{ids['d']}'").replace('%(j)s', f"'{ids['j']}'"))
+        self.conexao.execute(f"COMMENT ON MATERIALIZED VIEW lex_integracao.lexico_legislacao IS '{ids['d']}'")
+        self._df.clear()
         contagens = {}
         for fonte in FONTES:
             contagens[fonte] = self.conexao.execute(f'SELECT count(*) FROM lex_integracao.lexico_{fonte}').fetchone()[0]
@@ -121,7 +153,7 @@ class Recuperador:
         if fonte == 'legislacao':
             sql = ('SELECT chunk_id FROM lex_clt.chunk_embeddings WHERE dataset_id=%s '
                    'ORDER BY embedding <=> %s, row_index LIMIT %s')
-            parametros = (LEGISLACAO_D, vetor, k)
+            parametros = (self.legislacao_d, vetor, k)
         else:
             sql = ('SELECT chunk_id FROM lex_jurisprudencia.embeddings WHERE dataset_id=%s '
                    'ORDER BY embedding <=> %s, chunk_id LIMIT %s')
@@ -189,7 +221,7 @@ class Recuperador:
         if por_fonte['legislacao']:
             for cid, art, texto, meta in self.conexao.execute(
                     'SELECT chunk_id, article_id, text_content, metadata FROM lex_clt.chunk_embeddings '
-                    'WHERE dataset_id=%s AND chunk_id = ANY(%s)', (LEGISLACAO_D, por_fonte['legislacao'])).fetchall():
+                    'WHERE dataset_id=%s AND chunk_id = ANY(%s)', (self.legislacao_d, por_fonte['legislacao'])).fetchall():
                 dados[('legislacao', cid)] = dict(texto=texto, unidade=art, metadata=meta)
         if por_fonte['jurisprudencia']:
             for cid, reg, texto, meta in self.conexao.execute(
@@ -201,7 +233,7 @@ class Recuperador:
     def artigos(self, article_ids):
         linhas = self.conexao.execute(
             'SELECT article_id, text_content, metadata FROM lex_clt.chunk_embeddings WHERE dataset_id=%s AND article_id = ANY(%s)',
-            (LEGISLACAO_A, list(article_ids))).fetchall()
+            (self.legislacao_a, list(article_ids))).fetchall()
         return {a: dict(texto=t, metadata=m) for a, t, m in linhas}
 
     def buscar(self, pergunta, config=None):

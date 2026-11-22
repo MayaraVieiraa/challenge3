@@ -5,8 +5,51 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
 **Próximos passos, em ordem:**
 1. Notebook 06 de correções em `03_integracao`. Começar pelo teste do contexto ideal: montar à mão o contexto de 5 respostas reprovadas pelo advogado (q09_p1_JUS-007, JUS-018, juris_017, JUS-001, JUS-043) e gerar de novo, para separar falha de recuperação de falha de geração.
 2. Critérios novos do juiz, detectáveis por regra: norma citada fora das fontes, lei sustentada só por acórdão, resposta normativa sem `[Fonte N]`. Junto, a regra de citação no prompt e o validador depois da geração.
-3. Base de precedentes (`notebooks/05_precedentes/`), quando a usuária enviar os documentos do TST.
+3. Base de precedentes (`notebooks/05_docs_precedentes/`): 00 a 03 prontos (JSONL único com 1.493 registros); faltam 04 chunking, 05 embeddings e 06 avaliação.
 4. Teste de cotas de entrega (2+2 × 3+3 × 5+5) e repetir básico + decisões × híbrido nas 111 perguntas.
+
+## Atualização de 2026-11-22: legislação com a EC 141/2026 (jornada de 40 horas e dois dias de repouso)
+
+A Emenda Constitucional nº 141, de 16/10/2026, mudou o art. 7º da CF. A base de legislação **não foi sobrescrita**: foram criadas versões novas dos dois datasets, e as antigas continuam no banco.
+
+| Versão (`VERSOES_LEGISLACAO` em `src/integracao/recuperacao.py`) | D_paragrafo_completo | A_artigo |
+|---|---|---|
+| `original` (notebooks publicados até aqui) | `036e49f3…` (10.971 trechos) | `508abda2…` (5.284) |
+| `ec141_2026` (**padrão da busca**) | `2f1ab3f0…` (10.983) | `4cbd0071…` (5.294) |
+
+**Trechos que mudaram:**
+- Art. 7º da CF:
+  - inciso XIII, com 8 horas diárias e 40 semanais e uma nota de vigência para a transição: 44 horas até 15/12/2026, 42 horas a partir de 16/12/2026 e 40 horas a partir de 16/12/2027;
+  - inciso XV, com dois dias de repouso a partir de 16/12/2026;
+  - o parágrafo único passou a ser o § 1º, e foram incluídos os §§ 2º e 3º.
+- Os 10 artigos da EC entraram como documento próprio (`constituicao/emendas/emc-141-2026.md`). Eles tratam de:
+  - irredutibilidade salarial;
+  - perda de efeito das cláusulas coletivas incompatíveis;
+  - transição;
+  - exceção para quem tem nível superior e salário alto (art. 8º);
+  - contratos públicos.
+
+**Como foi gerado:**
+- Só os trechos novos receberam embedding: BGE-M3, mesma revisão, sobre o texto completo, como na base original.
+- Os demais trechos foram copiados com o mesmo vetor.
+
+**Onde está registrado:**
+- Script: `scripts/atualizar_legislacao_ec141.py`. Ele é idempotente; `--verificar` confere os hashes.
+- Transcrição: `data/atualizacoes_legislacao/ec_141_2026/ec_141_2026.md`. O PDF do Planalto é só imagem, por isso a transcrição foi manual.
+- Relatório: `reports/legislacao/atualizacoes/ec_141_2026.json`.
+
+**Atenção:**
+- **A visão lexical acompanha a versão:** `lex_integracao.lexico_legislacao` guarda o ID do dataset no comentário. O `Recuperador` recria a visão quando a versão muda. Para reproduzir um notebook antigo, use `Recuperador(..., versao_legislacao='original')`.
+- **A geração v3 que está no Kaggle não muda:** ela foi preparada com as fontes antigas, nos pedidos já montados. Por isso fica comparável com a v1.
+- **Notas de vigência (versão `ec141_2026_notas`, padrão da busca desde 2026-11-22):**
+- **Datasets:** D `dca7b51d…` e A `d61d07a5…`, criados por `scripts/atualizar_legislacao_notas_ec141.py`. As notas ficam em `reports/legislacao/atualizacoes/ec_141_2026_notas.json`.
+- **Onde há nota:**
+  - LC 150/2015, art. 2º: transição de 44, 42 e 40 horas para os domésticos, pelo § 1º do art. 7º da CF;
+  - Lei 605/1949, art. 1º, LC 150/2015, art. 16 e CLT, arts. 67 e 385: 2 dias de repouso a partir de 16/12/2026, no lugar das 24 horas.
+- **Como a nota funciona:** o texto da lei não muda. A nota vem entre colchetes logo depois do dispositivo e cita "art. 7º, XIII/XV, da CF", para que o validador v3 aceite a citação da CF feita a partir dela.
+- **Prompt v3:** ganhou a **regra 24**. O modelo deve usar a nota, comparar com a DATA ATUAL e apresentar primeiro a regra nova.
+  - A geração v3 já enviada ao Kaggle usou as regras 16 a 23.
+- **Teste de ponta a ponta:** nas perguntas sobre jornada dos domésticos, repouso de 24 horas e folgas da doméstica, todos os artigos com a regra antiga chegaram com a nota.
 
 ## Atualização de 2026-11-22 (Windows): validação com advogado revisor e notebook 04
 
@@ -35,7 +78,7 @@ Um advogado revisor avaliou às cegas 25 das 111 respostas do Qwen (sorteadas co
 - **Base de precedentes:** súmulas, OJs e temas de recursos repetitivos do TST vão para uma **terceira base**, `lex_precedentes`, e não para a de jurisprudência.
   - **Teste de ranking com BGE-M3:** misturada aos 303 mil chunks de acórdãos, a súmula certa ficou além da 100ª posição em 4 de 5 perguntas. Os textos das súmulas foram digitados de memória, só para o teste.
   - **Por que separar:** anexar também exigiria validar de novo o dataset congelado e quebraria a reprodutibilidade dos notebooks 01, 04 e 05.
-  - **Pasta:** `notebooks/05_precedentes/`, com 01 auditoria, 02 EDA, 03 limpeza e estruturação, 04 chunking, 05 embeddings e indexação, 06 avaliação da recuperação. Não renumerar as pastas 03 e 04.
+  - **Pasta:** `notebooks/05_docs_precedentes/`, com 01 auditoria, 02 EDA, 03 limpeza e estruturação, 04 chunking, 05 embeddings e indexação, 06 avaliação da recuperação. Não renumerar as pastas 03 e 04.
   - **Aguardando:** a usuária vai procurar e enviar os documentos oficiais do TST, que vão em `data/raw/precedentes/`, como baixados.
 
 **Como reproduzir:**
@@ -133,7 +176,7 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
 | Juiz (Gemma 3 27B) | `src/integracao/juiz.py`, `scripts/*juiz*`, `reports/integracao/juiz/*_27b*.csv` | validado com advogado revisor (25 respostas): concorda em 10 de 25, brando diante do especialista; faltam critérios novos detectáveis por regra |
 | Avaliação e diagnóstico (notebook 04) | `notebooks/03_integracao/04_avaliacao.ipynb`, `scripts/criar_notebook_integracao_04.py`, `scripts/importar_revisao_juiz.py` | concluída com juiz 27B, validação com especialista e prioridades de correção |
 | Correções (notebook 06) | `notebooks/03_integracao/06_correcoes.ipynb` (a criar) | planejado: teste do contexto ideal, critérios novos do juiz, regra de citação e validador |
-| Base de precedentes do TST | `notebooks/05_precedentes/` (a criar), schema `lex_precedentes` | planejada; aguardando os documentos oficiais |
+| Base de precedentes do TST | `notebooks/05_docs_precedentes/` (a criar), schema `lex_precedentes` | planejada; aguardando os documentos oficiais |
 | Comparação RAG × LLM (notebook 05) | `notebooks/03_integracao/05_comparacao_rag_llm.ipynb`, `scripts/comparacao_rag_basico.py`, `reports/integracao/comparacao/` | concluída com 5 configurações; falta repetir básico + decisões × híbrido em mais perguntas |
 | Sistema multiagentes | `src/multiagentes/`, `notebooks/04_multiagentes/` | implementação e testes recebidos da branch remota |
 | Buscador local | `src/multiagentes/buscador_local.py`, `scripts/consultar_buscador_local.py` | busca local implementada; avaliação jurídica não substituída |

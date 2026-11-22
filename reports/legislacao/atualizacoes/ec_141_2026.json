@@ -1,0 +1,128 @@
+{
+  "atualizacao": "ec_141_2026",
+  "norma": "Emenda Constitucional nº 141, de 16/10/2026",
+  "versoes": {
+    "D_paragrafo_completo": {
+      "dataset_id": "2f1ab3f092e990cdf549adb0e825381dffd66aa0f5b1f7b3c4d557c3b2015299",
+      "base_dataset_id": "036e49f3a30a99ea706fce9be2f8301aabf5817c81e9f700535753b046657313",
+      "trechos": 10983,
+      "trechos_base": 10971,
+      "substituidos": [
+        "9ee7ea8640234401d1d792b3f3b300c042c5ceb455a093b95097cb38e1e072f7",
+        "ccae4dfa7db984df0f517221aed2690305e403ab696e1b7eb7a53f567d99a384"
+      ],
+      "acrescentados": [
+        {
+          "chunk_id": "2f1717f669a6ae4c7f5719e9cef87a5564cca29bc29f17050b8d3b9fb6861a11",
+          "contexto": "[constituicao/constituicao-1988.md | TÍTULO II — Dos Direitos e Garantias Fundamentais > CAPÍTULO II — DOS DIREITOS SOCIAIS > Art. 7º > § 2º]"
+        },
+        {
+          "chunk_id": "ebd37b53b1f9f16a1d99a2981009bb2ebc01efaabfcb711ed2202c64c42620ad",
+          "contexto": "[constituicao/constituicao-1988.md | TÍTULO II — Dos Direitos e Garantias Fundamentais > CAPÍTULO II — DOS DIREITOS SOCIAIS > Art. 7º > § 3º]"
+        },
+        {
+          "chunk_id": "553a31dcadee39cf196fbfbd6ac6efb1c81276685b1fd7dda7b9dba3e5df5001",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 1º]"
+        },
+        {
+          "chunk_id": "bf914c832a90bf645c65bba54a8e355d290235a2911f58b44778c03499f906f9",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 2º]"
+        },
+        {
+          "chunk_id": "9b5567cc239606b8ffac993464963bf91f90fe7d7052db1bf735847017a8b873",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 3º]"
+        },
+        {
+          "chunk_id": "c8262f7b49dc18e248cfd11b5e05a981a837a24e38d1b9a45c229cf87dbed8c9",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 4º]"
+        },
+        {
+          "chunk_id": "c4f04cd4eca8564a9c95e7c22ed259aad19c35cd56ba3c1466fe0325d3791e77",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 5º]"
+        },
+        {
+          "chunk_id": "dc26aeaf1382af6e1456ca3dc979cb4a6502bbf4d54c97d3c496a1c566ca676c",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 6º]"
+        },
+        {
+          "chunk_id": "c45697159be11fc879c04946e5fa4f45c71cf60df0d3feca534a0e8d0312891c",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 7º]"
+        },
+        {
+          "chunk_id": "4b3cbff5ea67ce8f4ea8438f7a85c0e47030b0f010453ab84c1691cbf57c9bd6",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 8º]"
+        },
+        {
+          "chunk_id": "c269a1f4846f10881520fb3f8fd9c2e54de25ca15186bf80db42496ec3e1f8a4",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 9º]"
+        },
+        {
+          "chunk_id": "1649194853952bd17efb5c14957aa2aa94570e0e5c87789b5fe18766506b2c39",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 10]"
+        }
+      ],
+      "textos_sha256_ordem": "8a2626d7d1d5a92faf92c116d43a12bfe7514a94da35130b7e8eeaf523d6c6e3",
+      "vetores_sha256_ordem": "9fef12183146d3eeb7a4060c2fe802ea7bbc6a28cfa9068e4ccbdaebf6ed9510"
+    },
+    "A_artigo": {
+      "dataset_id": "4cbd00716aff870627506f32993a01c8e9300915a7d6b2bf2b07f0456a793bcb",
+      "base_dataset_id": "508abda2246b7cc1db28bd9b0bf762bddfb2a5696f6681ec22e99b60108876f9",
+      "trechos": 5294,
+      "trechos_base": 5284,
+      "substituidos": [
+        "cb1ef7ff56ef03edf10e30c78c2971b2a41e513fa132bfeadb3371db495ed6d2"
+      ],
+      "acrescentados": [
+        {
+          "chunk_id": "f7d370d80831c35f378ef5eb14fa61e28b4444f61c440fb1b61ce20421f410d7",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 1º]"
+        },
+        {
+          "chunk_id": "880399e14f895cf119bf00673241b93d304b9e3ed2d47b7b0cdbbce6cd820230",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 2º]"
+        },
+        {
+          "chunk_id": "c521f12204824338b5b4857d29bffd80f1107026acc7926f9a9887171652b767",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 3º]"
+        },
+        {
+          "chunk_id": "5fef6971558c99c0d96bc69c7dedd3d6ad09296bf978606824408ef1cb10a83f",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 4º]"
+        },
+        {
+          "chunk_id": "09fd29e75972d1d772bb7306e1a0b38720edac28cee25064d5472cedd4120863",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 5º]"
+        },
+        {
+          "chunk_id": "44c3f6ec78690e93737432553eb7fe561464c61cb5df92decf429e9b860c087e",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 6º]"
+        },
+        {
+          "chunk_id": "739567a64d32189ae94238a9d5093175e18009b12e0df58da637b8a354f95ee9",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 7º]"
+        },
+        {
+          "chunk_id": "e8ca564ea10c17ee839bd48b2c3c23188acb1a0f1881b2c32f7e3f7a5aee143b",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 8º]"
+        },
+        {
+          "chunk_id": "220348a219c4e5a3ca77c5bc31b7b64010eafaefdef306033dc210a098ea880d",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 9º]"
+        },
+        {
+          "chunk_id": "de7f40c8d23bc537f61a2ed7de9a2c5d154b60ed4aa2606fe2512882714e7a6f",
+          "contexto": "[constituicao/emendas/emc-141-2026.md | Emenda Constitucional nº 141, de 16 de outubro de 2026 > Art. 10]"
+        }
+      ],
+      "textos_sha256_ordem": "f8f3ec658db012794adce220ad1cba2f33eaa12ecdd2b7bedc7d6564d3a989ba",
+      "vetores_sha256_ordem": "1b4ee871269b3f3309e45a8d31fe38f89077cd7d273e6d2b1cc529ec3dbcdf8b"
+    }
+  },
+  "fonte": {
+    "norma": "Emenda Constitucional nº 141, de 16/10/2026",
+    "url": "https://planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc141.htm",
+    "transcricao": "data/atualizacoes_legislacao/ec_141_2026/ec_141_2026.md",
+    "transcricao_sha256": "966afc4d664d14a27e6f54f8d7fbd6916ccfbf29bf5731923d98b694e8ea92d7",
+    "pdf_sha256": "1be36f847ff928a001833ccc0c8930e53f8f7059a61dc9cc4adff3e6fb3fa96f"
+  }
+}
