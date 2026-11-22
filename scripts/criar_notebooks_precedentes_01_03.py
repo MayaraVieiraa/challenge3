@@ -80,8 +80,8 @@ Primeiro notebook da base de precedentes do TST. O `00_introducao_precedentes.ip
 | `01_auditoria_precedentes` | Este notebook | pronto |
 | `02_eda_precedentes` | Volume, tamanho, situação, estrutura e normas citadas | pronto |
 | `03_limpeza_estruturacao_precedentes` | Campos, vigência e o JSONL único | pronto |
-| `04_chunking_precedentes` | Um trecho por enunciado ou item | a fazer |
-| `05_embeddings_indexacao_precedentes` | BGE-M3 e schema `lex_precedentes` | a fazer |
+| `04_chunking_precedentes` | Um trecho por enunciado ou item, com cabeçalho (1.268 trechos) | pronto |
+| `05_embeddings_indexacao_precedentes` | BGE-M3 e schema `lex_precedentes` validado | pronto |
 | `06_avaliacao_recuperacao_precedentes` | Hit@k com o precedente esperado | a fazer |
 ''')
 n1.code('aud_setup', SETUP + r'''
@@ -529,12 +529,12 @@ Este notebook transforma os blocos brutos da auditoria num **JSONL único**, `da
 |---|---|
 | Linha quebrada e hifenização no fim da linha | Juntar as linhas. "jorna-\\nda" vira "jornada", e "ex-\\nSúmula" mantém o hífen |
 | Cabeçalho e rodapé de página ("SÚMULAS - TST", "SUMÁRIO") | Removidos já na extração |
-| Parêntese no título, como "(ART. 612 DA CLT)", e parêntese de situação, como "(cancelada)" | O parêntese em maiúsculas é parte do título. O primeiro em minúsculas é a situação |
+| Parêntese no título, como "(ART. 612 DA CLT)", e parêntese de situação, como "(cancelada)" | O parêntese em maiúsculas é parte do título. Os símbolos "º" e "ª" não contam como minúscula. Os parênteses de situação são lidos em sequência, porque às vezes há dois seguidos, como "(nova redação) ... (cancelada)", e o último é o que vale. Um parêntese só com a publicação, como "(DEJT ...)", não é situação |
 | Publicação ("- Res. 129/2005, DJ 20, 22 e 25.04.2005") | Retirada do enunciado |
 | Histórico de redações | Campo `historico`, fora do texto de busca |
 | Notas remissivas ao TRT-3 ("• SÚM. 29 TRT3") | Campo `remissoes_trt3` |
 | Origem do item ("(ex-OJ nº 234 da SBDI-1...)") | Mantida em `texto` (oficial) e retirada de `texto_busca` |
-| Itens I, II, III... | Lista `itens` |
+| Itens I, II, III... (também no formato "I.", como na Súmula 85) | Lista `itens` |
 | Tema repetido em vários assuntos | Um registro por tema, com os `assuntos` e as `paginas` reunidos |
 | Número da página colado na tese ("Ainda não fixada. 21") | Corrigido |
 | Faixa "IRR com determinação de suspensão" | Campo `avisos` |
@@ -545,6 +545,7 @@ Este notebook transforma os blocos brutos da auditoria num **JSONL único**, `da
 |---|---|---|
 | `vigente` | Súmula ou OJ sem cancelamento no cabeçalho, inclusive quando só um item foi cancelado | sim |
 | `cancelada` | O cabeçalho diz cancelada ou cancelamento, ou o verbete não tem enunciado porque foi convertido em outro | não, mas fica registrada |
+| `suspensa` | Súmula com eficácia ou aplicação suspensa por decisão do STF, como as Súmulas 228 e 277 | não, mas fica registrada |
 | `tese_fixada` | Tema com tese no texto | sim |
 | `afetado_sem_tese` | Tese "Ainda não fixada". Útil para responder que a questão está pendente no TST | sim |
 | `tese_superada` | Tese "Superada" | não |
@@ -666,7 +667,7 @@ n3.md('lim_conclusao', '''
 
 - **JSONL único gravado:** súmulas, OJs e temas num só arquivo, com o mesmo esquema. Cada registro tem o nome de citação ("Súmula 60 do TST", "Tema 128 de IRR do TST"), que o prompt vai usar para identificar a fonte.
 - **Só vai para a busca o que vale:**
-  - os cancelados, as teses superadas e os cancelamentos integrais noticiados ficam registrados, fora da busca;
+  - os cancelados, as súmulas suspensas pelo STF, as teses superadas e os cancelamentos integrais noticiados ficam registrados, fora da busca;
   - o texto de busca não leva o histórico nem as notas.
 - **Pendências:**
   1. **Livro oficial do TST de 2026**, ou a resolução dos cancelamentos, para confirmar a quarentena.

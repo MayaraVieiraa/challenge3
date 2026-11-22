@@ -5,7 +5,14 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
 **Próximos passos, em ordem:**
 1. Notebook 06 de correções em `03_integracao`. Começar pelo teste do contexto ideal: montar à mão o contexto de 5 respostas reprovadas pelo advogado (q09_p1_JUS-007, JUS-018, juris_017, JUS-001, JUS-043) e gerar de novo, para separar falha de recuperação de falha de geração.
 2. Critérios novos do juiz, detectáveis por regra: norma citada fora das fontes, lei sustentada só por acórdão, resposta normativa sem `[Fonte N]`. Junto, a regra de citação no prompt e o validador depois da geração.
-3. Base de precedentes (`notebooks/05_docs_precedentes/`): 00 a 03 prontos (JSONL único com 1.493 registros); faltam 04 chunking, 05 embeddings e 06 avaliação.
+3. Base de precedentes (`notebooks/05_docs_precedentes/`): 00 a 05 prontos.
+   - JSONL único: 1.493 registros, 1.022 buscáveis.
+   - Chunking: 1.268 trechos.
+   - Schema `lex_precedentes` validado: dataset `bdf048e6…`.
+   - Busca por palavras com texto normalizado ("art. 7º" = "art. 7", "Lei nº 8.036" = "Lei 8036", incisos romanos separados), sem stopwords e com peso IDF (`src/precedentes/normalizacao.py`).
+   - A mesma normalização na legislação e na jurisprudência fica para os testes no conjunto maior, porque muda resultados já medidos.
+   - Falta o 06 (avaliação da recuperação) e a integração como terceira fonte da busca.
+   - Os notebooks da pasta ainda não foram commitados, a pedido da usuária.
 4. Teste de cotas de entrega (2+2 × 3+3 × 5+5) e repetir básico + decisões × híbrido nas 111 perguntas.
 
 ## Atualização de 2026-11-22: geração v3 medida (notebook 06, seção 6)

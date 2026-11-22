@@ -12,6 +12,7 @@ Regras de vigência:
   conferida na EDA.
 - buscavel = vigente, tese fixada ou afetado sem tese. Cancelados e superados ficam registrados, fora da busca.
   Cancelamento integral noticiado: continua "vigente" (situação oficial), mas fica fora da busca (quarentena).
+- suspensa: súmula com eficácia ou aplicação suspensa por decisão do STF; registrada, fora da busca.
 """
 import hashlib
 import json
@@ -30,7 +31,7 @@ REF_PUBLICACAO = re.compile(
 CORTE_TITULO = re.compile(r'\s[-–]\s*(?:Res\.|RA\s|DJ\b|DEJT)')
 PUBLICACAO_PARENTESE = re.compile(r'^\s*(?:DJ|DEJT|RA|Res\.|[Ii]nserid).{0,120}\d{4}\s*$')
 HISTORICO = re.compile(r'\bHistórico\s*:?(?=\s|$)')
-ITEM = re.compile(r'(?:^|(?<=[.;:)]\s))([IVX]{1,5})\s*[-–]\s+')
+ITEM = re.compile(r'(?:^|(?<=[.;:)]\s))([IVX]{1,5})\s*[-–.]\s+')  # "I - ..." ou "I. ..." (Súmula 85)
 ORIGEM_EX = re.compile(r'\s*\((?:(?:primeira|segunda) parte|parte final)?\s*[-–]?\s*(?:ex|Ex)-[^()]*(?:\([^()]*\)[^()]*)*\)')
 
 
@@ -60,7 +61,7 @@ def _parentese(texto, inicio):
 
 
 def _maiusculas(texto):
-    letras = [c for c in texto if c.isalpha()]
+    letras = [c for c in texto if c.isalpha() and c not in 'ºª']  # "Nº", "4º": ordinais não contam como minúscula
     return bool(letras) and sum(c.isupper() for c in letras) >= 0.8 * len(letras)
 
 
@@ -76,12 +77,30 @@ def _cabecalho(corpo):
         if abre < 0:
             return corpo.strip(' .-–'), '', None
         conteudo, fim = _parentese(corpo, abre)
-        if PUBLICACAO_PARENTESE.match(conteudo):  # "(DJ 09.12.2003)": só a publicação, sem situação
-            return corpo[:abre].strip(' .-–'), corpo[fim:], None
-        if _maiusculas(conteudo):
+        if _maiusculas(conteudo) and not PUBLICACAO_PARENTESE.match(conteudo):
             i = fim  # parêntese do próprio título
             continue
-        return corpo[:abre].strip(' .-–'), corpo[fim:], conteudo
+        # Pode haver mais de um parêntese seguido, ex.: "(DEJT ...)" ou "(nova redação) - Res. ... (cancelada) - Res. ...".
+        # Parêntese só com a publicação não é situação; os demais ficam em situacao_detalhe (o último costuma valer).
+        detalhes = [] if PUBLICACAO_PARENTESE.match(conteudo) else [conteudo]
+        resto = corpo[fim:]
+        while True:
+            m = REF_PUBLICACAO.match(resto)
+            if m:
+                resto = resto[m.end():]
+                continue
+            r = resto.lstrip(' .-–')
+            if r.startswith('('):
+                outro, f2 = _parentese(r, 0)
+                if PUBLICACAO_PARENTESE.match(outro):
+                    resto = r[f2:]
+                    continue
+                if not _maiusculas(outro):
+                    detalhes.append(outro)
+                    resto = r[f2:]
+                    continue
+            break
+        return corpo[:abre].strip(' .-–'), resto, '; '.join(d for d in detalhes if d) or None
 
 
 def _itens(texto):
@@ -97,6 +116,8 @@ def _situacao_verbete(detalhe, enunciado):
     parcial = re.search(r'cancelad[oa]s? (?:o|os) ite|cancelamento d[oe]s? ite', d)
     if ('cancelad' in d or 'cancelamento' in d) and not parcial:
         return 'cancelada'
+    if 'suspens' in d:
+        return 'suspensa'  # eficácia ou aplicação suspensa por decisão do STF (ex.: Súmulas 228 e 277)
     if not enunciado:
         return 'cancelada'  # sem enunciado: convertido ou incorporado em outro verbete
     return 'vigente'
@@ -212,7 +233,7 @@ def gravar_jsonl(registros, caminho):
     if problemas:
         raise ValueError(f'{len(problemas)} problemas; nada foi gravado: {problemas[:10]}')
     caminho.parent.mkdir(parents=True, exist_ok=True)
-    with caminho.open('w', encoding='utf-8') as f:
+    with caminho.open('w', encoding='utf-8', newline='\n') as f:  # LF em qualquer sistema: o hash não depende do SO
         for r in registros:
             f.write(json.dumps(r, ensure_ascii=False) + '\n')
-    return _sha(caminho.read_text(encoding='utf-8'))
+    return hashlib.sha256(caminho.read_bytes()).hexdigest()

@@ -43,7 +43,7 @@ Também explica por que essa base precisa ser **separada** da base de jurisprud�
 3. **Uma base separada é mais barata e mais reprodutível.** Ela não obriga a refazer a base de jurisprudência validada, com 303 mil trechos, e tem uma cota de entrega própria.
 4. **Os documentos oficiais já chegaram** (seção 2). Foram 10 arquivos, com 8 documentos distintos, que resultaram em:
    - 463 súmulas, 709 OJs e 321 temas repetitivos do TST;
-   - um JSONL único com 1.493 registros, dos quais 1.026 entram na busca.
+   - um JSONL único com 1.493 registros, dos quais 1.022 entram na busca.
 
    A **Emenda Constitucional nº 141/2026**, que reduz a jornada para 40 horas e prevê dois dias de repouso, veio junto. Ela não é precedente e foi aplicada à base de legislação.
 ''')
@@ -243,8 +243,8 @@ Os documentos e o destino de cada um estão na seção 2.
 | `01_auditoria_precedentes` | Origem, data e hash dos arquivos. Numeração completa, duplicatas e vigência diante da notícia de cancelamentos | pronto |
 | `02_eda_precedentes` | Quantidade por tipo, tamanho em tokens, ruído do texto bruto, cor do título x tese, normas citadas e cobertura dos precedentes das 25 respostas | pronto |
 | `03_limpeza_estruturacao_precedentes` | Título, enunciado, itens e histórico separados. Vigência e quarentena. JSONL único `precedentes_tst.jsonl` | pronto |
-| `04_chunking_precedentes` | Um trecho por enunciado ou por item. Conferência do limite de tokens | a fazer |
-| `05_embeddings_indexacao_precedentes` | BGE-M3 na mesma revisão, schema `lex_precedentes`, dataset com hash e manifesto, visão lexical | a fazer |
+| `04_chunking_precedentes` | Um trecho por enunciado ou por item, com cabeçalho; limite de 220 tokens (1.268 trechos) | pronto |
+| `05_embeddings_indexacao_precedentes` | BGE-M3 na mesma revisão, schema `lex_precedentes` validado, dataset com hash e manifesto, visão lexical | pronto |
 | `06_avaliacao_recuperacao_precedentes` | Este mesmo teste dentro da base separada e com o texto oficial. Gabarito com o precedente esperado nas perguntas da curadoria. Hit@1 e Hit@3 | a fazer |
 
 **Depois, na integração:**

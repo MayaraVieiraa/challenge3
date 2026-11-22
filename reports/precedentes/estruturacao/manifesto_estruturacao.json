@@ -1,8 +1,8 @@
 {
   "arquivo": "data/processed/precedentes/precedentes_tst.jsonl",
-  "sha256": "05dbc05297f07661b0082ff80a4c33180cce9412ed8e8a1fca51c721fdd4b5a6",
+  "sha256": "2884779dbbd4cf4b657e6f4a8405872c45cceef21e38429d215c2776f109591b",
   "registros": 1493,
-  "buscaveis": 1026,
+  "buscaveis": 1022,
   "esquema": [
     "id",
     "tipo",
