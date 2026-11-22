@@ -3,17 +3,98 @@
 Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-22.
 
 **Próximos passos, em ordem:**
-1. Notebook 06 de correções em `03_integracao`. Começar pelo teste do contexto ideal: montar à mão o contexto de 5 respostas reprovadas pelo advogado (q09_p1_JUS-007, JUS-018, juris_017, JUS-001, JUS-043) e gerar de novo, para separar falha de recuperação de falha de geração.
-2. Critérios novos do juiz, detectáveis por regra: norma citada fora das fontes, lei sustentada só por acórdão, resposta normativa sem `[Fonte N]`. Junto, a regra de citação no prompt e o validador depois da geração.
-3. Base de precedentes (`notebooks/05_docs_precedentes/`): 00 a 05 prontos.
-   - JSONL único: 1.493 registros, 1.022 buscáveis.
-   - Chunking: 1.268 trechos.
-   - Schema `lex_precedentes` validado: dataset `bdf048e6…`.
-   - Busca por palavras com texto normalizado ("art. 7º" = "art. 7", "Lei nº 8.036" = "Lei 8036", incisos romanos separados), sem stopwords e com peso IDF (`src/precedentes/normalizacao.py`).
-   - A mesma normalização na legislação e na jurisprudência fica para os testes no conjunto maior, porque muda resultados já medidos.
-   - Falta o 06 (avaliação da recuperação) e a integração como terceira fonte da busca.
-   - Os notebooks da pasta ainda não foram commitados, a pedido da usuária.
-4. Teste de cotas de entrega (2+2 × 3+3 × 5+5) e repetir básico + decisões × híbrido nas 111 perguntas.
+1. **Base de precedentes:**
+   - notebook `06_avaliacao_recuperacao_precedentes`, com Hit@1 e Hit@3 e o gabarito do precedente esperado, repetindo o teste de posição com o texto oficial;
+   - depois, a integração como **terceira fonte** da busca, com cota própria e citação pelo nome no prompt ("Súmula 338, I, do TST").
+2. **Feito pela usuária, à parte:** juiz Gemma 3 27B nas respostas v3 e v3.1. Não rodar.
+3. **Testes num conjunto maior de perguntas, decididos pela usuária para depois:**
+   - EC 141/2026 e regra 24 (jornada, repouso e domésticos);
+   - diagnóstico da busca por jornada semanal (a pergunta FAQ40 não recebe o art. 7º da CF);
+   - normalização do índice de palavras na legislação e na jurisprudência;
+   - cotas de entrega (2+2 × 3+3 × 5+5);
+   - básico + decisões × híbrido nas 111 perguntas.
+4. **Correções que ficaram em aberto:**
+   - critérios novos do juiz, detectáveis por regra;
+   - ação quando o validador bloqueia: fallback para o Llama ou nova geração com o motivo do bloqueio;
+   - o alerta "lei sustentada só por decisão", que subiu na v3.
+5. **Pendências de fonte, que dependem da usuária:**
+   - livro oficial de súmulas e OJs do TST de 2026, ou a resolução dos cancelamentos, para confirmar os 22 enunciados em quarentena;
+   - divisor 220 da LC 150, ligado às 44 horas.
+
+## Atualização de 2026-11-22 (noite): base de precedentes do TST, notebooks 00 a 05
+
+Pasta `notebooks/05_docs_precedentes/`, com os notebooks 00 a 05 executados e o `README.md`. **Os notebooks da pasta ainda não foram commitados, a pedido da usuária.** O código, os scripts geradores e os relatórios estão no Git (commits `57d1fe9` e `a0f314a`).
+
+| Notebook | O que faz | Resultado |
+|---|---|---|
+| `00_introducao_precedentes` | Por que criar a terceira base, os três tipos de documento, os documentos recebidos, as respostas sem precedente e o teste de posição | Na base de jurisprudência, a súmula certa ficaria entre a 8ª e a 3.370ª posição |
+| `01_auditoria_precedentes` | Inventário com hash, papel de cada documento, extração bruta, numeração e vigência | 10 PDFs (8 distintos + 2 cópias "(1)"); séries completas, sem falta de número |
+| `02_eda_precedentes` | Volume, tokens, ruído do texto bruto, cor do título × tese, normas citadas e cobertura | 7 de 8 precedentes das respostas reprovadas estão nos documentos; o 8º é do STF |
+| `03_limpeza_estruturacao_precedentes` | Campos, vigência, quarentena e o **JSONL único** | 1.493 registros: 463 súmulas, 709 OJs e 321 temas; 1.022 buscáveis |
+| `04_chunking_precedentes` | Um trecho por enunciado ou item, com cabeçalho e caput repetido; limite de 220 tokens | 1.268 trechos |
+| `05_embeddings_indexacao_precedentes` | BGE-M3 na mesma revisão; schema `lex_precedentes`; índice de palavras normalizado | Versão `bdf048e6…` validada |
+
+**Fontes:**
+- **Súmulas e OJs:** coletânea do TRT-3 com a jurisprudência do TST, atualizada até 28/06/2024, páginas 65 a 256.
+- **Temas:** índice de IRR do TST de 19/11/2026, páginas 12 a 121.
+- **Fora desta base:**
+  - o índice de repercussão geral do STF, que fica para uma etapa posterior;
+  - o acórdão 168, que tem dados pessoais;
+  - a coletânea do TRT-2 de 2021;
+  - a EC 141, que foi para a base de legislação.
+
+**Vigência:**
+
+| Situação | Quantidade | Na busca? |
+|---|---|---|
+| Vigente | 323 súmulas e 401 OJs | sim, menos as que estão em quarentena |
+| Cancelada | 138 súmulas e 308 OJs | não, mas fica registrada |
+| Suspensa pelo STF | 2 (Súmulas 228 e 277) | não |
+| Tese fixada | 221 temas | sim |
+| Afetado sem tese | 98 temas | sim |
+| Tese superada | 2 temas | não |
+
+A notícia do cancelamento de 36 enunciados não é fonte oficial. Ela vira alerta. Os **22** enunciados que ela dá como cancelados por inteiro ficam fora da busca (quarentena). Os 3 com cancelamento parcial (Súmulas 6, 331 e 372) ficam na busca, com o alerta.
+
+**Correções feitas na estruturação, depois de conferir os casos:**
+- **Parênteses de situação seguidos:** o cabeçalho às vezes tem dois, e todos passaram a ser lidos. Com isso, a Súmula 164 e as OJs 331 e 338 da SBDI-1 passaram a canceladas. Antes, estavam como vigentes e buscáveis.
+- **Nova situação `suspensa`:** criada para as Súmulas 228 e 277.
+- **"º" e "ª":** não contam mais como minúscula no teste do título, o que causava vazamento do cabeçalho em 9 registros.
+- **Itens numerados como "I.":** passaram a ser reconhecidos (Súmula 85).
+- **Caput antes dos itens:** passou a se repetir em cada trecho por item (OJ 225 da SBDI-1).
+- **Hashes:** o JSONL é gravado com LF, e o hash é calculado sobre os bytes.
+
+**Busca por palavras** (`src/precedentes/normalizacao.py`, versão `normalizacao-lexica-v1`):
+- **Onde vale:** só no índice e na pergunta. O texto guardado e entregue ao modelo continua o oficial.
+- **Normalizações:**
+  - "§" vira "paragrafo" e "art." vira "artigo";
+  - "nº" sai antes de número;
+  - o ordinal sai ("7º" = "7");
+  - o ponto de milhar sai e a barra entre números é separada ("8.036/1990" = "8036 / 1990");
+  - o numeral romano vira uma marca própria ("XIII" = "inc13"; antes, o índice juntava os incisos XII e XIII);
+  - tudo fica em minúsculas e sem acento.
+- **Sem stopwords** (pedido da usuária): configuração `lex_precedentes.pt_sem_stopwords`, que mantém o radicalizador. O padrão em português descartava "não", e "é devido" e "não é devido" ficavam iguais.
+- **Peso IDF:** cada palavra pesa pela raridade, como no BM25, e as palavras comuns quase não contam.
+- **Trechos e vetores continuam valendo:** a normalização não muda o texto de onde eles são gerados.
+
+**Testes de funcionamento:**
+- cada trecho acha a si mesmo em 50 de 50 casos;
+- três perguntas de exemplo, escritas para o teste e não tiradas da curadoria:
+
+| Pergunta de exemplo | Busca semântica | Busca por palavras |
+|---|---|---|
+| Súmula 338 | 1º | 1º |
+| Tema 58 | 1º | 1º |
+| Súmula 60 | 3º | 4º |
+| "Lei 8036 saque do FGTS" | — | OJ 42 em 1º |
+
+A medida que vale, com gabarito, fica no notebook 06.
+
+**Como reproduzir:**
+1. PDFs em `data/raw/precedentes/`, fora do Git. O hash de cada um está em `reports/precedentes/auditoria/inventario_documentos.csv`.
+2. `python scripts/criar_notebook_precedentes_00.py`, `scripts/criar_notebooks_precedentes_01_03.py` e `scripts/criar_notebooks_precedentes_04_05.py`.
+3. Executar na ordem, de 00 a 05, com `python scripts/executar_notebook_integracao.py notebooks/05_docs_precedentes/<notebook>.ipynb`. O 05 precisa do Postgres no Docker. Os vetores levam cerca de 9 minutos na CPU e depois ficam em cache, em `data/processed/precedentes/vetores_bge_m3.npy`.
+4. A cadeia confere os hashes: o 04 confere o JSONL do 03, e o 05 confere os trechos do 04. Se o texto mudar, nasce uma nova versão de `lex_precedentes`, e a anterior passa a `substituido`.
 
 ## Atualização de 2026-11-22: geração v3 medida (notebook 06, seção 6)
 
@@ -47,7 +128,8 @@ A Emenda Constitucional nº 141, de 16/10/2026, mudou o art. 7º da CF. A base d
 | Versão (`VERSOES_LEGISLACAO` em `src/integracao/recuperacao.py`) | D_paragrafo_completo | A_artigo |
 |---|---|---|
 | `original` (notebooks publicados até aqui) | `036e49f3…` (10.971 trechos) | `508abda2…` (5.284) |
-| `ec141_2026` (**padrão da busca**) | `2f1ab3f0…` (10.983) | `4cbd0071…` (5.294) |
+| `ec141_2026` (art. 7º da CF e os 10 artigos da EC) | `2f1ab3f0…` (10.983) | `4cbd0071…` (5.294) |
+| `ec141_2026_notas` (**padrão da busca**: a versão anterior mais as notas de vigência em 5 artigos) | `dca7b51d…` (10.983) | `d61d07a5…` (5.294) |
 
 **Trechos que mudaram:**
 - Art. 7º da CF:
@@ -73,15 +155,19 @@ A Emenda Constitucional nº 141, de 16/10/2026, mudou o art. 7º da CF. A base d
 **Atenção:**
 - **A visão lexical acompanha a versão:** `lex_integracao.lexico_legislacao` guarda o ID do dataset no comentário. O `Recuperador` recria a visão quando a versão muda. Para reproduzir um notebook antigo, use `Recuperador(..., versao_legislacao='original')`.
 - **A geração v3 que está no Kaggle não muda:** ela foi preparada com as fontes antigas, nos pedidos já montados. Por isso fica comparável com a v1.
-- **Notas de vigência (versão `ec141_2026_notas`, padrão da busca desde 2026-11-22):**
-- **Datasets:** D `dca7b51d…` e A `d61d07a5…`, criados por `scripts/atualizar_legislacao_notas_ec141.py`. As notas ficam em `reports/legislacao/atualizacoes/ec_141_2026_notas.json`.
+- **Limpeza do banco:** as duas versões intermediárias das notas (2 e 4 notas) foram apagadas, porque nunca foram usadas. Use conexão com `autocommit=True` para apagar. Com uma consulta antes do `transaction()`, a exclusão fica numa transação externa que não é confirmada.
+
+**Notas de vigência** (versão `ec141_2026_notas`, padrão da busca):
+- **Script:** `scripts/atualizar_legislacao_notas_ec141.py`. As notas ficam em `reports/legislacao/atualizacoes/ec_141_2026_notas.json`.
 - **Onde há nota:**
   - LC 150/2015, art. 2º: transição de 44, 42 e 40 horas para os domésticos, pelo § 1º do art. 7º da CF;
-  - Lei 605/1949, art. 1º, LC 150/2015, art. 16 e CLT, arts. 67 e 385: 2 dias de repouso a partir de 16/12/2026, no lugar das 24 horas.
-- **Como a nota funciona:** o texto da lei não muda. A nota vem entre colchetes logo depois do dispositivo e cita "art. 7º, XIII/XV, da CF", para que o validador v3 aceite a citação da CF feita a partir dela.
+  - Lei 605/1949, art. 1º; LC 150/2015, art. 16; e CLT, arts. 67 e 385: 2 dias de repouso a partir de 16/12/2026, no lugar das 24 horas.
+  - Uma busca na base inteira não encontrou mais nenhum artigo com 44 horas ou 24 horas de repouso sem nota.
+- **Como a nota funciona:** o texto da lei não muda. A nota vem entre colchetes logo depois do dispositivo e cita "art. 7º, XIII/XV, da CF", para que o validador v3 aceite a citação da CF feita a partir dela. Ela só traz o que a EC e a CF dizem. A "regulamentação por decreto" de um texto recebido pela usuária ficou de fora, porque não está na EC.
 - **Prompt v3:** ganhou a **regra 24**. O modelo deve usar a nota, comparar com a DATA ATUAL e apresentar primeiro a regra nova.
-  - A geração v3 já enviada ao Kaggle usou as regras 16 a 23.
+  - A geração v3 enviada ao Kaggle usou as regras 16 a 23; a v3.1 usou a regra 24.
 - **Teste de ponta a ponta:** nas perguntas sobre jornada dos domésticos, repouso de 24 horas e folgas da doméstica, todos os artigos com a regra antiga chegaram com a nota.
+- **Em aberto:** o divisor 220 da LC 150, art. 2º, § 2º, corresponde às 44 horas. A EC não trata disso; ver a Súmula 431 do TST quando os precedentes entrarem na busca.
 
 ## Atualização de 2026-11-22 (Windows): validação com advogado revisor e notebook 04
 
@@ -110,8 +196,8 @@ Um advogado revisor avaliou às cegas 25 das 111 respostas do Qwen (sorteadas co
 - **Base de precedentes:** súmulas, OJs e temas de recursos repetitivos do TST vão para uma **terceira base**, `lex_precedentes`, e não para a de jurisprudência.
   - **Teste de ranking com BGE-M3:** misturada aos 303 mil chunks de acórdãos, a súmula certa ficou além da 100ª posição em 4 de 5 perguntas. Os textos das súmulas foram digitados de memória, só para o teste.
   - **Por que separar:** anexar também exigiria validar de novo o dataset congelado e quebraria a reprodutibilidade dos notebooks 01, 04 e 05.
-  - **Pasta:** `notebooks/05_docs_precedentes/`, com 01 auditoria, 02 EDA, 03 limpeza e estruturação, 04 chunking, 05 embeddings e indexação, 06 avaliação da recuperação. Não renumerar as pastas 03 e 04.
-  - **Aguardando:** a usuária vai procurar e enviar os documentos oficiais do TST, que vão em `data/raw/precedentes/`, como baixados.
+  - **Pasta:** `notebooks/05_docs_precedentes/`, com 00 introdução, 01 auditoria, 02 EDA, 03 limpeza e estruturação, 04 chunking, 05 embeddings e indexação, 06 avaliação da recuperação. Não renumerar as pastas 03 e 04.
+  - **Documentos:** recebidos, em `data/raw/precedentes/`. Os notebooks 00 a 05 estão prontos (ver a seção da noite de 2026-11-22).
 
 **Como reproduzir:**
 
@@ -207,8 +293,9 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
 | Geração estruturada (Qwen3 8B) | `src/integracao/geracao.py`, `scripts/*geracao*`, `notebooks/03_integracao/03_geracao.ipynb` | integração v2 em validação; saídas em `geracao_v2` |
 | Juiz (Gemma 3 27B) | `src/integracao/juiz.py`, `scripts/*juiz*`, `reports/integracao/juiz/*_27b*.csv` | validado com advogado revisor (25 respostas): concorda em 10 de 25, brando diante do especialista; faltam critérios novos detectáveis por regra |
 | Avaliação e diagnóstico (notebook 04) | `notebooks/03_integracao/04_avaliacao.ipynb`, `scripts/criar_notebook_integracao_04.py`, `scripts/importar_revisao_juiz.py` | concluída com juiz 27B, validação com especialista e prioridades de correção |
-| Correções (notebook 06) | `notebooks/03_integracao/06_correcoes.ipynb` (a criar) | planejado: teste do contexto ideal, critérios novos do juiz, regra de citação e validador |
-| Base de precedentes do TST | `notebooks/05_docs_precedentes/` (a criar), schema `lex_precedentes` | planejada; aguardando os documentos oficiais |
+| Correções (notebook 06) | `notebooks/03_integracao/06_correcoes.ipynb`, `src/integracao/prompt_juridico.py` (v3, regras 16 a 24), `src/integracao/guardrails.py` (validador v3) | concluída a medição de v3 e v3.1 no validador. Faltam o juiz 27B (feito pela usuária) e os critérios novos do juiz |
+| Legislação versionada (EC 141/2026) | `VERSOES_LEGISLACAO` em `src/integracao/recuperacao.py`, `scripts/atualizar_legislacao_*.py` | concluída: versão `ec141_2026_notas` é o padrão da busca, e a `original` está preservada |
+| Base de precedentes do TST | `notebooks/05_docs_precedentes/`, `src/precedentes/`, schema `lex_precedentes` | notebooks 00 a 05 prontos e versão `bdf048e6…` validada. Faltam o 06 e a integração como terceira fonte. Os notebooks não estão commitados |
 | Comparação RAG × LLM (notebook 05) | `notebooks/03_integracao/05_comparacao_rag_llm.ipynb`, `scripts/comparacao_rag_basico.py`, `reports/integracao/comparacao/` | concluída com 5 configurações; falta repetir básico + decisões × híbrido em mais perguntas |
 | Sistema multiagentes | `src/multiagentes/`, `notebooks/04_multiagentes/` | implementação e testes recebidos da branch remota |
 | Buscador local | `src/multiagentes/buscador_local.py`, `scripts/consultar_buscador_local.py` | busca local implementada; avaliação jurídica não substituída |
@@ -292,7 +379,11 @@ Os itens abaixo não estão no GitHub e precisam ser recriados ou copiados.
 - **PostgreSQL com pgvector (Docker):**
   - contêiner `lex-clt-postgres-1`, porta 15432, credenciais em `.env.pgvector.local`;
   - recriar o banco com os notebooks de indexação (legislação e jurisprudência 06), ou exportar o volume do Docker;
-  - criar as visões lexicais com `Recuperador.preparar_lexico()`.
+  - criar as visões lexicais com `Recuperador.preparar_lexico()`;
+  - legislação com a EC 141: rodar `scripts/atualizar_legislacao_ec141.py` e depois `scripts/atualizar_legislacao_notas_ec141.py`. Os dois são idempotentes e recriam as mesmas versões;
+  - base de precedentes: executar os notebooks 03, 04 e 05 de `notebooks/05_docs_precedentes/`. O 05 recria o schema `lex_precedentes` e o índice de palavras.
+- **PDFs dos precedentes** em `data/raw/precedentes/`, fora do Git. São 10 arquivos, e o hash de cada um está no inventário da auditoria.
+- **Gerações v3 e v3.1:** pedidos e respostas em `output/kaggle/geracao_v3/` e `output/kaggle/geracao_v3_1/`, fora do Git. Datasets privados `lexia-geracao-v3-pedidos` e `lexia-geracao-v3-1-pedidos`; kernels `lexia-geracao-qwen3-v3` e `lexia-geracao-qwen3-v3-1`.
 - **Modelos do Hugging Face** em cache local: `BAAI/bge-m3` (revisão `5617a9f`) e `BAAI/bge-reranker-v2-m3`.
 - **Token do Kaggle** em `~/.kaggle`.
 - **Pedidos e respostas antigos** em `output/kaggle/geracao/` e `output/kaggle/juiz/`; novos artefatos estruturados ficam em `output/kaggle/geracao_v2/` e `output/kaggle/juiz_v2/`. Todos estão fora do Git porque podem conter trechos de decisões e perguntas protegidas.
