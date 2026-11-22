@@ -64,14 +64,59 @@ REGRAS:
     desenvolver uma fundamentação sobre o assunto fora do Direito do Trabalho.
 """
 
-def build_rag_prompt(query, retrieved_chunks):
+# --- Versão 3 (2026-11-22): regras acrescentadas a partir do diagnóstico do advogado revisor (notebook 04, seção 8).
+# O SYSTEM_PROMPT_LEGAL acima continua sem alteração: os pedidos antigos e o notebook 05 conferem o hash dele.
+REGRAS_V3 = """
+REGRAS ADICIONAIS DE CITAÇÃO E DE PRECISÃO:
+16. Só coloque [Fonte N] numa afirmação se o texto da Fonte N contém essa informação.
+    Uma fonte que apenas menciona a mesma palavra não sustenta a afirmação.
+    Cite no máximo duas fontes por afirmação e não junte várias fontes numa frase só.
+17. Só cite lei, artigo, súmula, orientação jurisprudencial ou tema que apareça no texto
+    de alguma fonte. Não complete com normas de memória. Se a norma necessária não estiver
+    nas fontes, diga que ela não foi encontrada nas evidências, sem citá-la como se estivesse.
+18. Para afirmar o que diz uma lei, use a fonte de legislação que contém o dispositivo.
+    Uma decisão judicial não sustenta o texto de uma lei nem de uma súmula; ela mostra como
+    um caso foi julgado. Apresente-a como "em um caso julgado pelo [tribunal], ...".
+    Não transforme dados do caso concreto (cláusula de convenção, percentual, categoria,
+    empresa) em regra geral.
+19. Regra primeiro, exceção depois. Quando a resposta depende de uma condição, comece pela
+    regra geral ou por "depende de ...", e não por um "sim" ou "não" que as frases seguintes
+    contradigam. Preserve as condições do dispositivo ("desde que", "salvo", "integralmente",
+    "a requerimento") e diferencie hipóteses parecidas, como suspender e cancelar um benefício.
+20. Normas de categoria específica (empregado doméstico, rural, professor, aprendiz) valem
+    só para essa categoria. Quando as fontes trazem regimes diferentes, diga a qual regime
+    cada regra se aplica ou pergunte qual é o da pessoa.
+21. Ao citar um dispositivo, cite exatamente o artigo, parágrafo ou inciso que contém a
+    informação. Se não tiver certeza do número, cite apenas a norma e a fonte.
+22. Toda resposta com conteúdo jurídico deve ter pelo menos uma marcação [Fonte N]. Se nenhuma
+    fonte sustenta a resposta, aplique a regra 6.
+23. Use a data atual informada para situar prazos e normas temporárias. Não mencione
+    metadados internos das fontes, como status de vigência, caminhos ou nomes de arquivos.
+"""
+SYSTEM_PROMPT_LEGAL_V3 = SYSTEM_PROMPT_LEGAL + REGRAS_V3
+VERSOES_PROMPT = ('v1', 'v3')
+
+
+def build_rag_prompt(query, retrieved_chunks, versao='v1', data_atual=None):
+    """Prompt de sistema e de usuário. `versao='v1'` reproduz o prompt original do grupo, byte a byte.
+
+    `versao='v3'` acrescenta REGRAS_V3, o tipo de cada fonte (legislação ou decisão judicial) e a data atual
+    (`data_atual`, texto como '2026-11-22'), e deixa de mostrar o status interno de vigência.
+    """
+    if versao not in VERSOES_PROMPT:
+        raise ValueError(f'Versão de prompt desconhecida: {versao}')
+    v3 = versao == 'v3'
+    if v3 and not data_atual:
+        raise ValueError('O prompt v3 precisa da data atual.')
     # Mantém texto e metadados disponíveis, sem inventar os campos ausentes.
     sources = []
     for index, chunk in enumerate(retrieved_chunks, 1):
         text = chunk.get('conteudo_chunk') or chunk.get('conteudo') or chunk.get('texto_estruturado')
         if not isinstance(text, str) or not text.strip():
             raise ValueError(f'A fonte {index} não contém texto válido.')
+        tipo = {'legislacao': 'legislação', 'jurisprudencia': 'decisão judicial'}.get(chunk.get('fonte')) if v3 else None
         metadata_fields = [
+            ('Tipo de fonte', tipo),
             ('Norma', chunk.get('norma') or chunk.get('title') or chunk.get('nome_arquivo') or chunk.get('caminho_relativo')),
             ('Dispositivo', chunk.get('artigo_ref') or chunk.get('identificador_dispositivo')),
             ('Contexto hierárquico', chunk.get('contexto') or chunk.get('caminho_hierarquico')),
@@ -80,7 +125,7 @@ def build_rag_prompt(query, retrieved_chunks):
             ('Órgão julgador', chunk.get('orgao_julgador')),
             ('Data do julgamento', chunk.get('data_julgamento')),
             ('Origem', chunk.get('source') or chunk.get('url')),
-            ('Status declarado pela fonte', chunk.get('status_declarado'))
+            ('Status declarado pela fonte', None if v3 else chunk.get('status_declarado'))
         ]
         metadata = '\n'.join(f'{label}: {value}' for label, value in metadata_fields
                              if value is not None and str(value).strip())
@@ -97,4 +142,9 @@ Siga as regras do sistema. Use linguagem simples e vincule as afirmações jurí
 Se faltarem fatos essenciais, faça as perguntas necessárias antes de concluir o caso específico.
 Informe limitações, preserve dados pessoais e não garanta resultados de processos.
 """
-    return SYSTEM_PROMPT_LEGAL, user_prompt
+    if not v3:
+        return SYSTEM_PROMPT_LEGAL, user_prompt
+    user_prompt = f'DATA ATUAL: {data_atual}\n\n' + user_prompt + (
+        'Cite [Fonte N] só onde o texto da fonte contém a informação, comece pela regra geral e preserve as '
+        'condições dos dispositivos.\n')
+    return SYSTEM_PROMPT_LEGAL_V3, user_prompt

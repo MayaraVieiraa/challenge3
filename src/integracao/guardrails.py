@@ -25,7 +25,15 @@ Saída — confere a resposta contra as fontes entregues:
   artigo_sem_fonte        artigo citado na resposta que não está em nenhuma fonte entregue (informativo;
                               compara só o número do artigo, não a norma)
   aviso_legal_ausente     resposta sem o aviso de que não substitui orientação profissional (acrescentado)
-Bloqueantes (reprovam a resposta): ver BLOQUEANTES; os demais alertas são informativos.
+Validador v3 (verificar_saida(..., versao='v3'), a partir do diagnóstico do advogado revisor):
+  norma_fora_das_fontes   lei, súmula, OJ, tema ou artigo de código (CLT, CF, CPC, CC) citado que não aparece em
+                              nenhuma fonte entregue (bloqueante)
+  sem_marcacao_fonte      resposta jurídica sem nenhuma marcação [Fonte N] (bloqueante)
+  lei_citada_com_decisao  frase que cita norma sustentada só por decisões judiciais (informativo)
+  citacao_em_lote         mais de duas fontes numa frase (informativo)
+  metadado_interno        status de vigência, caminho ou nome de arquivo das fontes na resposta (informativo)
+  abertura_categorica     abre com "sim"/"não" e depois condiciona a resposta (informativo)
+Bloqueantes (reprovam a resposta): ver BLOQUEANTES (v1) e BLOQUEANTES_V3; os demais alertas são informativos.
 As regras são heurísticas e auditáveis; não substituem revisão humana nem certificam correção jurídica.
 """
 from __future__ import annotations
@@ -232,6 +240,129 @@ def dispositivos(texto):
     return partes
 
 
+# --- validador v3 (2026-11-22): falhas apontadas pelo advogado revisor (notebook 04, seção 8) ---------------------
+# Normas citadas pelo número: "Lei 8.036/1990", "Lei nº 13.467", "LC 150", "Decreto-Lei 5.452", "MP 946/2020",
+# "Instrução Normativa 1.127", "Decreto Legislativo 6/2020", "Súmula 338", "OJ 394", "Tema 58".
+NORMA = re.compile(
+    r'\b(?P<tipo>lei\s+complementar|lc|decreto[\s-]+lei|decreto\s+legislativo|decreto|medida\s+provis[óo]ria|mp|'
+    r'instru[çc][ãa]o\s+normativa(?:\s+rfb)?|in(?:\s+rfb)?|lei|s[úu]mula(?:\s+vinculante)?|oj|orienta[çc][ãa]o\s+jurisprudencial|tema)'
+    r'\s*(?:n[º°o.]*\s*)?(?P<numero>\d{1,2}(?:\.\d{3})|\d{1,5})(?![\d.,]*\d)', re.IGNORECASE)
+TIPO_NORMA = (('sumula', ('sumula',)), ('oj', ('oj', 'orientacao jurisprudencial')), ('tema', ('tema',)))
+# Códigos citados por sigla ou nome, com o trecho do caminho das fontes de legislação que os identifica.
+CODIGOS = {
+    'CLT': ('consolidacao-das-leis-do-trabalho', r'CLT|Consolida[çc][ãa]o das Leis do Trabalho'),
+    'CF': ('constituicao', r'CF|CF/88|Constitui[çc][ãa]o(?: Federal)?'),
+    'CPC': ('codigo-de-processo-civil', r'CPC|C[óo]digo de Processo Civil'),
+    'CC': ('codigo-civil', r'CC|C[óo]digo Civil'),
+}
+_COD = '|'.join(f'(?P<{k}>{v[1]})' for k, v in CODIGOS.items())
+ARTIGO_CODIGO = re.compile(rf'\bart(?:igo)?s?\.?\s*(?P<art>\d+(?:-[A-Z])?)\s*[ºo°]?[^.;\n\[]{{0,45}}?\b(?:{_COD})\b'
+                           rf'|\b(?:{_COD.replace("?P<", "?P<x")})\b,?\s*\(?\s*(?:em\s+seu\s+)?art(?:igo)?\.?\s*(?P<art2>\d+(?:-[A-Z])?)',
+                           re.IGNORECASE)
+METADADO_INTERNO = re.compile(r'in_force|status declarado|status_declarado|caminho_relativo|\b[\w-]+\.md\b', re.IGNORECASE)
+CONTRAPESO = _rx(r'\bno entanto\b', r'\bcontudo\b', r'\bporem\b', r'\bentretanto\b', r'\bdepende\b', r'\bsalvo\b',
+                 r'\bexceto\b', r'\bnao e automatic', r'\bnao se aplica\b')
+BLOQUEANTES_V3 = BLOQUEANTES | {'norma_fora_das_fontes', 'sem_marcacao_fonte'}
+VERSOES_SAIDA = ('v1', 'v3')
+
+
+def _sem_pontos(texto):
+    """Tira os pontos de milhar entre dígitos ("8.036" → "8036") para comparar números de normas."""
+    return re.sub(r'(?<=\d)\.(?=\d{3}\b)', '', texto or '')
+
+
+def _tipo_norma(rotulo):
+    r = _sem_acento(rotulo)
+    for tipo, prefixos in TIPO_NORMA:
+        if r.startswith(prefixos):
+            return tipo
+    return 'lei'   # leis, LC, decretos, MP e IN: identificadas pelo número
+
+
+def normas_citadas(texto):
+    """{(tipo, número)} das normas citadas pelo número, com tipo 'lei', 'sumula', 'oj' ou 'tema'."""
+    achados = set()
+    for m in NORMA.finditer(texto or ''):
+        numero = _sem_pontos(m.group('numero')).lstrip('0')
+        if numero:
+            achados.add((_tipo_norma(m.group('tipo')), numero))
+    return achados
+
+
+_NUMERO_NORMA = r'(?:n[º°o.]*\s*)?'
+
+
+def _norma_nas_fontes(tipo, numero, fontes):
+    for fonte in fontes:
+        caminho = _sem_acento(str(fonte.get('caminho') or ''))
+        base = _sem_acento(_sem_pontos(' '.join(str(fonte.get(c) or '') for c in ('texto', 'contexto'))))
+        if tipo == 'lei':
+            # Pelo caminho da fonte de legislação ("lei-8036-1990.md") ou pelo número junto de uma palavra de norma.
+            if re.search(rf'-{numero}-', caminho) or re.search(
+                    rf'\b(?:lei|lc|complementar|decreto|legislativo|mp|medida provisoria|instrucao normativa|in|rfb)\b'
+                    rf'[^.;\n]{{0,25}}?(?<![\d.,]){numero}(?!\d)', base):
+                return True
+        elif tipo == 'sumula' and re.search(rf'sumula(?:\s+vinculante)?\s*{_NUMERO_NORMA}{numero}\b', base):
+            return True
+        elif tipo == 'oj' and re.search(rf'(?:\boj\b|orientac\w+ jurisprudencia\w*)[^.]{{0,40}}?\b{numero}\b', base):
+            return True
+        elif tipo == 'tema' and re.search(rf'\btema\s*{_NUMERO_NORMA}{numero}\b', base):
+            return True
+    return False
+
+
+def artigos_de_codigo(texto):
+    """{(código, artigo)} citados como 'art. 11 da CLT', 'CLT, art. 11' ou 'art. 51, X, da CF'."""
+    achados = set()
+    for m in ARTIGO_CODIGO.finditer(texto or ''):
+        artigo = (m.group('art') or m.group('art2') or '').upper()
+        codigo = next((k for k in CODIGOS if m.group(k) or m.group('x' + k)), None)
+        if artigo and codigo:
+            achados.add((codigo, artigo))
+    return achados
+
+
+def _artigo_de_codigo_nas_fontes(codigo, artigo, fontes):
+    trecho_caminho, nome = CODIGOS[codigo]
+    for fonte in fontes:
+        if trecho_caminho in (fonte.get('caminho') or '') and _normaliza_artigo(fonte.get('artigo_ref')) == artigo:
+            return True
+        # Decisões e outras leis que citam o artigo junto do código também contam como "está nas fontes".
+        if (codigo, artigo) in artigos_de_codigo(fonte.get('texto') or ''):
+            return True
+    return False
+
+
+def alertas_v3(texto, fontes, lista_frases, juridicas):
+    """Alertas do validador v3. Bloqueantes: norma_fora_das_fontes e sem_marcacao_fonte (ver BLOQUEANTES_V3)."""
+    alertas = []
+    if not fontes:
+        return alertas
+    for tipo, numero in sorted(normas_citadas(texto)):
+        if not _norma_nas_fontes(tipo, numero, fontes):
+            alertas.append(dict(codigo='norma_fora_das_fontes', detalhe=f'{tipo} {numero} não aparece em nenhuma fonte entregue'))
+    for codigo, artigo in sorted(artigos_de_codigo(texto)):
+        if not _artigo_de_codigo_nas_fontes(codigo, artigo, fontes):
+            alertas.append(dict(codigo='norma_fora_das_fontes', detalhe=f'art. {artigo} da {codigo} não aparece em nenhuma fonte entregue'))
+    if juridicas and not CITACAO.search(texto):
+        alertas.append(dict(codigo='sem_marcacao_fonte', detalhe='Resposta jurídica sem nenhuma marcação [Fonte N].'))
+    for frase in lista_frases:
+        citadas = sorted({int(n) for n in CITACAO.findall(frase) if 1 <= int(n) <= len(fontes)})
+        if len(citadas) > 2:
+            alertas.append(dict(codigo='citacao_em_lote', detalhe=f'{len(citadas)} fontes numa frase', frase=frase.strip()[:200]))
+        menciona_norma = ARTIGO.search(frase) or NORMA.search(frase)
+        if citadas and menciona_norma and all(fontes[n - 1].get('tipo') == 'jurisprudencia' for n in citadas):
+            alertas.append(dict(codigo='lei_citada_com_decisao', detalhe='Norma sustentada só por decisão judicial',
+                                frase=frase.strip()[:200]))
+    if METADADO_INTERNO.search(texto):
+        alertas.append(dict(codigo='metadado_interno', detalhe='Resposta expõe metadado interno das fontes.'))
+    if lista_frases:
+        abertura = _sem_acento(lista_frases[0])
+        if re.match(r'\W*(sim|nao)\b', abertura) and CONTRAPESO.search(_sem_acento(' '.join(lista_frases[1:]))):
+            alertas.append(dict(codigo='abertura_categorica', detalhe='Abre com sim/não e depois condiciona a resposta.'))
+    return alertas
+
+
 @dataclass
 class ResultadoSaida:
     aprovada: bool
@@ -239,8 +370,15 @@ class ResultadoSaida:
     resposta_final: str
 
 
-def verificar_saida(resposta, fontes, entrada=None):
-    """fontes: lista na ordem das [Fonte N], cada uma com 'texto' e, na legislação, 'artigo_ref'."""
+def verificar_saida(resposta, fontes, entrada=None, versao='v1'):
+    """fontes: lista na ordem das [Fonte N], cada uma com 'texto' e, na legislação, 'artigo_ref'.
+
+    `versao='v3'` acrescenta os alertas de `alertas_v3` e usa BLOQUEANTES_V3; para isso as fontes devem trazer
+    também 'tipo' ('legislacao' ou 'jurisprudencia') e, na legislação, 'caminho'. `versao='v1'` mantém o
+    comportamento original.
+    """
+    if versao not in VERSOES_SAIDA:
+        raise ValueError(f'Versão do guardrail de saída desconhecida: {versao}')
     alertas, texto = [], resposta or ''
     processos_fontes = [f.get('processo') for f in fontes] + PROCESSO_CNJ.findall(' '.join(f.get('texto', '') or '' for f in fontes))
     final, pii = mascarar(texto, processos_fontes)
@@ -312,6 +450,8 @@ def verificar_saida(resposta, fontes, entrada=None):
                                     detalhe='A resposta pede número do processo, documentos ou dados pessoais.',
                                     frase=texto[m.start():m.end() + 40].strip()))
                 break
+    if versao == 'v3' and not acao_sem_busca:
+        alertas.extend(alertas_v3(texto, fontes, lista_frases, juridicas))
     if 'nao substitui' not in _sem_acento(texto):
         alertas.append(dict(codigo='aviso_legal_ausente', detalhe='Aviso acrescentado.'))
         final = final.rstrip() + '\n\n' + AVISO_LEGAL
@@ -321,5 +461,6 @@ def verificar_saida(resposta, fontes, entrada=None):
         if chave not in vistos:
             vistos.add(chave)
             unicos.append(a)
-    aprovada = not any(a['codigo'] in BLOQUEANTES for a in unicos)
+    bloqueantes = BLOQUEANTES_V3 if versao == 'v3' else BLOQUEANTES
+    aprovada = not any(a['codigo'] in bloqueantes for a in unicos)
     return ResultadoSaida(aprovada, unicos, final)

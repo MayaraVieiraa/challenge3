@@ -114,3 +114,6 @@ Desktop.ini
 /output/kaggle/geracao_v2/
 /output/kaggle/fallback_v2/
 /output/kaggle/juiz_v2*/
+# Correções (notebook 06): geração e julgamento com o prompt v3
+/output/kaggle/geracao_v3/
+/output/kaggle/juiz_v3*/

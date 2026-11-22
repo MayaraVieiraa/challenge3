@@ -98,8 +98,11 @@ def _hash(*partes):
     return hashlib.sha256(json.dumps(partes, ensure_ascii=False, sort_keys=True).encode('utf-8')).hexdigest()
 
 
-def montar_pedido(pergunta_id, pergunta, recuperador, config):
-    """Devolve o pedido de uma pergunta: com prompt para a LLM ou com resposta fixa."""
+def montar_pedido(pergunta_id, pergunta, recuperador, config, versao_prompt='v1', data_atual=None):
+    """Devolve o pedido de uma pergunta: com prompt para a LLM ou com resposta fixa.
+
+    `versao_prompt='v3'` usa as regras novas do prompt (precisa de `data_atual`) e, na revisão, o validador v3.
+    """
     entrada = g.verificar_entrada(pergunta)
     fatos = extrair_fatos(entrada.pergunta_sanitizada)
     intencao = rotear_intencao(entrada.pergunta_sanitizada)
@@ -110,7 +113,7 @@ def montar_pedido(pergunta_id, pergunta, recuperador, config):
         return dict(base, precisa_llm=False, fontes=[], resposta_fixa=RESPOSTAS_FIXAS[entrada.acao])
     entregues, diag = recuperador.buscar(entrada.pergunta_sanitizada, config)
     fontes = [fonte_para_prompt(u) for u in entregues]
-    sistema, usuario = build_rag_prompt(entrada.pergunta_sanitizada, fontes)
+    sistema, usuario = build_rag_prompt(entrada.pergunta_sanitizada, fontes, versao=versao_prompt, data_atual=data_atual)
     sistema += INSTRUCAO_SAIDA_ESTRUTURADA
     fatos_presentes = {k: v for k, v in fatos.para_dict().items() if v not in (None, [], ())}
     if fatos_presentes:
@@ -133,9 +136,12 @@ def montar_pedido(pergunta_id, pergunta, recuperador, config):
         max_context_tokens=OPCOES_GERACAO['num_ctx'],
         max_output_tokens=OPCOES_GERACAO['num_predict'],
     )
-    return dict(base, precisa_llm=True, fontes=fontes, mensagens=mensagens, segundos_recuperacao=round(diag['segundos'], 1),
-                formato=FORMATO_SAIDA, janela_contexto=janela.para_dict(),
-                pedido_sha256=_hash(MODELO_GERACAO, OPCOES_GERACAO, mensagens, FORMATO_SAIDA))
+    pedido = dict(base, precisa_llm=True, fontes=fontes, mensagens=mensagens, segundos_recuperacao=round(diag['segundos'], 1),
+                  formato=FORMATO_SAIDA, janela_contexto=janela.para_dict(),
+                  pedido_sha256=_hash(MODELO_GERACAO, OPCOES_GERACAO, mensagens, FORMATO_SAIDA))
+    if versao_prompt != 'v1':   # pedidos v1 continuam idênticos aos já exportados
+        pedido['versao_prompt'] = versao_prompt
+    return pedido
 
 
 def analisar_saida_estruturada(texto):
@@ -197,9 +203,15 @@ def revisar(pedido, texto):
             texto = renderizar_saida_estruturada(analisar_saida_estruturada(texto))
         except ValueError:
             pass
-    fontes = [dict(texto=f['conteudo'], artigo_ref=f.get('artigo_ref'), processo=f.get('processo')) for f in pedido['fontes']]
+    fontes = [dict(texto=f['conteudo'], artigo_ref=f.get('artigo_ref'), processo=f.get('processo'), tipo=f.get('fonte'),
+                   caminho=f.get('caminho_relativo'), contexto=f.get('contexto')) for f in pedido['fontes']]
     entrada = g.ResultadoEntrada(pedido['acao'], pedido['pergunta_sanitizada'], pedido['sinais'], pedido['motivo'])
-    return g.verificar_saida(texto, fontes, entrada)
+    return g.verificar_saida(texto, fontes, entrada, versao=versao_guardrail(pedido))
+
+
+def versao_guardrail(pedido):
+    """Pedidos com prompt v3 são revisados pelo validador v3; os demais, pelo guardrail original."""
+    return 'v3' if pedido.get('versao_prompt') == 'v3' else 'v1'
 
 
 def motivo_fallback(pedido, resposta):
@@ -213,7 +225,8 @@ def motivo_fallback(pedido, resposta):
     if problemas:
         return 'tecnico: ' + '; '.join(problemas)
     saida = revisar(pedido, resposta['resposta'])
-    bloqueantes = sorted({a['codigo'] for a in saida.alertas if a['codigo'] in g.BLOQUEANTES})
+    lista = g.BLOQUEANTES_V3 if versao_guardrail(pedido) == 'v3' else g.BLOQUEANTES
+    bloqueantes = sorted({a['codigo'] for a in saida.alertas if a['codigo'] in lista})
     return 'guardrail: ' + ', '.join(bloqueantes) if bloqueantes else None
 
 
