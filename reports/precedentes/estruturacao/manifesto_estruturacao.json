@@ -1,0 +1,47 @@
+{
+  "arquivo": "data/processed/precedentes/precedentes_tst.jsonl",
+  "sha256": "05dbc05297f07661b0082ff80a4c33180cce9412ed8e8a1fca51c721fdd4b5a6",
+  "registros": 1493,
+  "buscaveis": 1026,
+  "esquema": [
+    "id",
+    "tipo",
+    "orgao",
+    "serie",
+    "numero",
+    "nome_citacao",
+    "titulo",
+    "texto",
+    "texto_busca",
+    "itens",
+    "questao_juridica",
+    "tese",
+    "referencias",
+    "avisos",
+    "assuntos",
+    "historico",
+    "remissoes_trt3",
+    "situacao",
+    "situacao_detalhe",
+    "alerta_vigencia",
+    "buscavel",
+    "fonte",
+    "texto_sha256"
+  ],
+  "fontes": {
+    "TRT3_2024": {
+      "sigla": "TRT3_2024",
+      "arquivo": "arquivo-versao-eletronica-28-6-2024-1.pdf",
+      "sha256": "603999652e74bac701b518dce3bb87b31cf12d086ffc7074c8b57ed6e46afbbc",
+      "data_referencia": "2024-06-28"
+    },
+    "IRR_2026": {
+      "sigla": "IRR_2026",
+      "arquivo": "Índice Temático IRRs - versão Novembro 19_11_2026.pdf",
+      "sha256": "3fd7edd1c4d41143815b6df4cdd891eac688e5dcb104936102c519cbeb1f9985",
+      "data_referencia": "2026-11-19"
+    }
+  },
+  "alertas_noticia": 25,
+  "brutos_sha256": "bcee3c2b1bb63f6b7faa8ac908f34c0e00b6bc6e1b53162cc360f409b4c0c2a4"
+}

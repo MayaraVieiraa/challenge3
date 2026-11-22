@@ -1,0 +1,27 @@
+serie,numero,codigo,titulo_noticia,alcance,na_coletanea,ja_cancelado_em_2024
+PN,100,PN-100,Férias iniciadas em sábado,integral,False,False
+SUM,450,SUM-450,Férias pagas com atraso,integral,True,False
+OJ-SDI1,14,OJ-SDI1-14,Aviso prévio cumprido em casa,integral,True,False
+OJ-SDI1,355,OJ-SDI1-355,Intervalo interjornada,integral,True,False
+SUM,452,SUM-452,Promoção por plano de cargos (PCS),integral,True,False
+OJ-SDI1,383,OJ-SDI1-383,Isonomia entre contratados diretos e terceirizados,integral,True,False
+SUM,449,SUM-449,Minutos que antecedem ou sucedem a jornada:,integral,True,False
+SUM,444,SUM-444,Jornada 12×36,integral,True,False
+SUM,437,SUM-437,Intervalo intrajornada,integral,True,False
+SUM,6,SUM-6,Equiparação Salarial,"itens I, II, VI (alínea “b”) e X.",True,False
+SUM,90,SUM-90,Horas In Itinere,integral,True,False
+SUM,320,SUM-320,Horas In Itinere (extensão),integral,True,False
+SUM,114,SUM-114,Prescrição Intercorrente,integral,True,False
+SUM,152,SUM-152,Gratificação por Ajuste Tácito,integral,True,False
+SUM,268,SUM-268,Prescrição após Arquivamento,integral,True,False
+SUM,277,SUM-277,Ultratividade da Norma Coletiva,integral,True,False
+SUM,294,SUM-294,Prescrição sobre alteração contratual,integral,True,False
+SUM,331,SUM-331,Terceirização,Item I,True,False
+SUM,366,SUM-366,Minutos residuais da jornada,integral,True,False
+SUM,372,SUM-372,Supressão de gratificação de função,Item I,True,False
+SUM,377,SUM-377,Preposto tem que ser empregado,integral,True,False
+SUM,429,SUM-429,Deslocamento interno,integral,True,False
+OJ-SDI1,418,OJ-SDI1-418,Critérios de promoção em PCS,integral,True,False
+OJ-SDC,16,OJ-SDC-16,Taxa de homologação de rescisão contratual,integral,True,False
+SUM,375,SUM-375,Reajuste salarial por norma coletiva x política nacional,integral,True,False
+SUM,423,SUM-423,Jornada em turno ininterrupto de revezamento,integral,True,False

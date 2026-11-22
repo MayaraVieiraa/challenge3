@@ -410,7 +410,7 @@ As correções serão aplicadas e medidas no notebook 06, com comparação de an
 | 1 | Regra de citação no prompt: só citar `[Fonte N]` se o trecho contém a informação. Validador automático depois da geração: dispositivo × afirmação, norma fora das fontes, lei sustentada só por acórdão, no máximo 2 fontes por afirmação. Os mesmos critérios entram no juiz | Falhas de citação e de memória; juiz brando |
 | 1 | Data atual no prompt; regra primeiro e exceção depois; preservar as condições de súmulas | Mecanismo distorcido e abertura invertida |
 | 2 | Cota de entrega ajustada por teste (2+2 × 3+3 × 5+5); recuperação em bloco por lei e recorte de artigos longos; metadados de escopo (doméstico, rural, professor) e de vigência | Ruído, normas separadas, escopo |
-| 3 | Nova base de precedentes (`notebooks/05_precedentes`): súmulas, OJs e temas do TST, separada da jurisprudência | Regra decisiva que hoje falta no corpus |
+| 3 | Nova base de precedentes (`notebooks/05_docs_precedentes`): súmulas, OJs e temas do TST, separada da jurisprudência | Regra decisiva que hoje falta no corpus |
 | 3 | Bases curadas: rescisão, seguro-desemprego, tributação das verbas, jornada, dano moral, FAQ do produto | Perguntas de fronteira e de alta frequência |
 
 **Teste do contexto ideal, antes de tudo.** Para 5 perguntas ruins (P19, P20, P23, P24 e P25), montamos à mão o contexto ideal e geramos a resposta de novo.
