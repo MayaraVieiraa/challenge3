@@ -1,6 +1,48 @@
 # Estado da integração (03_integracao)
 
-Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-19.
+Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-22.
+
+## Atualização de 2026-11-22 (Windows): notebook 05, comparação RAG × LLM
+
+`notebooks/03_integracao/05_comparacao_rag_llm.ipynb` é o validador e observador da qualidade: responde às 40 perguntas JUS da curadoria que seguem para a busca de cinco formas e mede todas com as mesmas métricas (recuperação, tríade do RAG e qualidade do LLM), com um painel de limites mínimos (validador) e o diagnóstico da etapa em que cada resposta reprovada falha (observador). Commit `53c8547`.
+
+| Configuração | Busca | Entrega |
+|---|---|---|
+| RAG isolado (`busca_sem_llm`) | híbrida | texto dos 3 artigos, sem LLM |
+| LLM isolado (`llm_isolado`) | — | Qwen3 8B sem fontes (`PROMPT_ISOLADO`) |
+| RAG + LLM básico (`rag_basico`) | só semântica (BGE-M3), sem lexical, RRF ou reranker | 5 artigos |
+| RAG + LLM básico + decisões (`rag_basico_jur`) | só semântica | 3 artigos + 3 decisões |
+| RAG + LLM híbrido (`rag_hibrido`) | configuração padrão | 3 artigos + 3 decisões |
+
+As três configurações RAG + LLM usam o mesmo modelo, as mesmas opções e o mesmo prompt; só as fontes mudam. As variantes básicas reaproveitam o pedido de geração original do RAG híbrido (texto livre, anterior à saída estruturada v2) e trocam só as fontes. O script confere que o prompt e o pedido do juiz originais continuam reproduzíveis com o código atual antes de montar os novos. O juiz é o Gemma 3 27B com a rubrica da comparação (`SISTEMA_JUIZ_COMPARACAO`) e veredito pela regra fixa. Os 200 julgamentos são válidos.
+
+| | Básico | Básico + decisões | Híbrido |
+|---|---|---|---|
+| Hit@3 dos artigos | 0,58 | 0,58 | 0,58 |
+| Correção (0–2) | 1,62 | 1,75 | 1,78 |
+| Afirmações sem apoio | 22% | 14% | 14% |
+| Decisões pertinentes | — | 85% | 85% |
+| Aprovadas pela regra (de 40) | 16 | 18 | 17 |
+| Tempo de busca / latência total | 0,2 s / 34 s | 0,85 s / 41 s | 16 s / 58 s |
+
+- **Achado principal:** o ganho do RAG híbrido sobre o básico vem das 3 decisões, não do algoritmo de busca. Com a mesma entrega, a busca semântica pura e a híbrida ficam praticamente iguais (correção melhor em 6 perguntas e pior em 5), e a semântica é cerca de 19 vezes mais rápida. É um indício, não uma decisão: 40 perguntas e um único juiz. O próximo passo é repetir básico + decisões × híbrido nas 111 perguntas da geração.
+- **Referência:** LLM isolado com correção 1,00 e 53% de afirmações sem apoio; RAG isolado com 91% de afirmações apoiadas, mas correção de 1,23. A segurança fica em 100% em todas as configurações.
+- **Validador:** todas as configurações com RAG ficam abaixo de dois limites, Hit@3 ≥ 0,70 e afirmações sem apoio ≤ 10%. Os limites foram declarados, não calibrados.
+- **Veredito:** a regra fixa é muito mais rígida que o veredito do próprio modelo (LLM isolado: 4 aprovadas pela regra contra 29 pelo modelo). Usar sempre a regra.
+
+**Como reproduzir** (`scripts/comparacao_rag_basico.py`; a variante padrão é `rag_basico`):
+
+1. `buscar --variante V`: busca local (precisa do Postgres no Docker) e grava os pedidos em `output/kaggle/comparacao/<V>/`.
+2. Subir o dataset e o kernel (`lexia-comparacao-rag-basico[-jur]`) e esperar a geração.
+3. `julgar --variante V`: monta os pedidos do juiz em `output/kaggle/comparacao/juiz_basico[_jur]/`. Subir e rodar o kernel `lexia-comparacao-juiz-basico[-jur]`.
+4. `importar`: baixa todas as saídas e grava `reports/integracao/comparacao/metricas_rag_llm_por_resposta.csv` e `recuperacao_rag_por_pergunta.csv` (só IDs, notas e tempos).
+5. `python scripts/criar_notebook_05_comparacao_rag_llm.py` e depois `python scripts/executar_notebook_jurisprudencia.py notebooks/03_integracao/05_comparacao_rag_llm.ipynb`. As conclusões ficam em `scripts/notebook_05_comparacao_rag_llm_conclusoes.md`.
+
+**Observações da execução:**
+
+- O CSV da curadoria (`perguntas_consolidadas_pre09.csv`) não existe no Windows. O script tira os 40 IDs e a referência da curadoria dos pedidos do juiz original (dataset `lexia-comparacao-juiz-pedidos`, baixado automaticamente).
+- Um pedido do juiz (`rag_basico_jur|q09_p1_JUS-038`) passou do limite estimado de contexto. Foi aceito pela contagem `cl100k` bruta (14.595 ≤ 16.384), sem truncar fontes, e a exceção ficou registrada no pedido. Nos 120 julgamentos originais, os tokens reais do Gemma ficaram entre 0,90 e 0,98 da contagem bruta. O módulo `context_window.py` não foi alterado.
+- O construtor anterior do Mac (`scripts/criar_notebook_integracao_05.py`, 3 configurações, `05_comparacao.ipynb`) continua no repositório, mas o notebook dele nunca foi versionado e depende do CSV da curadoria. O notebook novo cobre as mesmas 3 configurações e mais as 2 variantes básicas.
 
 ## Extensão multiagentes
 
@@ -47,6 +89,7 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
 | Guardrails de entrada e saída | `notebooks/03_integracao/02_guardrails.ipynb`, `src/integracao/guardrails.py` | concluída |
 | Geração estruturada (Qwen3 8B) | `src/integracao/geracao.py`, `scripts/*geracao*`, `notebooks/03_integracao/03_geracao.ipynb` | integração v2 em validação; saídas em `geracao_v2` |
 | Juiz (Gemma 3 27B) | `src/integracao/juiz.py`, `scripts/*juiz*`, `reports/integracao/juiz/*_27b*.csv` | avaliação histórica importada; falta validação humana adicional |
+| Comparação RAG × LLM (notebook 05) | `notebooks/03_integracao/05_comparacao_rag_llm.ipynb`, `scripts/comparacao_rag_basico.py`, `reports/integracao/comparacao/` | concluída com 5 configurações; falta repetir básico + decisões × híbrido em mais perguntas |
 | Sistema multiagentes | `src/multiagentes/`, `notebooks/04_multiagentes/` | implementação e testes recebidos da branch remota |
 | Buscador local | `src/multiagentes/buscador_local.py`, `scripts/consultar_buscador_local.py` | busca local implementada; avaliação jurídica não substituída |
 
@@ -63,6 +106,7 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
   - O gabarito é estreito; falta julgar a pertinência das decisões, o que o juiz vai fazer.
   - Ponto a investigar: sem reranker, a jurisprudência teve MRR = 0,21.
 - **Tempo:** 15 a 21 s por pergunta na CPU.
+- **Notebook 05:** nas 33 perguntas JUS da curadoria com artigo de referência, a busca só semântica empata com a híbrida na legislação (Hit@3 = 0,58; MRR@3 = 0,48 × 0,49), e a resposta final também fica praticamente igual quando as duas entregam 3 artigos + 3 decisões. Os conjuntos e os gabaritos são diferentes dos 16 acima, por isso os Hit@3 não se contradizem.
 
 ### Guardrails
 
@@ -106,7 +150,7 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
 
 Como o contrato mudou, esses resultados históricos não validam a saída estruturada v2. Antes de concluir uma nova avaliação, executar novamente os fluxos v2 e revisar manualmente respostas amostradas; não enviar dados sensíveis para repositórios públicos.
 
-Use caminhos absolutos no `kaggle datasets create` e no `kaggle kernels push`. Com caminho relativo, o upload falha no Windows.
+Use caminhos absolutos no `kaggle datasets create` e no `kaggle kernels push`. Com caminho relativo, o upload falha no Windows. No Git Bash, o caminho com barras normais (`C:/...`) também falha; rode pelo PowerShell com o caminho do Windows (`(Resolve-Path ...).Path`).
 
 ## Atualização do fluxo de geração (v2)
 
@@ -133,5 +177,6 @@ Os itens abaixo não estão no GitHub e precisam ser recriados ou copiados.
 - **Token do Kaggle** em `~/.kaggle`.
 - **Pedidos e respostas antigos** em `output/kaggle/geracao/` e `output/kaggle/juiz/`; novos artefatos estruturados ficam em `output/kaggle/geracao_v2/` e `output/kaggle/juiz_v2/`. Todos estão fora do Git porque podem conter trechos de decisões e perguntas protegidas.
   - Os pedidos novos são destinados aos datasets privados `laisapaiva93/lexia-geracao-pedidos-v2` e `laisapaiva93/lexia-juiz-pedidos-v2`.
+- **Comparação do notebook 05:** pedidos e respostas em `output/kaggle/comparacao/` (fora do Git). Datasets privados `lexia-comparacao-{isolado,juiz,rag-basico,juiz-basico,rag-basico-jur,juiz-basico-jur}-pedidos`; o `importar` baixa as saídas dos kernels de mesmo nome.
 - **Histórico da branch remota:** datasets privados antigos `lexia-geracao-pedidos`, `lexia-juiz-27b-pedidos` e `lexia-juiz-27b-llama-pedidos`; novos datasets usam nomes com sufixo `-v2`.
 - **Regra do repositório:** commits sem a linha de atribuição do Claude.
