@@ -99,6 +99,21 @@ Com a nota de vigência, o modelo pode responder corretamente nos três momentos
 
 O mesmo cuidado vale para os precedentes. Por isso a situação de cada súmula (vigente, cancelada ou em quarentena) vai junto do texto.
 ''')
+md('prec_mapa_dados', '''
+### Mapa de dados da pasta (da origem ao banco)
+
+| | Caminho no repositório | Formato | Quantidade | Versionado? |
+|---|---|---|---|---|
+| Documentos recebidos (01) | `data/raw/precedentes/*.pdf` | PDF | 10 arquivos, 8 distintos | fora do Git |
+| Blocos brutos (01) | `data/interim/precedentes/verbetes_brutos.jsonl` | JSONL (um registro JSON por linha) | 1.596 blocos | fora do Git |
+| **Base estruturada (03)** | `data/processed/precedentes/precedentes_tst.jsonl` | JSONL (um registro JSON por linha) | **1.493 registros**: 463 súmulas, 709 OJs e 321 temas; 1.022 buscáveis | fora do Git |
+| Trechos (04) | `data/processed/precedentes/chunks_precedentes.jsonl` | JSONL (um registro JSON por linha) | 1.268 trechos | fora do Git |
+| Vetores (05) | `data/processed/precedentes/vetores_bge_m3.npy` | NumPy (.npy) | 1.268 × 1.024 | fora do Git |
+| Banco (05) | `PostgreSQL, schema lex_precedentes` | tabelas | embeddings 1.268 · registros 1.493 · lexico 1.268 | fora do Git (banco) |
+| Relatórios (01 a 06) | `reports/precedentes/ (auditoria, eda, estruturacao, chunking, indexacao, avaliacao)` | CSV, JSON e PNG | só identificadores, contagens e hashes | sim |
+
+**Formato:** a base estruturada é gravada em **JSONL** (texto, um registro JSON por linha), e não em CSV, porque cada registro tem campos com listas (itens da súmula, páginas, assuntos, histórico). Os arquivos **CSV** do projeto são os relatórios em `reports/precedentes/`. Os arquivos de dados ficam em `data/`, dentro da pasta do repositório, mas **fora do Git** (`.gitignore`): contêm texto integral e são recriados pelos notebooks.
+''')
 code('prec_docs_inv', r'''
 from pathlib import Path
 import pandas as pd

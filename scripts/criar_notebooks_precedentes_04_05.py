@@ -70,6 +70,17 @@ Este notebook divide os registros do JSONL único (notebook 03) em **trechos**, 
 | Tamanho | Até **220 tokens** (tokenizador do BGE-M3), com o cabeçalho incluído. Acima disso, o texto é dividido por frases, com o cabeçalho repetido e "parte k de n" | O reranker lê 256 tokens por par pergunta–trecho. Descontada a pergunta, um trecho de até 220 tokens é lido inteiro |
 | Entrega | A busca encontra o trecho, mas o modelo recebe o **registro inteiro**, com todos os itens e o nome de citação | É o mesmo padrão da legislação, que busca no parágrafo e entrega o artigo. O item encontrado indica onde está a regra, mas o enunciado completo evita perder condições de outros itens |
 ''')
+n4.md('ch_dados', '''
+### Dados desta etapa
+
+| | Caminho no repositório | Formato | Quantidade | Versionado? |
+|---|---|---|---|---|
+| Entrada | `data/processed/precedentes/precedentes_tst.jsonl` | JSONL (um registro JSON por linha) | 1.493 registros (1.022 buscáveis) | fora do Git |
+| Saída | `data/processed/precedentes/chunks_precedentes.jsonl` | JSONL (um registro JSON por linha) | **1.268 trechos** (442 de súmulas, 425 de OJs, 401 de temas) | fora do Git |
+| Relatórios | `reports/precedentes/chunking/` | CSV, JSON e PNG | contagens.csv (3 linhas: uma por tipo), manifesto_chunking.json, tokens_trechos.png | sim |
+
+**Formato:** a base estruturada é gravada em **JSONL** (texto, um registro JSON por linha), e não em CSV, porque cada registro tem campos com listas (itens da súmula, páginas, assuntos, histórico). Os arquivos **CSV** do projeto são os relatórios em `reports/precedentes/`. Os arquivos de dados ficam em `data/`, dentro da pasta do repositório, mas **fora do Git** (`.gitignore`): contêm texto integral e são recriados pelos notebooks.
+''')
 n4.code('ch_setup', SETUP + r'''
 from transformers import AutoTokenizer
 from src.integracao.recuperacao import MODELO, REVISAO
@@ -150,6 +161,9 @@ Os trechos vão para `data/processed/precedentes/chunks_precedentes.jsonl`, fora
 
 O notebook 05 confere esse hash antes de gerar os vetores.
 ''')
+n4.md('ch_grava_dados', '''
+> **Grava:** `data/processed/precedentes/chunks_precedentes.jsonl` (JSONL, 1.268 linhas, fora do Git) e `reports/precedentes/chunking/manifesto_chunking.json`
+''')
 n4.code('ch_grava', r'''
 if problemas:
     raise ValueError(f'{len(problemas)} problemas; nada foi gravado')
@@ -193,6 +207,19 @@ Este notebook gera os vetores dos trechos do notebook 04 e grava a base no Postg
 | Tabelas | `datasets` (manifesto e estado); `embeddings` (um trecho por linha); `registros` (o registro inteiro, incluindo os que estão fora da busca, para a entrega e para dizer que um enunciado foi cancelado) |
 | Índice | Busca **exata**, sem índice aproximado: com cerca de 1,3 mil vetores, a varredura completa é rápida e não perde resultados. Mais um índice para a busca por palavras (`lex_precedentes.lexico`), com o texto normalizado e **sem stopwords** (seção 3) |
 ''')
+n5.md('ix_dados', '''
+### Dados desta etapa
+
+| | Caminho no repositório | Formato | Quantidade | Versionado? |
+|---|---|---|---|---|
+| Entrada | `data/processed/precedentes/chunks_precedentes.jsonl` | JSONL (um registro JSON por linha) | 1.268 trechos | fora do Git |
+| Entrada | `data/processed/precedentes/precedentes_tst.jsonl` | JSONL (um registro JSON por linha) | 1.493 registros | fora do Git |
+| Saída (cache) | `data/processed/precedentes/vetores_bge_m3.npy` | NumPy (.npy), float32 | matriz 1.268 × 1.024 | fora do Git |
+| Saída (banco) | `PostgreSQL no Docker, schema lex_precedentes` | tabelas | datasets (1 versão validada), embeddings (1.268 linhas), registros (1.493), lexico (1.268) | fora do Git (banco) |
+| Relatórios | `reports/precedentes/indexacao/manifesto_indexacao.json` | JSON | manifesto da versão (hashes e contagens) | sim |
+
+**Formato:** a base estruturada é gravada em **JSONL** (texto, um registro JSON por linha), e não em CSV, porque cada registro tem campos com listas (itens da súmula, páginas, assuntos, histórico). Os arquivos **CSV** do projeto são os relatórios em `reports/precedentes/`. Os arquivos de dados ficam em `data/`, dentro da pasta do repositório, mas **fora do Git** (`.gitignore`): contêm texto integral e são recriados pelos notebooks.
+''')
 n5.code('ix_setup', SETUP + r'''
 import numpy as np, psycopg
 from sentence_transformers import SentenceTransformer
@@ -214,6 +241,10 @@ n5.md('ix_vet_texto', '''
 
 Os vetores são calculados no computador local, na CPU, porque são poucos trechos. Eles ficam num cache em `data/processed/precedentes/`. Uma nova execução só recalcula se os textos mudarem.
 ''')
+n5.md('ix_vet_dados', '''
+> **Lê:** `data/processed/precedentes/chunks_precedentes.jsonl` (1.268 trechos)  
+> **Grava:** `data/processed/precedentes/vetores_bge_m3.npy` (NumPy, 1.268 × 1.024, fora do Git)
+''')
 n5.code('ix_vet', r'''
 import time
 inicio = time.monotonic()
@@ -226,6 +257,10 @@ print(f'norma: mín {normas.min():.4f} · máx {normas.max():.4f} (normalizados)
 ''')
 
 n5.md('ix_imp_texto', '## 2. Manifesto, importação e conferência')
+n5.md('ix_imp_dados', '''
+> **Lê:** os trechos, os vetores e os 1.493 registros  
+> **Grava:** tabelas `lex_precedentes.datasets`, `lex_precedentes.embeddings` (1.268 linhas) e `lex_precedentes.registros` (1.493 linhas) no PostgreSQL; `reports/precedentes/indexacao/manifesto_indexacao.json`
+''')
 n5.code('ix_imp', r'''
 manifesto = ix.manifesto(trechos, vetores, registros, MODELO, REVISAO, sha_tr, sha_reg, man_ch['limite_tokens'])
 conexao = psycopg.connect(load_database_url(ROOT / '.env.pgvector.local'), autocommit=True)
@@ -258,6 +293,10 @@ A busca por palavras do PostgreSQL compara as palavras da pergunta com as do tre
 **Sem stopwords.** O índice padrão em português descarta palavras como "não", "de", "a" e "o". No texto jurídico, "não" muda o sentido da regra: "é devido" e "não é devido" ficavam iguais no índice. Por isso usamos uma configuração própria (`lex_precedentes.pt_sem_stopwords`), que mantém todas as palavras e só aplica o radicalizador, que reduz "trabalhadores" e "trabalhador" à mesma raiz.
 
 **As palavras comuns não atrapalham porque cada palavra pesa pelo IDF**, como no BM25. "De" aparece em quase todos os trechos e pesa perto de zero; "338" ou "insalubridade" são raras e pesam muito. Nenhuma palavra é descartada, mas as frequentes quase não contam.
+''')
+n5.md('ix_lex_dados', '''
+> **Lê:** `lex_precedentes.embeddings`  
+> **Grava:** tabela `lex_precedentes.lexico` (1.268 linhas, texto normalizado) no PostgreSQL
 ''')
 n5.code('ix_lex', r'''
 from src.precedentes import normalizacao as nz

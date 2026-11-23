@@ -84,6 +84,17 @@ Primeiro notebook da base de precedentes do TST. O `00_introducao_precedentes.ip
 | `05_embeddings_indexacao_precedentes` | BGE-M3 e schema `lex_precedentes` validado | pronto |
 | `06_avaliacao_recuperacao_precedentes` | Hit@k com o precedente esperado | a fazer |
 ''')
+n1.md('aud_dados', '''
+### Dados desta etapa
+
+| | Caminho no repositório | Formato | Quantidade | Versionado? |
+|---|---|---|---|---|
+| Entrada | `data/raw/precedentes/*.pdf` | PDF | 10 arquivos (8 documentos distintos); coletânea TRT-3 com 421 páginas e índice de IRR com 221 | fora do Git |
+| Saída | `data/interim/precedentes/verbetes_brutos.jsonl` | JSONL (um registro JSON por linha) | 1.596 blocos brutos: 1.172 súmulas e OJs + 424 blocos de temas (321 temas distintos) | fora do Git |
+| Relatórios | `reports/precedentes/auditoria/` | CSV e JSON | inventario_documentos.csv (10 linhas), numeracao_series.csv (9), conferencia_noticia_cancelamento.csv (26), manifesto_auditoria.json | sim |
+
+**Formato:** a base estruturada é gravada em **JSONL** (texto, um registro JSON por linha), e não em CSV, porque cada registro tem campos com listas (itens da súmula, páginas, assuntos, histórico). Os arquivos **CSV** do projeto são os relatórios em `reports/precedentes/`. Os arquivos de dados ficam em `data/`, dentro da pasta do repositório, mas **fora do Git** (`.gitignore`): contêm texto integral e são recriados pelos notebooks.
+''')
 n1.code('aud_setup', SETUP + r'''
 from src.precedentes import documentos, extracao
 (REL / 'auditoria').mkdir(parents=True, exist_ok=True)
@@ -95,6 +106,10 @@ n1.md('aud_inv_texto', '''
 Os 10 PDFs enviados estão em `data/raw/precedentes/` exatamente como foram baixados. Eles ficam fora do Git porque são grandes: o maior tem 238 MB. O inventário registra o hash de cada um para que a extração possa ser refeita com a mesma versão.
 
 Dois arquivos terminam em "(1)": a coletânea do TRT-3 e o índice de repercussão geral foram baixados duas vezes. O hash mostra que são cópias byte a byte dos originais. Eles ficam registrados como `duplicata` e não são lidos. Por isso, há **10 arquivos e 8 documentos distintos**.
+''')
+n1.md('aud_inv_dados', '''
+> **Lê:** `data/raw/precedentes/*.pdf` (10 PDFs)  
+> **Grava:** `reports/precedentes/auditoria/inventario_documentos.csv` (CSV, 10 linhas: uma por arquivo)
 ''')
 n1.code('aud_inv', r'''
 inv = documentos.inventario(RAW)
@@ -169,6 +184,10 @@ Durante o desenvolvimento, essa conferência pegou três problemas na leitura do
 - redações antigas no histórico que pareciam verbetes novos, como `OJ-SDC-6 –Dissídio...`;
 - títulos de tema justificados palavra por palavra, em que o número ficava em outro bloco.
 ''')
+n1.md('aud_extr_dados', '''
+> **Lê:** a coletânea do TRT-3 (p. 65–256) e o índice de IRR (p. 12–121)  
+> **Grava:** `reports/precedentes/auditoria/numeracao_series.csv` (CSV, 9 linhas: uma por série)
+''')
 n1.code('aud_extr', r'''
 verbetes = extracao.verbetes_tst_trt3(RAW / 'arquivo-versao-eletronica-28-6-2024-1.pdf')
 temas = extracao.temas_irr(RAW / 'Índice Temático IRRs - versão Novembro 19_11_2026.pdf')
@@ -203,6 +222,10 @@ A coletânea foi atualizada até **28/06/2024**. A notícia recebida diz que o T
 - se o enunciado existe;
 - se a coletânea já o dava como cancelado.
 ''')
+n1.md('aud_vig_dados', '''
+> **Lê:** `data/raw/precedentes/cancelamento_36_enunciados_tst.pdf`  
+> **Grava:** `reports/precedentes/auditoria/conferencia_noticia_cancelamento.csv` (CSV, 26 linhas)
+''')
 n1.code('aud_vig', r'''
 noticia = pd.DataFrame(extracao.cancelamentos_noticia(RAW / 'cancelamento_36_enunciados_tst.pdf'))
 cabecalho = {v['codigo']: v['texto_bruto'][:400].lower() for v in verbetes}
@@ -234,6 +257,9 @@ n1.md('aud_grava_texto', '''
 ## 6. Gravação dos blocos brutos e manifesto
 
 Os blocos brutos vão para `data/interim/precedentes/`, fora do Git, e são a entrada da EDA e da limpeza. O manifesto, que é versionado, registra o hash de cada PDF de origem e o hash do arquivo bruto. Com isso, qualquer mudança nos documentos ou no extrator aparece na próxima execução.
+''')
+n1.md('aud_grava_dados', '''
+> **Grava:** `data/interim/precedentes/verbetes_brutos.jsonl` (JSONL, 1.596 linhas, fora do Git) e `reports/precedentes/auditoria/manifesto_auditoria.json` (hashes)
 ''')
 n1.code('aud_grava', r'''
 import hashlib
@@ -286,6 +312,16 @@ Este notebook explora os blocos brutos gravados pela auditoria (notebook 01), an
 4. **Se a cor do título dos temas bate com o texto da tese.**
 5. **Quais normas os precedentes interpretam.**
 6. **Se os precedentes que faltaram nas 25 respostas do advogado estão nos documentos.**
+''')
+n2.md('eda_dados', '''
+### Dados desta etapa
+
+| | Caminho no repositório | Formato | Quantidade | Versionado? |
+|---|---|---|---|---|
+| Entrada | `data/interim/precedentes/verbetes_brutos.jsonl` | JSONL (um registro JSON por linha) | 1.596 blocos brutos (1.172 súmulas e OJs + 424 blocos de temas) | fora do Git |
+| Relatórios | `reports/precedentes/eda/` | CSV e PNG | tokens_por_tipo.csv (3 linhas), ruido_texto_bruto.csv (6), temas_cor_vs_tese.csv (4), artigos_clt_mais_citados.csv (15), cobertura_precedentes_respostas.csv (7) e 2 gráficos | sim |
+
+A EDA não grava dados novos: só lê os blocos brutos e grava relatórios.
 ''')
 n2.code('eda_setup', SETUP + r'''
 import re
@@ -551,6 +587,17 @@ Este notebook transforma os blocos brutos da auditoria num **JSONL único**, `da
 | `tese_superada` | Tese "Superada" | não |
 | alerta da notícia | Cancelamento noticiado sem fonte oficial. A situação oficial não muda | integral: **não** (quarentena); parcial: sim, com o alerta |
 ''')
+n3.md('lim_dados', '''
+### Dados desta etapa
+
+| | Caminho no repositório | Formato | Quantidade | Versionado? |
+|---|---|---|---|---|
+| Entrada | `data/interim/precedentes/verbetes_brutos.jsonl` | JSONL (um registro JSON por linha) | 1.596 blocos brutos | fora do Git |
+| **Saída: a base de precedentes** | `data/processed/precedentes/precedentes_tst.jsonl` | JSONL (um registro JSON por linha) | **1.493 registros** (463 súmulas, 709 OJs, 321 temas), dos quais **1.022 buscáveis**; 23 campos por registro | fora do Git |
+| Relatórios | `reports/precedentes/estruturacao/` | CSV e JSON | contagens.csv (8 linhas: tipo × situação), manifesto_estruturacao.json (hash do JSONL) | sim |
+
+**Formato:** a base estruturada é gravada em **JSONL** (texto, um registro JSON por linha), e não em CSV, porque cada registro tem campos com listas (itens da súmula, páginas, assuntos, histórico). Os arquivos **CSV** do projeto são os relatórios em `reports/precedentes/`. Os arquivos de dados ficam em `data/`, dentro da pasta do repositório, mas **fora do Git** (`.gitignore`): contêm texto integral e são recriados pelos notebooks.
+''')
 n3.code('lim_setup', SETUP + r'''
 from src.precedentes import documentos, extracao, estruturacao as est
 brutos = [json.loads(l) for l in BRUTOS.read_text(encoding='utf-8').splitlines()]
@@ -629,6 +676,9 @@ O arquivo só é gravado se passar nas verificações abaixo:
 - nenhum registro buscável sem texto de busca.
 
 O manifesto registra o hash do JSONL, das fontes e as contagens. Com isso, o chunking do notebook 04 pode conferir que usa exatamente esta versão.
+''')
+n3.md('lim_valid_dados', '''
+> **Grava:** `data/processed/precedentes/precedentes_tst.jsonl` (JSONL, 1.493 linhas, fora do Git), `reports/precedentes/estruturacao/contagens.csv` (CSV, 8 linhas) e `manifesto_estruturacao.json`
 ''')
 n3.code('lim_valid', r'''
 problemas = est.validar(registros)

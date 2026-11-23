@@ -3,9 +3,11 @@
 Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-22.
 
 **Próximos passos, em ordem:**
-1. **Base de precedentes:**
-   - notebook `06_avaliacao_recuperacao_precedentes`, com Hit@1 e Hit@3 e o gabarito do precedente esperado, repetindo o teste de posição com o texto oficial;
-   - depois, a integração como **terceira fonte** da busca, com cota própria e citação pelo nome no prompt ("Súmula 338, I, do TST").
+1. **Base de precedentes:** integrar como **terceira fonte** da busca. O notebook 06 de avaliação está pronto (ver a seção sobre ele). O que integrar:
+   - busca híbrida + reranker, com o conjunto do reranker vindo da **união** dos primeiros da busca semântica e da busca por palavras;
+   - cota inicial de 3 precedentes;
+   - citação pelo nome no prompt ("Súmula 338, I, do TST");
+   - dicionário de sinônimos jurídicos na pergunta ("13º salário" = "gratificação natalina").
 2. **Feito pela usuária, à parte:** juiz Gemma 3 27B nas respostas v3 e v3.1. Não rodar.
 3. **Testes num conjunto maior de perguntas, decididos pela usuária para depois:**
    - EC 141/2026 e regra 24 (jornada, repouso e domésticos);
@@ -20,6 +22,41 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
 5. **Pendências de fonte, que dependem da usuária:**
    - livro oficial de súmulas e OJs do TST de 2026, ou a resolução dos cancelamentos, para confirmar os 22 enunciados em quarentena;
    - divisor 220 da LC 150, ligado às 44 horas.
+
+## Atualização de 2026-11-22 (noite): avaliação da base de precedentes (notebook 06) e quadros de dados
+
+**Notebook `06_avaliacao_recuperacao_precedentes`** (`scripts/criar_notebook_precedentes_06.py`, `src/precedentes/avaliacao.py`). Ele leva cerca de 80 minutos na CPU, sobretudo por causa do reranker.
+
+**Gabarito A, especialista:** 7 perguntas reais em que o advogado apontou o precedente que faltou.
+- Com a busca híbrida + reranker, ficam em 1º as Súmulas 338, 276, 378 e 6 e o Tema 58. Na base de jurisprudência, eram da 8ª à 3.370ª posição.
+- A semântica sozinha acha 6 dos 7 até o 3º lugar.
+- Falhas:
+  - **Súmula 60:** a fusão com a busca por palavras a levou ao 21º lugar, fora dos 20 que o reranker reordena;
+  - **Súmula 45:** "13º salário" × "gratificação natalina", um sinônimo que nenhuma busca ligou.
+
+**Gabarito B, prata:** 300 trechos de acórdãos que citam exatamente um precedente, com a citação mascarada e sem transcrição, no máximo 3 por precedente.
+
+| Busca | Hit@1 | Hit@3 | MRR@10 |
+|---|---|---|---|
+| **Híbrida + reranker** | 0,33 | 0,53 | 0,44 |
+| Semântica | 0,29 | 0,46 | 0,40 |
+| Híbrida sem reranker | 0,27 | 0,43 | 0,37 |
+| Por palavras | 0,17 | 0,30 | 0,25 |
+
+- **Por que B é conservador:** muitos erros são súmulas processuais (126, 333, 422), e parte deles é um precedente vizinho correto (Súmula 438 e Tema 211).
+- **Relatórios:** `reports/precedentes/avaliacao/`, só com identificadores, nomes de precedentes e posições.
+
+**Quadros "Dados desta etapa"** (pedido da usuária):
+- **Onde estão:** em todos os notebooks de dados, ou seja, legislação 01 a 06, jurisprudência 01 a 06 e precedentes 00 a 06.
+- **O que mostram:** entrada e saída com caminho no repositório, formato, quantidade e se o arquivo é versionado, mais as notas "Lê/Grava" antes das células que gravam.
+- **Formatos:**
+  - precedentes: a base é **JSONL**, não CSV, porque os registros têm campos com listas;
+  - legislação: Parquet, CSV e JSON;
+  - jurisprudência: Parquet canônico e exportação em JSONL.
+- **Como foram inseridos:** só como células novas, sem reexecutar.
+  - Na jurisprudência, pela API de preservação (`AGENTS.md`), com cópia em `reports/jurisprudencia/versoes_notebooks/`.
+  - O diff mostra 286 linhas acrescentadas e 0 removidas.
+- **Cuidado:** os geradores sobrescrevem o notebook executado. Depois de rodar um gerador, é preciso reexecutar o notebook.
 
 ## Atualização de 2026-11-22 (noite): base de precedentes do TST, notebooks 00 a 05
 
@@ -295,7 +332,7 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
 | Avaliação e diagnóstico (notebook 04) | `notebooks/03_integracao/04_avaliacao.ipynb`, `scripts/criar_notebook_integracao_04.py`, `scripts/importar_revisao_juiz.py` | concluída com juiz 27B, validação com especialista e prioridades de correção |
 | Correções (notebook 06) | `notebooks/03_integracao/06_correcoes.ipynb`, `src/integracao/prompt_juridico.py` (v3, regras 16 a 24), `src/integracao/guardrails.py` (validador v3) | concluída a medição de v3 e v3.1 no validador. Faltam o juiz 27B (feito pela usuária) e os critérios novos do juiz |
 | Legislação versionada (EC 141/2026) | `VERSOES_LEGISLACAO` em `src/integracao/recuperacao.py`, `scripts/atualizar_legislacao_*.py` | concluída: versão `ec141_2026_notas` é o padrão da busca, e a `original` está preservada |
-| Base de precedentes do TST | `notebooks/05_docs_precedentes/`, `src/precedentes/`, schema `lex_precedentes` | notebooks 00 a 05 prontos e versão `bdf048e6…` validada. Faltam o 06 e a integração como terceira fonte. Os notebooks não estão commitados |
+| Base de precedentes do TST | `notebooks/05_docs_precedentes/`, `src/precedentes/`, schema `lex_precedentes` | notebooks 00 a 06 prontos; versão `bdf048e6…` validada e avaliada (gabarito A: 5 de 7 em 1º; gabarito B: Hit@3 0,53). Falta a integração como terceira fonte. Os notebooks não estão commitados |
 | Comparação RAG × LLM (notebook 05) | `notebooks/03_integracao/05_comparacao_rag_llm.ipynb`, `scripts/comparacao_rag_basico.py`, `reports/integracao/comparacao/` | concluída com 5 configurações; falta repetir básico + decisões × híbrido em mais perguntas |
 | Sistema multiagentes | `src/multiagentes/`, `notebooks/04_multiagentes/` | implementação e testes recebidos da branch remota |
 | Buscador local | `src/multiagentes/buscador_local.py`, `scripts/consultar_buscador_local.py` | busca local implementada; avaliação jurídica não substituída |
