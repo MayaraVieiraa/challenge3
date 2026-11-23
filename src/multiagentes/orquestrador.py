@@ -20,8 +20,9 @@ from langgraph.graph import END, START, StateGraph
 from langsmith import tracing_context
 
 from src.integracao import guardrails as g
+from src.integracao.context_window import ContextWindowExceeded, validar_janela_contexto
 from src.integracao.geracao import RESPOSTAS_FIXAS
-from .analista import Analista
+from .analista import VERSAO_PROMPT_JURIDICO, Analista
 from .cliente_llm import ErroLLM
 from .contratos import ErroContrato, MAX_PROBLEMAS
 from .validador import Validador
@@ -210,13 +211,15 @@ class SistemaMultiagentes:
         restante = self._conferir_tempo(estado)
         if estado["chamadas_llm"] >= self.config.max_chamadas_llm:
             raise _FalhaExecucao("orcamento_llm_esgotado")
-        # Limite conservador em bytes, sem cortar texto: a seleção de fontes
-        # acontece antes do snapshot. A margem também reserva saída e template.
-        bytes_prompt = len(json.dumps(pedido["mensagens"], ensure_ascii=False).encode("utf-8"))
+        # Limite sem cortar texto: a seleção de fontes acontece antes do snapshot. Até multiagentes-v2 o limite
+        # contava bytes como tokens; com o prompt v3 (8,4 KB) isso estourava. Agora usa a mesma estimativa de
+        # tokens da geração (cl100k_base x 1,25, margem de 512), que também reserva a saída.
         opcoes = pedido["opcoes"]
-        limite = opcoes.get("num_ctx", 16384) - opcoes.get("num_predict", 1800) - 512
-        if bytes_prompt > limite:
-            raise _FalhaExecucao("contexto_excedido", limitada=True)
+        try:
+            validar_janela_contexto(pedido["mensagens"], max_context_tokens=opcoes.get("num_ctx", 16384),
+                                    max_output_tokens=opcoes.get("num_predict", 1800))
+        except ContextWindowExceeded:
+            raise _FalhaExecucao("contexto_excedido", limitada=True) from None
         estado["chamadas_llm"] += 1
         self._evento(
             estado, "chamada_llm", estado["agente"],
@@ -382,12 +385,17 @@ class SistemaMultiagentes:
                 candidato += " [Fonte 99]"
             estado["falha_injetada"] = True
             self._evento(estado, "falha_controlada", tipo="citacao_inexistente", falha_injetada=True)
+        # Prompt v3 é revisado pelo validador v3, como na geração (geracao.versao_guardrail): o v3 precisa do
+        # tipo, do caminho e do nome de citação das fontes.
         fontes = [
-            dict(texto=f["conteudo"], artigo_ref=f.get("artigo_ref"), processo=f.get("processo"))
+            dict(texto=f["conteudo"], artigo_ref=f.get("artigo_ref"), processo=f.get("processo"),
+                 tipo=f.get("fonte"), caminho=f.get("caminho_relativo"), contexto=f.get("contexto"),
+                 nome_citacao=f.get("nome_citacao"), situacao=f.get("situacao"),
+                 alerta_vigencia=f.get("alerta_vigencia"), alerta_lei_posterior=f.get("alerta_lei_posterior"))
             for f in self._fontes(estado)
         ]
         verificacao = g.verificar_saida(
-            candidato, fontes, g.ResultadoEntrada(**estado["entrada"]),
+            candidato, fontes, g.ResultadoEntrada(**estado["entrada"]), versao=VERSAO_PROMPT_JURIDICO,
         )
         estado["historico"].append(dict(
             versao=estado["revisoes_usadas"],

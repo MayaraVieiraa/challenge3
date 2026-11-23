@@ -140,9 +140,9 @@ def mensagens_com_fontes(pedido, fontes):
 
 def buscar():
     from src.storage.pgvector_store import load_database_url
-    from src.integracao.recuperacao import Recuperador, Configuracao
+    from src.integracao.recuperacao import Recuperador, configuracao_duas_bases
     nome, v = variante()
-    config = Configuracao(**v['config'])
+    config = configuracao_duas_bases(**v['config'])   # medido antes das 3 bases
     recuperador = Recuperador(load_database_url(ROOT / '.env.pgvector.local'), device='cpu', carregar_reranker=False)
     pedidos = []
     for i, item in enumerate(conjunto(), 1):

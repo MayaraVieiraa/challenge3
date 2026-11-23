@@ -27,7 +27,7 @@ import pandas as pd  # noqa: E402
 from src.integracao.context_window import ContextWindowExceeded, validar_janela_contexto  # noqa: E402
 from src.integracao.geracao import _hash, fonte_para_prompt  # noqa: E402
 from src.integracao.prompt_juridico import build_rag_prompt  # noqa: E402
-from src.integracao.recuperacao import Configuracao, Recuperador, VERSOES_LEGISLACAO  # noqa: E402
+from src.integracao.recuperacao import Recuperador, VERSOES_LEGISLACAO, configuracao_duas_bases  # noqa: E402
 from src.storage.pgvector_store import load_database_url  # noqa: E402
 
 ORIGEM = ROOT / 'output/kaggle/geracao'
@@ -42,7 +42,7 @@ COTA_LEGISLACAO = 3
 
 
 def legislacao(recuperador, pergunta):
-    config = Configuracao(fontes=('legislacao',), entrega_por_fonte={'legislacao': COTA_LEGISLACAO}, top_k=10)
+    config = configuracao_duas_bases(fontes=('legislacao',), entrega_por_fonte={'legislacao': COTA_LEGISLACAO}, top_k=10)
     entregues, _ = recuperador.buscar(pergunta, config)
     return [fonte_para_prompt(u) for u in entregues]
 

@@ -34,7 +34,9 @@ MAX_ARTIGOS_LOCAL = 20000
 MAX_BYTES_CORPUS_LOCAL = 32 * 1024 * 1024
 VERSAO_PACOTE = 'multiagentes-kaggle-v1'
 _ARTIGO = re.compile(r'Art\.?\s*(\d+)[ºo°]?(?:-([A-Z]))?\.?', re.IGNORECASE)
-_INTEGRACAO = ('__init__.py', 'geracao.py', 'guardrails.py', 'prompt_juridico.py')
+# context_window e stracting: importados por geracao.py; situacao_precedentes.json: lido pelo validador v3 (multiagentes-v3)
+_INTEGRACAO = ('__init__.py', 'context_window.py', 'geracao.py', 'guardrails.py', 'prompt_juridico.py', 'stracting.py',
+               'situacao_precedentes.json')
 
 
 def _json_bytes(valor):

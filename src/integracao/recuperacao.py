@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
+import json
 import os
 import time
 
@@ -40,8 +41,12 @@ VERSOES_LEGISLACAO = {
     # scripts/atualizar_legislacao_notas_ec141.py; reports/legislacao/atualizacoes/ec_141_2026_notas.json
     'ec141_2026_notas': ('dca7b51d5efa82bb000a427de92bd92aab4d162f9a7881a4d0ff9cad948692e5',
                          'd61d07a50919f1f423b26726d22085519b17fb1429f858bbef12dd969179c62d'),
+    # ec141_2026_notas + nota no divisor 220 da LC 150/2015, art. 2º, § 2º (opção B, 2026-11-23). Usada a partir da v3.3.
+    # scripts/atualizar_legislacao_nota_divisor_lc150.py; reports/legislacao/atualizacoes/lc150_divisor_220_nota.json
+    'ec141_2026_notas_divisor': ('96d0710a21cdf06ceb29a839cd295a1ba09a38b70a413477d57b108621cd4346',
+                                 'fbb9073502063f5c3866e9343c0abf519d157afe822342fd11acc3957d6acb40'),
 }
-VERSAO_LEGISLACAO = 'ec141_2026_notas'
+VERSAO_LEGISLACAO = 'ec141_2026_notas_divisor'
 LEGISLACAO_D, LEGISLACAO_A = VERSOES_LEGISLACAO[VERSAO_LEGISLACAO]  # D_paragrafo_completo, A_artigo
 MODELO = 'BAAI/bge-m3'
 REVISAO = '5617a9f61b028005a4858fdac845db406aefb181'
@@ -76,32 +81,43 @@ def rrf(rankings, k=RRF_K):
 
 @dataclass
 class Configuracao:
-    fontes: tuple = FONTES
+    """Configuração da busca. Padrão (desde 2026-11-23): as 3 bases, com 3 artigos, 3 decisões e 3 precedentes.
+
+    Para reproduzir as medições feitas com 2 bases (notebooks 01 a 06 da integração, gerações v1 a v3.1), use
+    `configuracao_duas_bases()`, que devolve os padrões anteriores."""
+    fontes: tuple = FONTES_COM_PRECEDENTES
     candidatos_por_busca: int = 50       # por fonte, em cada busca (semântica e lexical)
     cota_por_fonte: int = 10             # candidatos de cada fonte enviados à combinação (notebook 01, seção 9)
     usar_lexical: bool = True
     usar_semantica: bool = True
     usar_reranker: bool = True
-    top_k: int = 5                       # unidades entregues (artigos ou decisões), sem cotas
-    # Cotas de entrega por fonte, por exemplo {'legislacao': 3, 'jurisprudencia': 3}. Com cotas, cada fonte
-    # mantém o próprio ranking e reserva suas posições; sem cotas, uma única lista combinada é cortada em top_k.
-    entrega_por_fonte: dict | None = None
+    top_k: int = 10                      # unidades entregues sem cotas (antes de 2026-11-23: 5)
+    # Cotas de entrega por fonte. Com cotas, cada fonte mantém o próprio ranking e reserva suas posições; sem cotas
+    # (None), uma única lista combinada é cortada em top_k.
+    entrega_por_fonte: dict | None = field(default_factory=lambda: {'legislacao': 3, 'jurisprudencia': 3, 'precedentes': 3})
     reranker_max_length: int | None = 256    # tokens lidos por par pergunta–trecho (None = valor do carregamento)
     lexical_modo: str = 'idf'            # 'idf', 'ts_rank' ou 'ts_rank_cd' (primeira versão)
     lexical_poda: float = 0.20           # descarta lexemas presentes em mais dessa fração dos chunks (modo idf)
     # Fontes em que o reranker recebe a união dos `cota_por_fonte` primeiros de cada busca (semântica e por palavras),
     # e não os primeiros da fusão RRF. Avaliação de precedentes: a fusão deixava de fora precedente que a semântica
     # punha em 3º.
-    uniao_reranker: tuple = ()
-    expandir_sinonimos: bool = False     # acrescenta sinônimos jurídicos à pergunta (src/integracao/sinonimos.py)
+    uniao_reranker: tuple = ('precedentes',)
+    expandir_sinonimos: bool = True      # acrescenta sinônimos jurídicos à pergunta (src/integracao/sinonimos.py)
+    alerta_lei_posterior: bool = True    # precedente anterior a mudança da lei (False reproduz a geração v3.2)
     extras: dict = field(default_factory=dict)
 
 
 def configuracao_com_precedentes(**alteracoes):
-    """Configuração recomendada com a terceira fonte (notebook 06 de precedentes): 3 artigos, 3 decisões e
-    3 precedentes; reranker sobre a união das buscas na fonte de precedentes; sinônimos jurídicos na pergunta."""
-    base = dict(fontes=FONTES_COM_PRECEDENTES, entrega_por_fonte={'legislacao': 3, 'jurisprudencia': 3, 'precedentes': 3},
-                top_k=10, uniao_reranker=('precedentes',), expandir_sinonimos=True)
+    """Configuração com a terceira fonte (notebook 06 de precedentes): 3 artigos, 3 decisões e 3 precedentes;
+    reranker sobre a união das buscas na fonte de precedentes; sinônimos jurídicos na pergunta. É a padrão desde
+    2026-11-23 (igual a `Configuracao(**alteracoes)`); o nome fica para os scripts e notebooks que a usam."""
+    return Configuracao(**alteracoes)
+
+
+def configuracao_duas_bases(**alteracoes):
+    """Padrões anteriores a 2026-11-23: legislação e decisões, sem cotas, top_k 5, sem união no reranker e sem
+    sinônimos. Reproduz as medições dos notebooks 01 a 06 da integração e as gerações v1 a v3.1."""
+    base = dict(fontes=FONTES, top_k=5, entrega_por_fonte=None, uniao_reranker=(), expandir_sinonimos=False)
     base.update(alteracoes)
     return Configuracao(**base)
 
@@ -112,13 +128,35 @@ def selecionar_uniao(semantica, lexical, n, escores):
     return sorted(manter, key=lambda c: (-escores.get(c, 0.0), c))
 
 
-def texto_precedente(dados):
-    """Texto entregue ao modelo para um precedente: nome, título, enunciado (sem as notas de origem) e alertas."""
+_LEI_POSTERIOR = None
+
+
+def alerta_lei_posterior(registro_id):
+    """Alerta de lei posterior do precedente (src/integracao/precedentes_lei_posterior.json, versionado), ou None.
+
+    Súmulas e OJs anteriores a uma mudança da lei sobre o mesmo ponto (Reforma Trabalhista de 2017, EC 141/2026).
+    Gerado por scripts/gerar_alertas_lei_posterior_precedentes.py; a lista deve ser confirmada pelo advogado revisor.
+    """
+    global _LEI_POSTERIOR
+    if _LEI_POSTERIOR is None:
+        caminho = Path(__file__).with_name('precedentes_lei_posterior.json')
+        _LEI_POSTERIOR = json.loads(caminho.read_text(encoding='utf-8'))['precedentes'] if caminho.exists() else {}
+    item = _LEI_POSTERIOR.get(registro_id)
+    return item['alerta'] if item else None
+
+
+def texto_precedente(dados, com_lei_posterior=True):
+    """Texto entregue ao modelo para um precedente: nome, título, enunciado (sem as notas de origem) e alertas.
+
+    com_lei_posterior=False reproduz o texto da geração v3.2 (antes do alerta de lei posterior)."""
     partes = [f"{dados['nome_citacao']} — {dados['titulo']}", dados.get('texto_busca') or dados.get('texto') or '']
     if dados.get('situacao') == 'afetado_sem_tese':
         partes.append('[Situação: tema afetado, ainda sem tese fixada pelo TST.]')
     if dados.get('alerta_vigencia'):
         partes.append(f"[Alerta de vigência: {dados['alerta_vigencia']}]")
+    posterior = alerta_lei_posterior(dados.get('id')) if com_lei_posterior else None
+    if posterior:
+        partes.append(f'[Alerta de lei posterior: {posterior}]')
     return '\n'.join(p for p in partes if p)
 
 
@@ -365,9 +403,10 @@ class Recuperador:
                 u['metadata'] = a['metadata'] if a else u['chunks'][0]['metadata']
             elif u['fonte'] == 'precedentes':
                 d = registros[u['unidade']]
-                u['texto'] = texto_precedente(d)
+                u['texto'] = texto_precedente(d, com_lei_posterior=config.alerta_lei_posterior)
                 u['metadata'] = dict(nome_citacao=d['nome_citacao'], tipo=d['tipo'], titulo=d['titulo'],
                                      situacao=d['situacao'], alerta_vigencia=d.get('alerta_vigencia'),
+                                     alerta_lei_posterior=alerta_lei_posterior(d.get('id')) if config.alerta_lei_posterior else None,
                                      item_encontrado=(u['chunks'][0].get('metadata') or {}).get('item'),
                                      data_referencia=(d.get('fonte') or {}).get('data_referencia'))
             else:

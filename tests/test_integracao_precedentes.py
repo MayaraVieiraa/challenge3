@@ -40,11 +40,21 @@ class TestSinonimos(unittest.TestCase):
 
 
 class TestBusca(unittest.TestCase):
-    def test_configuracao_padrao_nao_muda(self):
-        c = Configuracao()
-        self.assertEqual(c.fontes, FONTES)
-        self.assertEqual(c.uniao_reranker, ())
-        self.assertFalse(c.expandir_sinonimos)
+    def test_configuracao_padrao_usa_as_3_bases(self):
+        c = Configuracao()                                   # padrão desde 2026-11-23
+        self.assertEqual(c.fontes, ('legislacao', 'jurisprudencia', 'precedentes'))
+        self.assertEqual(c.entrega_por_fonte, {'legislacao': 3, 'jurisprudencia': 3, 'precedentes': 3})
+        self.assertEqual(c.uniao_reranker, ('precedentes',))
+        self.assertTrue(c.expandir_sinonimos)
+        self.assertEqual(c, configuracao_com_precedentes())
+        self.assertIsNot(c.entrega_por_fonte, Configuracao().entrega_por_fonte)   # cotas não compartilhadas
+
+    def test_duas_bases_reproduz_os_padroes_anteriores(self):
+        from src.integracao.recuperacao import configuracao_duas_bases
+        c = configuracao_duas_bases()
+        self.assertEqual((c.fontes, c.top_k, c.entrega_por_fonte, c.uniao_reranker, c.expandir_sinonimos),
+                         (FONTES, 5, None, (), False))
+        self.assertEqual(configuracao_duas_bases(fontes=('legislacao',), top_k=10).fontes, ('legislacao',))
 
     def test_configuracao_com_precedentes(self):
         c = configuracao_com_precedentes()
@@ -183,6 +193,57 @@ class TestAlertasPrecedentes(unittest.TestCase):
                       versao_prompt='v3', formato=None)
         saida = geracao.revisar(pedido, 'Pela Súmula 338 do TST [Fonte 1], o ônus é do empregador.')
         self.assertIn('alerta_vigencia_omitido', [a['codigo'] for a in saida.alertas])
+
+
+class TestLeiPosterior(unittest.TestCase):
+    """Lei posterior prevalece sobre precedente anterior a ela (decisão de 2026-11-23): regra 25, alerta e nota."""
+
+    def test_regra_25_da_a_ordem_e_pede_a_data(self):
+        from src.integracao.prompt_juridico import REGRA_25_V3_2, REGRAS_V3
+        self.assertIn('a) A Constituição e a lei posteriores ao precedente', REGRAS_V3)
+        self.assertIn('pergunte quando os fatos ocorreram', REGRAS_V3)
+        self.assertIn('11/11/2017', REGRAS_V3)
+        self.assertNotIn('Alerta de lei posterior', REGRA_25_V3_2)          # texto usado nos pedidos da v3.2
+        self.assertNotIn('posteriores ao precedente', SYSTEM_PROMPT_LEGAL)   # v1 intacto
+
+    def test_alerta_entregue_com_o_precedente(self):
+        from src.integracao.recuperacao import alerta_lei_posterior
+        sum85 = dict(id='TST-SUM-85', nome_citacao='Súmula 85 do TST', titulo='COMPENSAÇÃO DE JORNADA',
+                     situacao='vigente', alerta_vigencia=None, texto_busca='I. A compensação de jornada...')
+        self.assertIn('Lei 13.467/2017', alerta_lei_posterior('TST-SUM-85'))
+        self.assertIn('[Alerta de lei posterior:', texto_precedente(sum85))
+        self.assertNotIn('Alerta de lei posterior', texto_precedente(sum85, com_lei_posterior=False))   # reproduz a v3.2
+        self.assertIsNone(alerta_lei_posterior('TST-SUM-338'))
+        self.assertIn('Emenda Constitucional 141/2026', alerta_lei_posterior('TST-SUM-110'))
+        self.assertIsNone(alerta_lei_posterior('TST-SUM-90'))      # em quarentena: não é entregue ao modelo
+        self.assertTrue(Configuracao().alerta_lei_posterior)
+        self.assertFalse(configuracao_com_precedentes(alerta_lei_posterior=False).alerta_lei_posterior)
+
+    def test_validador_lei_posterior_omitida(self):
+        fonte = dict(texto='Súmula 85 do TST — COMPENSAÇÃO DE JORNADA\nI. A compensação...', tipo='precedentes',
+                     nome_citacao='Súmula 85 do TST', situacao='vigente', alerta_vigencia=None,
+                     alerta_lei_posterior='enunciado anterior à Lei 13.467/2017...')
+        cods = lambda r: [a['codigo'] for a in g.verificar_saida(r, [fonte], versao='v3').alertas]
+        self.assertIn('lei_posterior_omitida', cods('Pela Súmula 85 do TST [Fonte 1], a compensação exige acordo escrito.'))
+        self.assertNotIn('lei_posterior_omitida', cods('Pela Súmula 85 do TST [Fonte 1], a compensação exigia acordo escrito; '
+                                                       'desde a Reforma Trabalhista, vale a regra nova.'))
+
+    def test_nota_do_divisor(self):
+        import sys
+        from pathlib import Path
+        from src.integracao.recuperacao import VERSAO_LEGISLACAO, VERSOES_LEGISLACAO
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
+        from atualizar_legislacao_nota_divisor_lc150 import NOTA_LC150_DIVISOR
+        self.assertEqual(VERSAO_LEGISLACAO, 'ec141_2026_notas_divisor')
+        self.assertIn('ec141_2026_notas', VERSOES_LEGISLACAO)               # versão da v3.1 e da v3.2 mantida
+        self.assertIn('Súmula 431 do TST', NOTA_LC150_DIVISOR)
+        self.assertIn('não há divisor fixado', NOTA_LC150_DIVISOR)          # opção B: nada para 42 horas
+        # o modelo pode citar a Súmula 431 e o art. 7º da CF a partir da nota, sem bloqueio
+        lei = dict(texto='§ 2º O salário-hora normal ... por 220 (duzentas e vinte) horas ... ' + NOTA_LC150_DIVISOR,
+                   tipo='legislacao', artigo_ref='Art. 2º', caminho='leis-complementares/2015/lcp-150-2015.md')
+        resposta = ('O divisor da LC 150 é 220 [Fonte 1]; para 40 horas, a Súmula 431 do TST aplica o divisor 200, '
+                    'conforme o art. 7º, XIII, da CF [Fonte 1].')
+        self.assertNotIn('norma_fora_das_fontes', [a['codigo'] for a in g.verificar_saida(resposta, [lei], versao='v3').alertas])
 
 
 if __name__ == '__main__':

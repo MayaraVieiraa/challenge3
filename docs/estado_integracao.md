@@ -4,9 +4,11 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
 
 **Próximos passos, em ordem:**
 1. **Base de precedentes como terceira fonte:** o código está integrado e registrado no notebook `03_integracao/07_integracao_precedentes.ipynb`. Faltam:
-   - uma nova geração (v3.2), com 3 bases, para medir o efeito nas respostas, se a usuária pedir;
-   - medir nela os 4 alertas novos de precedentes e decidir se algum passa a bloquear;
-   - se as respostas melhorarem, tornar `configuracao_com_precedentes()` a configuração de produção.
+   - **geração v3.2** (3 bases, regra 25 antiga, sem alerta de lei posterior): enviada ao Kaggle em 2026-11-23 (`lexia-geracao-qwen3-v3-2`). Baixar, passar o validador v3 e comparar com a v3.1;
+   - medir nela os alertas novos de precedentes e decidir se algum passa a bloquear;
+   - **geração v3.3**, depois da v3.2: regra 25 nova (ordem entre as fontes), alerta de lei posterior e nota do divisor 220 (ver a seção de 2026-11-23);
+   - **advogado revisor:** confirmar `reports/precedentes/lei_posterior/lista_para_revisao_advogado.csv`;
+   - **a configuração padrão já usa as 3 bases** (2026-11-23, pedido da usuária); a v3.2 e o juiz confirmam se as respostas melhoram.
 2. **Feito pela usuária, à parte:** juiz Gemma 3 27B nas respostas v3 e v3.1. Não rodar.
 3. **Testes num conjunto maior de perguntas, decididos pela usuária para depois:**
    - EC 141/2026 e regra 24 (jornada, repouso e domésticos);
@@ -20,11 +22,64 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
    - o alerta "lei sustentada só por decisão", que subiu na v3.
 5. **Pendências de fonte, que dependem da usuária:**
    - livro oficial de súmulas e OJs do TST de 2026, ou a resolução dos cancelamentos, para confirmar os 22 enunciados em quarentena;
-   - divisor 220 da LC 150, ligado às 44 horas.
+   - ~~divisor 220 da LC 150~~: decidido em 2026-11-23 (opção B, nota que só informa).
+
+## Atualização de 2026-11-23 (tarde): leis citadas fora da base — decisão de não acrescentar
+
+Nas gerações v1, v3, v3.1 e v3.2, o modelo citou de memória 9 leis que não estão na base de legislação (26 normas). A conferência no Planalto mostrou:
+- citação correta: Lei 13.709/2018 (LGPD), Lei 6.615/1978 (radialistas, art. 13, por analogia) e Lei 13.467/2017 (Reforma; a CLT da base já traz as alterações);
+- assunto errado: Leis 9.876/1999, 12.527/2011, 11.350/2006 e 11.367/2006 (as três últimas citadas para o prazo de prescrição, que está no art. 7º, XXIX, da CF e no art. 11 da CLT, já na base);
+- número trocado: 13.486/2017 (CDC) no lugar da 13.846/2019 (perito médico federal); número inexistente: 8.671/1993 (trabalho rural é a Lei 5.889/1973, já na base).
+
+**Decisão da usuária:** não acrescentar nenhuma dessas leis. O validador v3 bloqueia as citações, e a busca complementar pede ao modelo para retirá-las. Fica como opção para a v3.4 buscar pelo **assunto** quando o modelo erra o número da lei.
+
+## Atualização de 2026-11-23: a lei posterior prevalece sobre o precedente anterior
+
+**Decisão da usuária:** o precedente pesa mais na interpretação da lei, porque é o que os juízes aplicam. Mas, quando a lei ou a Constituição muda depois do precedente, sobre o mesmo ponto, vale a lei nova para os fatos posteriores à vigência dela. Todas as súmulas e OJs da base são anteriores à Reforma Trabalhista (a data mais recente nos textos é 30/06/2017) e à EC 141/2026.
+
+**1. Regra 25 do prompt v3, reescrita** (`src/integracao/prompt_juridico.py`):
+- a) Constituição e lei posteriores ao precedente prevalecem para fatos posteriores; com "Alerta de lei posterior", "Alerta de vigência" ou "Nota de vigência", apresentar primeiro a regra atual;
+- b) súmula ou OJ sem esses alertas: seguir o entendimento na interpretação da lei;
+- c) tema repetitivo com tese é obrigatório; tema sem tese não é regra;
+- d) fatos anteriores à mudança seguem a lei e o entendimento da época;
+- quando a data dos fatos muda a resposta (11/11/2017, 16/12/2026), explicar as duas situações ou perguntar a data;
+- o texto anterior fica em `REGRA_25_V3_2`; `scripts/preparar_geracao_v3_2.py` usa esse texto e reproduz os 111 pedidos enviados.
+
+**2. Alerta de lei posterior nos precedentes** (`scripts/gerar_alertas_lei_posterior_precedentes.py` → `src/integracao/precedentes_lei_posterior.json`, versionado):
+- **15 precedentes com alerta entregue ao modelo:**
+  - 11 da lista manual: Súmulas 6, 85, 101, 219, 241, 329, 331, 372 e 463 (Reforma) e Súmula 110 e OJ 410 da SBDI-1 (EC 141, repouso de 24 horas);
+  - 4 automáticos por dispositivo: o enunciado cita um parágrafo da CLT marcado "pela Lei nº 13.467" na CLT da base (Súmulas 442, 446 e 458, OJ 322 da SBDI-1);
+- os dispositivos da lista manual são conferidos contra as marcas da CLT da base;
+- a maior parte das súmulas mais afetadas pela Reforma (90, 320, 437, 444, 366, 429, 449, 114, 268, 294) já está em quarentena: não é entregue, e o validador avisa se o modelo a citar;
+- **lista para o advogado revisor:** `reports/precedentes/lei_posterior/lista_para_revisao_advogado.csv` (77 linhas: as 15 entregues, os candidatos que citam só o artigo, que não são entregues, e os casos em quarentena), com colunas para confirmação e comentário;
+- **entrega:** `texto_precedente` acrescenta "[Alerta de lei posterior: …]"; `Configuracao.alerta_lei_posterior` (padrão True; False reproduz a v3.2);
+- **validador v3:** alerta informativo novo `lei_posterior_omitida` (cita o precedente sem dizer que a lei mudou).
+
+**3. Nota do divisor 220 da LC 150, art. 2º, § 2º** (opção B; `scripts/atualizar_legislacao_nota_divisor_lc150.py`):
+- a nota diz que a EC 141 não alterou o 220, que corresponde a 44 horas; que, para 40 horas, a Súmula 431 do TST aplica o divisor 200 (fixado para a CLT); que não há divisor fixado para 42 horas; e que a ressalva do próprio § 2º continua;
+- nova versão da legislação `ec141_2026_notas_divisor` (D `96d0710a…`, A `fbb90735…`), agora o **padrão** da busca. A `ec141_2026_notas` continua disponível (v3.1 e v3.2);
+- o script das notas (`atualizar_legislacao_notas_ec141.py`) ficou parametrizável; rodado de novo, reproduz os mesmos IDs.
+
+**4. As 3 bases viraram a configuração padrão** (pedido da usuária):
+- `Configuracao()` agora tem `fontes` = legislação, jurisprudência e precedentes; cotas 3 + 3 + 3; `top_k` 10; união no reranker nos precedentes; sinônimos ligados. É o que `Recuperador.buscar(pergunta)` usa sem configuração;
+- `configuracao_duas_bases()` devolve os padrões anteriores (2 bases, sem cotas, `top_k` 5, sem união, sem sinônimos). Passaram a usá-la explicitamente: notebook 01 da integração e o gerador dele (só o código das células; as saídas não mudaram), `preparar_geracao_kaggle.py` (v1), `preparar_geracao_v3_1.py`, `comparacao_rag_basico.py`, `avaliar_sinonimos_recuperacao.py` e o notebook 07 na conferência de 2 bases;
+- testes: 124 na integração.
+
+**5. Multiagentes com as 3 bases e o prompt v3** (pedido da usuária; versão dos prompts `multiagentes-v3`):
+- **busca** (`src/multiagentes/ferramentas.py`, `BuscaReal`): as 3 bases, com as opções da configuração padrão, e as fontes **intercaladas** por base (`intercalar_por_fonte`: 1º artigo, 1ª decisão, 1º precedente…). O orquestrador guarda as fontes em ordem até `max_bytes_fontes` (5.000 bytes); na ordem antiga, os artigos (mediana 1,7 KB) ocupavam o orçamento e as decisões (2,4 KB) quase nunca entravam. No banco, cabem 1 artigo + 1 decisão + 1 precedente, ou 1 artigo + 1 precedente;
+- **analista** (`src/multiagentes/analista.py`): prompt v3 (regras 16 a 25 e DATA ATUAL, data do dia ou `data_atual=`) no planejamento e na redação; o papel de busca cita as 3 bases;
+- **orquestrador**: a conferência de contexto passou de bytes contados como tokens para a estimativa de tokens da geração (`validar_janela_contexto`). Com o prompt v3 (8,4 KB), o limite antigo barrava a revisão. Pior caso medido: 12,1 mil de 13,4 mil tokens;
+- **revisão automática**: validador v3 (`verificar_saida(..., versao='v3')`), com tipo, caminho, nome de citação, situação e alertas das fontes, como na geração;
+- **pacote do Kaggle** (`scripts/preparar_multiagentes_kaggle.py`): passou a levar `context_window.py`, `stracting.py` (já importados por `geracao.py` e ausentes do pacote) e `situacao_precedentes.json`; `requirements-multiagentes.txt` ganhou `tiktoken==0.14.0`;
+- **testes**: os exemplos de fonte de `tests/test_multiagentes.py` e `tests/test_buscador_local_cli.py` usavam caminhos fictícios da CLT (`sintetico/clt.md`, `fixtures/clt.md`); o validador v3 reconhece "art. 73 da CLT" pelo arquivo real da CLT, por isso passaram a usar o caminho real. `langgraph` (de `requirements-multiagentes.txt`) foi instalado no `.venv`, e os testes do orquestrador voltaram a rodar;
+- suíte inteira: 437 testes; ficam 6 erros e 1 falha de ambiente do Windows, que já existiam (cache do buscador local, symlink sem privilégio, hash de arquivo gravado com CRLF na exportação).
+- **não medido:** os multiagentes não foram executados de ponta a ponta com os modelos (Ollama no Kaggle).
+
+**Testes:** 123 na integração, todos passando. No banco, a Súmula 85 chegou com o alerta de lei posterior, junto dos arts. 59 e 59-B da CLT, e o art. 2º da LC 150 chegou com a nota do divisor.
 
 ## Atualização de 2026-11-22 (noite): integração dos precedentes como terceira fonte (notebook 07)
 
-**Configuração:** a terceira fonte entra só com `configuracao_com_precedentes()` em `src/integracao/recuperacao.py`. A `Configuracao()` padrão continua com 2 fontes e não muda nada do que já foi medido.
+**Configuração:** desde 2026-11-23, a `Configuracao()` padrão usa as 3 bases (igual a `configuracao_com_precedentes()`). Os padrões anteriores ficam em `configuracao_duas_bases()` (ver a seção de 2026-11-23).
 
 **O que foi feito, por arquivo:**
 - **Busca** (`recuperacao.py`):

@@ -32,6 +32,8 @@ ATUALIZACAO = 'ec141_2026_notas'
 BASE_VERSAO = 'ec141_2026'
 RELATORIO = ROOT / 'reports/legislacao/atualizacoes/ec_141_2026_notas.json'
 URL_EC = 'https://planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc141.htm'
+DATA_ATUALIZACAO = '2026-11-22'
+PERMITIR_NOTA_EXISTENTE = False   # True: o trecho pode já ter outra nota (ex.: artigo inteiro, estratégia A)
 
 NOTA_LC150_ART2 = (
     '[Nota de vigência: o limite semanal deste artigo segue o art. 7º, XIII, da CF, na redação da Emenda '
@@ -105,12 +107,12 @@ def trechos_com_nota(conexao, dataset_id):
         if len(linhas) != 1:
             raise SystemExit(f'{caminho} {artigo}: esperado 1 trecho com o dispositivo, encontrados {len(linhas)}')
         cid, art, sp, texto, meta = linhas[0]
-        if 'Nota de vigência' in texto:
+        if 'Nota de vigência' in texto and not PERMITIR_NOTA_EXISTENTE:
             raise SystemExit(f'{caminho} {artigo}: o trecho já tem nota')
         novo_texto = texto.replace(dispositivo, f'{dispositivo} {nota}', 1)
         meta = dict(meta or {})
         meta.update(atualizacao=ATUALIZACAO, nota_vigencia='EC 141/2026', fonte_atualizacao=URL_EC,
-                    tamanho_caracteres=len(novo_texto), tokens_reais_total=None, retrieved='2026-11-22')
+                    tamanho_caracteres=len(novo_texto), tokens_reais_total=None, retrieved=DATA_ATUALIZACAO)
         novo_id = _sha(json.dumps([ATUALIZACAO, dataset_id, cid, _sha(novo_texto)]))
         meta['chunk_id'] = novo_id
         novos.append(dict(substitui=cid, chunk_id=novo_id, article_id=art, source_path=sp, text_content=novo_texto,
@@ -178,9 +180,9 @@ def criar_versao(conexao, encoder, estrategia, base):
         erros.append('hash dos textos')
     if hashlib.sha256('\n'.join(v for _, v, _ in gravado).encode()).hexdigest() != manifesto['vetores_sha256_ordem']:
         erros.append('hash dos vetores')
-    if sum('Nota de vigência: o limite semanal deste artigo' in t or 'Nota de vigência: a partir de 16/12/2026, o art. 7º, XV' in t
-           for _, _, t in gravado) != len(ALVOS):
-        erros.append('notas ausentes')
+    # cada nota aparece em exatamente um trecho da versão (a base pode ter outras notas)
+    if any(sum(nota in t for _, _, t in gravado) != 1 for _, nota, _, _ in ALVOS):
+        erros.append('notas ausentes ou repetidas')
     if erros:
         raise SystemExit(f'{estrategia}: falha na conferência: {erros}')
     return dict(dataset_id=dataset_id, base_dataset_id=base, trechos=len(gravado), ja_existia=bool(existe),

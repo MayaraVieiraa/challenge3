@@ -66,6 +66,8 @@ REGRAS:
 
 # --- Versão 3 (2026-11-22): regras acrescentadas a partir do diagnóstico do advogado revisor (notebook 04, seção 8).
 # Regra 25 (precedentes do TST como terceira fonte) acrescentada depois da geração v3.1 no Kaggle.
+# Regra 25 reescrita depois de enviada a geração v3.2 (lexia-geracao-qwen3-v3-2): ordem entre lei posterior,
+# precedente e tema repetitivo, e data dos fatos. Os pedidos da v3.2 guardam o texto anterior (REGRA_25_V3_2).
 # Regra 24 (notas de vigência, EC 141/2026) acrescentada depois de enviada a geração v3 ao Kaggle
 # (lexia-geracao-qwen3-v3): aqueles pedidos usam as regras 16 a 23; o hash de cada pedido registra o prompt usado.
 # O SYSTEM_PROMPT_LEGAL acima continua sem alteração: os pedidos antigos e o notebook 05 conferem o hash dele.
@@ -106,11 +108,31 @@ REGRAS ADICIONAIS DE CITAÇÃO E DE PRECISÃO:
     repetitivo) trazem o entendimento consolidado do tribunal. Cite-as pelo nome do campo
     "Precedente" (por exemplo, "Súmula 338, I, do TST" ou "Tema 58 de IRR do TST") junto da
     [Fonte N]. Não confunda as três espécies de fonte: a lei diz a regra; o precedente diz como
+    o TST a interpreta e aplica; a decisão judicial mostra como um caso foi julgado.
+    Para decidir entre as fontes, siga esta ordem:
+    a) A Constituição e a lei posteriores ao precedente, sobre o mesmo ponto, prevalecem sobre ele
+       para os fatos ocorridos depois da vigência delas. Se a fonte trouxer "Alerta de lei
+       posterior", "Alerta de vigência" ou "Nota de vigência", apresente primeiro a regra atual e
+       avise que o precedente pode estar superado.
+    b) Súmula ou orientação jurisprudencial sem esses alertas mostra como o TST aplica a lei:
+       siga esse entendimento na interpretação da lei.
+    c) Tema de recurso repetitivo com tese fixada é de aplicação obrigatória. Um tema "ainda sem
+       tese fixada" indica questão pendente no TST: não o apresente como regra.
+    d) Fatos anteriores a uma mudança da lei seguem a lei e o entendimento da época.
+    Quando a data dos fatos mudar a resposta (por exemplo, antes ou depois de 11/11/2017, início
+    da Reforma Trabalhista, ou de 16/12/2026, na EC 141/2026), explique as duas situações ou
+    pergunte quando os fatos ocorreram.
+"""
+SYSTEM_PROMPT_LEGAL_V3 = SYSTEM_PROMPT_LEGAL + REGRAS_V3
+# Texto da regra 25 usado nos pedidos da geração v3.2 (antes da ordem entre as fontes).
+REGRA_25_V3_2 = '''25. Fontes do tipo "precedente do TST" (súmula, orientação jurisprudencial ou tema de recurso
+    repetitivo) trazem o entendimento consolidado do tribunal. Cite-as pelo nome do campo
+    "Precedente" (por exemplo, "Súmula 338, I, do TST" ou "Tema 58 de IRR do TST") junto da
+    [Fonte N]. Não confunda as três espécies de fonte: a lei diz a regra; o precedente diz como
     o TST a interpreta e aplica; a decisão judicial mostra como um caso foi julgado. Se a fonte
     trouxer "Alerta de vigência", avise que o enunciado pode ter sido alterado. Um tema "ainda
     sem tese fixada" indica questão pendente no TST: não o apresente como regra.
-"""
-SYSTEM_PROMPT_LEGAL_V3 = SYSTEM_PROMPT_LEGAL + REGRAS_V3
+'''
 VERSOES_PROMPT = ('v1', 'v3')
 
 

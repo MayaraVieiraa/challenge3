@@ -23,7 +23,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.integracao import avaliacao_recuperacao as av  # noqa: E402
-from src.integracao.recuperacao import Configuracao, Recuperador, configuracao_com_precedentes  # noqa: E402
+from src.integracao.recuperacao import Recuperador, configuracao_com_precedentes, configuracao_duas_bases  # noqa: E402
 from src.integracao.sinonimos import expandir  # noqa: E402
 from src.storage.pgvector_store import load_database_url  # noqa: E402
 
@@ -31,8 +31,8 @@ SAIDA = ROOT / 'reports/integracao/precedentes'
 COTAS = {'legislacao': 3, 'jurisprudencia': 3}
 BASE = dict(top_k=10, entrega_por_fonte=COTAS, cota_por_fonte=10, reranker_max_length=256, lexical_modo='idf')
 EXECUCOES = {
-    '2 bases, sem sinônimos': Configuracao(**BASE),
-    '2 bases, com sinônimos': Configuracao(**BASE, expandir_sinonimos=True),
+    '2 bases, sem sinônimos': configuracao_duas_bases(**BASE),
+    '2 bases, com sinônimos': configuracao_duas_bases(**BASE, expandir_sinonimos=True),
     '3 bases (com precedentes)': configuracao_com_precedentes(),
 }
 

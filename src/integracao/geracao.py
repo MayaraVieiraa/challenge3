@@ -86,7 +86,8 @@ def fonte_para_prompt(unidade):
     if unidade['fonte'] == 'precedentes':
         return dict(fonte='precedentes', unidade=unidade['unidade'], conteudo=unidade['texto'],
                     nome_citacao=meta.get('nome_citacao'), tipo_precedente={'sumula': 'súmula', 'orientacao_jurisprudencial': 'orientação jurisprudencial', 'tema_repetitivo': 'tema de recurso repetitivo'}.get(meta.get('tipo')),
-                    situacao=meta.get('situacao'), alerta_vigencia=meta.get('alerta_vigencia'), artigo_ref=None)
+                    situacao=meta.get('situacao'), alerta_vigencia=meta.get('alerta_vigencia'),
+                    alerta_lei_posterior=meta.get('alerta_lei_posterior'), artigo_ref=None)
     if unidade['fonte'] == 'legislacao':
         return dict(fonte='legislacao', unidade=unidade['unidade'], conteudo=unidade['texto'],
                     caminho_relativo=_valor(meta, 'caminho_relativo'), artigo_ref=_valor(meta, 'artigo_ref'),
@@ -209,7 +210,8 @@ def revisar(pedido, texto):
             pass
     fontes = [dict(texto=f['conteudo'], artigo_ref=f.get('artigo_ref'), processo=f.get('processo'), tipo=f.get('fonte'),
                    caminho=f.get('caminho_relativo'), contexto=f.get('contexto'), nome_citacao=f.get('nome_citacao'),
-                   situacao=f.get('situacao'), alerta_vigencia=f.get('alerta_vigencia'))
+                   situacao=f.get('situacao'), alerta_vigencia=f.get('alerta_vigencia'),
+                   alerta_lei_posterior=f.get('alerta_lei_posterior'))
               for f in pedido['fontes']]
     entrada = g.ResultadoEntrada(pedido['acao'], pedido['pergunta_sanitizada'], pedido['sinais'], pedido['motivo'])
     return g.verificar_saida(texto, fontes, entrada, versao=versao_guardrail(pedido))

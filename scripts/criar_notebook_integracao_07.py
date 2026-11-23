@@ -48,7 +48,7 @@ A base de precedentes reúne súmulas, orientações jurisprudenciais (OJs) e te
 | `src/integracao/sinonimos.py` | **arquivo novo.** Acrescenta à pergunta os termos jurídicos equivalentes ("13º" → "gratificação natalina"), sem alterar a pergunta original |
 | `src/integracao/prompt_juridico.py` | prompt v3: tipo de fonte "precedente do TST (…)", campo "Precedente" e **regra 25**. O v1 continua idêntico |
 | `src/integracao/geracao.py` | converte a unidade de precedente em fonte do prompt e passa o nome de citação ao validador |
-| `src/integracao/guardrails.py` | validador v3: a súmula citada pelo nome da fonte ("Súmula 338 do TST") conta como norma presente nas fontes; **4 alertas novos** para precedentes (seção 7) |
+| `src/integracao/guardrails.py` | validador v3: a súmula citada pelo nome da fonte ("Súmula 338 do TST") conta como norma presente nas fontes; **5 alertas novos** para precedentes (seção 7) |
 | `src/integracao/situacao_precedentes.json` | **arquivo novo, versionado.** Situação das súmulas, OJs e temas (cancelados, suspensos, superados, em quarentena) para o validador. Gerado por `scripts/gerar_catalogo_situacao_precedentes.py` |
 | `tests/test_integracao_precedentes.py` | **arquivo novo.** Testes da integração dos precedentes |
 
@@ -88,7 +88,7 @@ ROOT = next(p for p in (Path.cwd(), *Path.cwd().parents) if (p / 'src/integracao
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from src.storage.pgvector_store import load_database_url
-from src.integracao.recuperacao import (Recuperador, Configuracao, configuracao_com_precedentes, FONTES,
+from src.integracao.recuperacao import (Recuperador, Configuracao, configuracao_com_precedentes, configuracao_duas_bases, FONTES,
                                         FONTES_COM_PRECEDENTES, texto_precedente)
 from src.integracao.sinonimos import GRUPOS, termos_faltantes
 from src.integracao.geracao import fonte_para_prompt
@@ -113,17 +113,18 @@ display(tabela.pivot(index='tipo', columns='situação', values='registros busc�
 ''')
 
 md('int07_chave_texto', '''
-## 2. A chave de ativação
+## 2. A configuração padrão: as 3 bases
 
-A terceira fonte entra por uma configuração própria, `configuracao_com_precedentes()`. A configuração padrão, `Configuracao()`, continua com duas bases. Assim, as gerações v1, v3 e v3.1, medidas com duas bases, continuam reproduzíveis.
+**Desde 2026-11-23, a configuração padrão, `Configuracao()`, usa as 3 bases:** 3 artigos, 3 decisões e 3 precedentes, com união no reranker na fonte de precedentes e sinônimos jurídicos na pergunta. É o que o sistema usa quando a busca é chamada sem configuração (`Recuperador.buscar(pergunta)`). `configuracao_com_precedentes()` continua existindo e dá o mesmo resultado.
 
-**Para valer em produção,** a configuração com precedentes passa a ser a usada pelo ponto de entrada do sistema. Isso será feito depois da medição das respostas (geração v3.2 e juiz).
+**Os padrões anteriores ficam em `configuracao_duas_bases()`**, usada pelos notebooks 01 a 06 da integração, pelas gerações v1 a v3.1 e pelos multiagentes. Assim, essas medições continuam reproduzíveis.
 ''')
 code('int07_chave', r'''
-padrao, nova = Configuracao(), configuracao_com_precedentes()
-campos = ['fontes', 'entrega_por_fonte', 'top_k', 'uniao_reranker', 'expandir_sinonimos']
-display(pd.DataFrame({'Configuracao() — padrão': [str(getattr(padrao, c)) for c in campos],
-                      'configuracao_com_precedentes()': [str(getattr(nova, c)) for c in campos]}, index=campos))
+padrao, antiga = Configuracao(), configuracao_duas_bases()
+campos = ['fontes', 'entrega_por_fonte', 'top_k', 'uniao_reranker', 'expandir_sinonimos', 'alerta_lei_posterior']
+display(pd.DataFrame({'Configuracao() — padrão (3 bases)': [str(getattr(padrao, c)) for c in campos],
+                      'configuracao_duas_bases() — antes': [str(getattr(antiga, c)) for c in campos]}, index=campos))
+assert padrao == configuracao_com_precedentes()
 ''')
 
 md('int07_busca_texto', '''
@@ -151,7 +152,7 @@ ESPERADO = {'juris_004': 'TST-SUM-338', 'q09_p2_FAQ32': 'TST-SUM-276', 'juris_01
 
 linhas, ultimas = [], {}
 for pid, esperado in ESPERADO.items():
-    entregues, diag = r.buscar(pedidos[pid], nova)     # o texto da pergunta não é impresso
+    entregues, diag = r.buscar(pedidos[pid], padrao)     # o texto da pergunta não é impresso
     ranking = [u for _, u in diag['ranking_por_fonte']['precedentes']]
     prec = [u['unidade'] for u in entregues if u['fonte'] == 'precedentes']
     pos_antes = antes.loc[antes.pergunta == pid, 'híbrida + reranker'].iloc[0]
@@ -160,7 +161,7 @@ for pid, esperado in ESPERADO.items():
                           'agora (3 bases)': f'{ranking.index(esperado) + 1}º' if esperado in ranking else 'perdido',
                           'entregue ao modelo': esperado in prec,
                           'sinônimos acrescentados': ', '.join(termos_faltantes(pedidos[pid])) or '—',
-                          'fontes entregues': ' + '.join(f"{sum(u['fonte'] == f for u in entregues)} {f}" for f in nova.fontes),
+                          'fontes entregues': ' + '.join(f"{sum(u['fonte'] == f for u in entregues)} {f}" for f in padrao.fontes),
                           'segundos': round(diag['segundos'], 1)}))
     ultimas[pid] = entregues
 resultado = pd.DataFrame(linhas)
@@ -170,11 +171,11 @@ print(f"Precedentes esperados entregues ao modelo: {resultado['entregue ao model
 ''')
 
 md('int07_padrao_texto', '''
-Conferência: com a configuração padrão, a mesma busca continua entregando só legislação e decisões.
+Conferência: com `configuracao_duas_bases()`, a mesma busca continua entregando só legislação e decisões, como nas medições anteriores.
 ''')
 code('int07_padrao', r'''
-entregues_padrao, _ = r.buscar(pedidos['juris_004'], Configuracao(entrega_por_fonte={'legislacao': 3, 'jurisprudencia': 3}, top_k=10))
-print('Configuração padrão:', pd.Series([u['fonte'] for u in entregues_padrao]).value_counts().to_dict())
+entregues_padrao, _ = r.buscar(pedidos['juris_004'], configuracao_duas_bases(entrega_por_fonte={'legislacao': 3, 'jurisprudencia': 3}, top_k=10))
+print('configuracao_duas_bases():', pd.Series([u['fonte'] for u in entregues_padrao]).value_counts().to_dict())
 assert {u['fonte'] for u in entregues_padrao} == set(FONTES)
 ''')
 
@@ -210,7 +211,7 @@ print(REGRAS_V3[REGRAS_V3.index('\n25. ') + 1:])
 md('int07_testes_texto', '''
 ## 6. Testes
 
-Os testes novos ficam em `tests/test_integracao_precedentes.py`, sem banco nem modelos. Eles cobrem sinônimos, configuração, união no reranker, entrega, prompt, validador e os 4 alertas da seção 7. A célula roda todos os testes da integração (`tests/test_integracao_*.py`).
+Os testes novos ficam em `tests/test_integracao_precedentes.py`, sem banco nem modelos. Eles cobrem sinônimos, configuração, união no reranker, entrega, prompt, validador e os alertas da seção 7. A célula roda todos os testes da integração (`tests/test_integracao_*.py`).
 ''')
 code('int07_testes', r'''
 saida = io.StringIO()
@@ -225,13 +226,14 @@ assert res.wasSuccessful(), saida.getvalue()
 md('int07_alertas_texto', '''
 ## 7. Validador: alertas para precedentes
 
-Com uma terceira espécie de fonte, surgem erros que o validador v3 não via. Foram acrescentados 4 alertas **informativos**: eles não bloqueiam a resposta até serem medidos nas respostas com precedentes (geração v3.2).
+Com uma terceira espécie de fonte, surgem erros que o validador v3 não via. Foram acrescentados alertas **informativos**: eles não bloqueiam a resposta até serem medidos nas respostas com precedentes (geração v3.2).
 
 | Alerta | O que confere |
 |---|---|
 | `precedente_fonte_trocada` | súmula, OJ ou tema citado com uma `[Fonte N]` que não o contém, quando outra fonte de precedente entregue o contém. O `norma_fora_das_fontes` só confere se a norma está em *alguma* fonte |
 | `tema_sem_tese_como_regra` | cita um tema afetado e ainda sem tese fixada, sem dizer que a questão está pendente no TST |
 | `alerta_vigencia_omitido` | cita um precedente que chegou com alerta de vigência, sem avisar que ele pode ter mudado |
+| `lei_posterior_omitida` | cita um precedente que chegou com "Alerta de lei posterior" sem dizer que a lei mudou (acrescentado depois; ver as atualizações no fim) |
 | `precedente_cancelado` | cita súmula, OJ ou tema cancelado, suspenso, superado ou em quarentena (cancelamento integral noticiado em fonte não oficial), sem dizer isso. Pega também o que o modelo cita de memória ou o que vem no texto de uma decisão antiga |
 
 O último alerta precisa saber a situação de todos os precedentes, mesmo dos que não foram entregues. A base completa fica em `data/processed/`, que não vai para o Git. Por isso, um catálogo pequeno e versionado vai junto do código: `src/integracao/situacao_precedentes.json`.
@@ -256,7 +258,8 @@ md('int07_alertas_respostas_texto', '''
 **Os alertas nas respostas que já existem.** As gerações v1, v3 e v3.1 foram feitas sem a base de precedentes, então só o alerta `precedente_cancelado` pode aparecer nelas. A tabela mostra só o identificador da pergunta e o precedente citado.
 ''')
 code('int07_alertas_respostas', r'''
-NOVOS = ('precedente_fonte_trocada', 'tema_sem_tese_como_regra', 'alerta_vigencia_omitido', 'precedente_cancelado')
+NOVOS = ('precedente_fonte_trocada', 'tema_sem_tese_como_regra', 'alerta_vigencia_omitido', 'lei_posterior_omitida',
+         'precedente_cancelado')
 ler = lambda c: [json.loads(l) for l in Path(c).read_text(encoding='utf-8').splitlines() if l.strip()]
 linhas, contagem = [], []
 for rotulo, pasta in (('v1', 'geracao'), ('v3', 'geracao_v3'), ('v3.1', 'geracao_v3_1')):
@@ -331,21 +334,106 @@ md('int07_sinonimos_conclusao', '''
 - **Limite da medição:** são 33 perguntas, das quais só 4 ou 5 ganham sinônimos. Ela mostra que os sinônimos não estragam o que já funcionava, mas não mede ganho. O teste no conjunto maior de perguntas fica para depois, como decidido.
 ''')
 
+md('int07_v32_texto', '''
+## 9. Geração v3.2: as 3 bases nas respostas
+
+A geração v3.2 é a primeira com as 3 bases. Ela parte dos pedidos da v3.1 e muda só uma coisa: entram 3 precedentes por pergunta (Fontes 7 a 9) e a regra 25 original do prompt. Ficam iguais as perguntas, a legislação (versão `ec141_2026_notas`), as decisões, a data atual, o modelo (Qwen3 8B q8_0, no Kaggle) e as opções. Assim, a diferença entre v3.1 e v3.2 vem da terceira base.
+
+> **Dados desta etapa**
+> - **Pedidos:** 137 (111 com LLM), preparados por `scripts/preparar_geracao_v3_2.py`; 110 perguntas com 3 precedentes. A `juris_011`, a maior, ficou sem precedentes, porque não cabia na janela de contexto. Resumo em `reports/integracao/correcoes/geracao_v3_2_precedentes.csv`.
+> - **Respostas:** 111 de 111 válidas, todas com o hash do pedido conferido, nenhuma vazia ou cortada; 36,2 s por resposta (v3.1: 34,2 s). Ficam em `output/kaggle/geracao_v3_2/resultados/respostas.jsonl` (JSONL, fora do Git).
+> - **Validador v3:** `reports/integracao/correcoes/validador_v3_respostas_v3_2.csv` (`scripts/avaliar_validador_v3.py`).
+> - **Grava:** `reports/integracao/precedentes/geracao_v3_2_comparacao.csv` (CSV, só identificadores e contagens).
+
+A célula abaixo aplica o validador v3 às respostas da v3.1 e da v3.2 e conta, em cada uma, os bloqueios, os alertas de precedentes e o uso dos precedentes. O texto das respostas não é impresso.
+''')
+code('int07_v32', r'''
+import re
+from collections import Counter
+NOVOS_PREC = ('precedente_fonte_trocada', 'tema_sem_tese_como_regra', 'alerta_vigencia_omitido', 'lei_posterior_omitida',
+              'precedente_cancelado')
+ESPERADO_NOME = {'juris_004': ('Súmula', '338'), 'q09_p2_FAQ32': ('Súmula', '276'), 'juris_013': ('Súmula', '378'),
+                 'juris_019': ('Súmula', '6'), 'juris_017': ('Tema', '58'), 'q09_p1_JUS-001': ('Súmula', '60'),
+                 'q09_p2_FAQ26': ('Súmula', '45')}
+linhas_g = []
+for rotulo, pasta in (('v3.1', 'geracao_v3_1'), ('v3.2', 'geracao_v3_2')):
+    base = ROOT / 'output/kaggle' / pasta
+    pedidos_g = {p['pergunta_id']: p for p in ler(base / 'dataset/pedidos.jsonl')}
+    for resp in ler(base / 'resultados/respostas.jsonl'):
+        p, t = pedidos_g[resp['pergunta_id']], resp.get('resposta') or ''
+        s = ger.revisar(dict(p, versao_prompt='v3'), t)
+        codigos = {a['codigo'] for a in s.alertas}
+        prec_idx = {i + 1 for i, f in enumerate(p['fontes']) if f['fonte'] == 'precedentes'}
+        linha = dict(geracao=rotulo, pergunta=resp['pergunta_id'], bloqueada=not s.aprovada,
+                     bloqueantes=';'.join(sorted(codigos & g.BLOQUEANTES_V3)),
+                     precedentes_entregues=len(prec_idx),
+                     cita_fonte_de_precedente=bool({int(n) for n in re.findall(r'Fonte\s*(\d+)', t)} & prec_idx),
+                     cita_precedente_pelo_nome=bool(re.search(r'S[úu]mula\s*(n[ºo.]*\s*)?\d|\bOJ\s*\d|Orienta[çc][ãa]o Jurisprudencial|\bTema\s*\d', t)))
+        linha.update({c: c in codigos for c in NOVOS_PREC})
+        if resp['pergunta_id'] in ESPERADO_NOME:
+            tipo, num = ESPERADO_NOME[resp['pergunta_id']]
+            linha['cita_precedente_do_advogado'] = bool(re.search(rf'{tipo[:4]}\w*\s*(n[ºo.]*\s*)?{num}\b', t))
+        linhas_g.append(linha)
+comp = pd.DataFrame(linhas_g)
+comp.to_csv(SAIDA / 'geracao_v3_2_comparacao.csv', index=False)
+
+resumo_g = pd.DataFrame({rot: {
+    'respostas': len(d),
+    'bloqueadas pelo validador v3': int(d.bloqueada.sum()),
+    'citam uma [Fonte N] de precedente': int(d.cita_fonte_de_precedente.sum()),
+    'citam súmula, OJ ou tema pelo nome': int(d.cita_precedente_pelo_nome.sum()),
+    'citam o precedente do advogado (de 7)': int(d.cita_precedente_do_advogado.fillna(False).astype(bool).sum()),
+    **{f'alerta: {c}': int(d[c].sum()) for c in NOVOS_PREC}} for rot, d in comp.groupby('geracao')})
+display(resumo_g)
+motivos = pd.DataFrame({rot: Counter(c for l in d.bloqueantes if l for c in l.split(';')) for rot, d in comp.groupby('geracao')}).fillna(0).astype(int)
+print('Respostas bloqueadas, por motivo:')
+display(motivos)
+par = comp.pivot(index='pergunta', columns='geracao', values='bloqueada')
+print(f"Bloqueadas só na v3.2: {int((~par['v3.1'] & par['v3.2']).sum())} · só na v3.1: {int((par['v3.1'] & ~par['v3.2']).sum())} · nas duas: {int((par['v3.1'] & par['v3.2']).sum())}")
+adv = comp[comp.cita_precedente_do_advogado.notna()].pivot(index='pergunta', columns='geracao', values='cita_precedente_do_advogado')
+print('As 7 perguntas do advogado: a resposta cita o precedente decisivo pelo nome?')
+display(adv)
+''')
+
+md('int07_v32_leitura', '''
+**Leitura.**
+
+1. **O modelo passou a usar os precedentes.** Com 2 bases (v3.1), nenhuma resposta citava uma fonte de precedente, e 18 citavam súmula, OJ ou tema de memória. Com as 3 bases (v3.2), 56 respostas citam uma das Fontes 7 a 9, e 56 citam súmula, OJ ou tema pelo nome. Nas 7 perguntas em que o advogado apontou o precedente decisivo, a resposta passou a citá-lo pelo nome em 5 (antes, 1). Das outras duas, a `q09_p2_FAQ32` usa a Súmula 276 (Fonte 7) sem dizer o nome, e a `juris_019` não usa a Súmula 6 entregue.
+2. **Os bloqueios subiram de 13 para 19.** A maior parte vem de norma citada de memória, fora das fontes (6 → 9), e de número de fonte inexistente (1 → 3): com 9 fontes, o Qwen escreveu "Fonte 10" e "Fonte 14". As trocas vão nos dois sentidos (13 respostas passaram a ser bloqueadas e 7 deixaram de ser), porque a geração muda inteira quando o prompt muda; parte da diferença é variação do modelo, como entre v3 e v3.1.
+3. **Falso positivo conhecido:** parte dos `dispositivo_inconsistente` acusa erro quando a lei escreve o número por extenso (o art. 134, § 1º, diz "quatorze dias"; a resposta, "14 dias").
+4. **Os alertas de precedentes apareceram.** 5 respostas citam a súmula com o número de fonte errado, 4 apresentam um tema ainda sem tese como regra, 2 citam de memória súmula em quarentena e 1 omite o alerta de vigência. A regra 25 reescrita, da geração v3.3, trata diretamente o tema sem tese e o precedente anterior à lei.
+5. **O que falta saber** é se as respostas ficaram juridicamente melhores: isso depende do juiz 27B e do advogado revisor.
+''')
+
 md('int07_conclusao', '''
-## 9. Conclusões e próximos passos
+## 10. Conclusões e próximos passos
 
 1. **A base de precedentes está no código de produção.** Ela é uma terceira base de busca, no mesmo nível da legislação e das decisões, e não uma documentação à parte. A junção com o modelo acontece no prompt: o modelo não é treinado de novo.
 2. **A busca entrega os 7 precedentes decisivos apontados pelo advogado.** Antes eram 5. A Súmula 60 voltou pela união no reranker, e a Súmula 45 pelos sinônimos.
-3. **Nada do que já foi medido mudou.** A configuração padrão continua com duas bases, e o prompt v1 continua idêntico.
-4. **O validador ganhou 4 alertas para precedentes** (seção 7), ainda informativos. Nas respostas antigas, nenhum bloqueio mudou, e o alerta de cancelado já encontrou súmulas em quarentena citadas de memória.
+3. **Nada do que já foi medido mudou.** As medições anteriores usam `configuracao_duas_bases()`, e o prompt v1 continua idêntico. A configuração padrão passou a usar as 3 bases.
+4. **O validador ganhou 5 alertas para precedentes** (seção 7), ainda informativos. Nas respostas antigas, nenhum bloqueio mudou, e o alerta de cancelado já encontrou súmulas em quarentena citadas de memória.
 5. **Os sinônimos não pioram a busca de artigos e decisões** (seção 8), depois de retirado o grupo da rescisão indireta, que atrapalhava a busca de decisões.
-6. **Próximos passos:**
-   - medir os 4 alertas novos nas respostas geradas com precedentes e decidir se algum passa a bloquear;
-   - gerar de novo as respostas com três bases (geração v3.2, no Kaggle) e medir com o validador v3 e o juiz;
-   - se as respostas melhorarem, tornar `configuracao_com_precedentes()` a configuração de produção;
+6. **Nas respostas, a terceira base cumpriu o objetivo, com um custo** (seção 9): o modelo passou a citar o entendimento do TST (56 respostas citam uma fonte de precedente; 5 das 7 perguntas do advogado citam o precedente decisivo), mas os bloqueios do validador subiram de 13 para 19, sobretudo por norma citada de memória e número de fonte inexistente.
+7. **Próximos passos:**
+   - geração v3.3: regra 25 reescrita, alerta de lei posterior e nota do divisor 220;
+   - julgar v3.1, v3.2 e v3.3 com o juiz 27B (etapa feita à parte) e decidir se algum alerta de precedente passa a bloquear;
+   - tratar o número de fonte inexistente ("Fonte 14") e o falso positivo de número escrito por extenso no validador;
    - para hospedar: restaurar os schemas do banco no servidor, servir o BGE-M3, o reranker e o Qwen3, e criar o ponto de entrada (API).
 ''')
 code('int07_fim', 'r.fechar()')
+
+md('int07_atualizacoes', '''
+## Atualizações depois desta medição (2026-11-23)
+
+As seções acima mediram a integração com a regra 25 original e sem os ajustes abaixo, feitos em seguida:
+
+1. **Lei posterior prevalece sobre o precedente anterior.** A regra 25 do prompt v3 foi reescrita com a ordem entre as fontes: (a) Constituição e lei posteriores ao precedente prevalecem para os fatos depois da vigência delas; (b) súmula ou OJ sem alerta orienta a interpretação; (c) tema repetitivo com tese é obrigatório, e tema sem tese não é regra; (d) fatos anteriores seguem a lei da época. Quando a data dos fatos muda a resposta (11/11/2017, 16/12/2026), o modelo explica as duas situações ou pergunta a data. O texto anterior fica em `REGRA_25_V3_2`.
+2. **Alerta de lei posterior** (`src/integracao/precedentes_lei_posterior.json`): 15 súmulas e OJs anteriores à Reforma Trabalhista (2017) ou à EC 141/2026, sobre o mesmo ponto, chegam ao modelo com "[Alerta de lei posterior: …]". O validador v3 ganhou o alerta `lei_posterior_omitida`. A lista, com os candidatos, está em `reports/precedentes/lei_posterior/lista_para_revisao_advogado.csv`, para confirmação do advogado revisor.
+3. **Nota do divisor 220 da LC 150** (art. 2º, § 2º): a EC 141 não alterou o divisor; para 40 horas, a Súmula 431 do TST aplica o divisor 200; não há divisor fixado para 42 horas. Nova versão da legislação `ec141_2026_notas_divisor`, padrão da busca.
+4. **As 3 bases são a configuração padrão.** `Configuracao()` usa as 3 bases; `configuracao_duas_bases()` reproduz as medições anteriores.
+5. **Multiagentes:** busca nas 3 bases, com as fontes intercaladas por base, analista com o prompt v3 e revisão pelo validador v3 (`multiagentes-v3`).
+6. **Gerações:** a **v3.2** (3 bases, regra 25 original, sem alerta de lei posterior) foi medida na seção 9; a **v3.3** reúne os itens 1 a 3 (`scripts/preparar_geracao_v3_3.py`).
+''')
 
 notebook = dict(cells=celulas,
                 metadata=dict(kernelspec=dict(display_name='Python 3', language='python', name='python3'),

@@ -33,11 +33,14 @@ Validador v3 (verificar_saida(..., versao='v3'), a partir do diagnóstico do adv
   citacao_em_lote         mais de duas fontes numa frase (informativo)
   metadado_interno        status de vigência, caminho ou nome de arquivo das fontes na resposta (informativo)
   abertura_categorica     abre com "sim"/"não" e depois condiciona a resposta (informativo)
+  mais_de_duas_fontes     a resposta cita mais de 2 fontes diferentes (informativo; limite decidido em 2026-11-23)
   Precedentes do TST (fontes com tipo 'precedentes', notebook 07 da integração; todos informativos):
   precedente_fonte_trocada    súmula, OJ ou tema citado com uma [Fonte N] que não o contém, quando outra fonte
                               de precedente entregue o contém
   tema_sem_tese_como_regra    tema afetado e ainda sem tese citado sem dizer que a questão está pendente
   alerta_vigencia_omitido     precedente com alerta de vigência citado sem avisar que pode ter mudado
+  lei_posterior_omitida       precedente anterior a mudança da lei sobre o mesmo ponto (Reforma de 2017, EC 141)
+                              citado sem dizer que a lei mudou (src/integracao/precedentes_lei_posterior.json)
   precedente_cancelado        súmula, OJ ou tema cancelado, suspenso ou superado citado sem dizer isso
                               (catálogo versionado em src/integracao/situacao_precedentes.json)
 Bloqueantes (reprovam a resposta): ver BLOQUEANTES (v1) e BLOQUEANTES_V3; os demais alertas são informativos.
@@ -368,6 +371,10 @@ def alertas_v3(texto, fontes, lista_frases, juridicas):
         abertura = _sem_acento(lista_frases[0])
         if re.match(r'\W*(sim|nao)\b', abertura) and CONTRAPESO.search(_sem_acento(' '.join(lista_frases[1:]))):
             alertas.append(dict(codigo='abertura_categorica', detalhe='Abre com sim/não e depois condiciona a resposta.'))
+    # Decisão da usuária (2026-11-23): a resposta cita no máximo 2 fontes diferentes, as mais relevantes.
+    distintas = {int(n) for n in CITACAO.findall(texto) if 1 <= int(n) <= len(fontes)}
+    if len(distintas) > 2:
+        alertas.append(dict(codigo='mais_de_duas_fontes', detalhe=f'{len(distintas)} fontes diferentes citadas na resposta'))
     alertas.extend(alertas_precedentes(texto, fontes, lista_frases))
     return alertas
 
@@ -381,6 +388,10 @@ AVISO_PENDENTE = _rx(r'pendente', r'sem tese', r'ainda nao (ha|foi|tem|fixou|def
                      r'nao foi (fixada|definida)', r'ainda sera (julgad|decidid|definid)')
 AVISO_VIGENCIA = _rx(r'alterad', r'cancelad', r'vigencia', r'revisad', r'revist', r'desatualizad', r'modificad',
                      r'pode ter (sido|mudado)', r'superad', r'nao (esta )?mais em vigor')
+# A resposta diz que a lei mudou depois do precedente (Reforma Trabalhista de 2017 ou EC 141/2026).
+AVISO_LEI_POSTERIOR = _rx(r'reforma trabalhista', r'13\.?467', r'emenda constitucional (n[ºo°.]* *)?141', r'\bec 141',
+                          r'lei (nova|posterior|atual)', r'regra (nova|atual)', r'a partir de 11/11/2017', r'novembro de 2017',
+                          r'superad', r'nao se aplica mais', r'alterad', r'mudou')
 SUMULA_CITADA = re.compile(r's[úu]mula(?P<vinc>\s+vinculante)?\s*(?:n[º°o.]*\s*)?(?P<num>\d{1,3})(?![\d.,]*\d)(?P<resto>[^.;\n]{0,40})',
                            re.IGNORECASE)
 OJ_CITADA = re.compile(r'(?:\bOJ|orienta[çc][ãa]o\s+jurisprudencial)\s*(?:n[º°o.]*\s*)?(?P<num>\d{1,3})(?![\d.,]*\d)(?P<resto>[^.;\n]{0,45})',
@@ -451,6 +462,8 @@ def alertas_precedentes(texto, fontes, lista_frases):
                                de precedente entregue o contenha
     tema_sem_tese_como_regra   cita um tema afetado e ainda sem tese sem dizer que a questão está pendente
     alerta_vigencia_omitido    cita um precedente com alerta de vigência sem avisar que ele pode ter mudado
+    lei_posterior_omitida      cita um precedente anterior a uma mudança da lei sobre o mesmo ponto sem dizer que a
+                               lei mudou (src/integracao/precedentes_lei_posterior.json)
     precedente_cancelado       cita súmula, OJ ou tema cancelado, suspenso, superado ou com cancelamento noticiado
                                (quarentena) sem dizer isso
     """
@@ -479,6 +492,9 @@ def alertas_precedentes(texto, fontes, lista_frases):
         if f.get('alerta_vigencia') and not AVISO_VIGENCIA.search(texto_sa):
             alertas.append(dict(codigo='alerta_vigencia_omitido',
                                 detalhe=f'{nome} [Fonte {n}] tem alerta de vigência, e a resposta não avisa'))
+        if f.get('alerta_lei_posterior') and not AVISO_LEI_POSTERIOR.search(texto_sa):
+            alertas.append(dict(codigo='lei_posterior_omitida',
+                                detalhe=f'{nome} [Fonte {n}] é anterior a uma mudança da lei, e a resposta não diz isso'))
     vistos = set()
     for inicio, fim, rotulo, situacao in precedentes_inativos_citados(texto):
         janela = _sem_acento((texto or '')[max(0, inicio - 120):fim + 120])

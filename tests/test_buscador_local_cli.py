@@ -18,8 +18,9 @@ TEXTO = ('Art. 73. O trabalho noturno terá remuneração superior à do diurno,
          'com acréscimo de 20% sobre a hora diurna, pelo menos.')
 RESPOSTA = ('O adicional noturno urbano corresponde a pelo menos 20% sobre a hora '
             'diurna, conforme o Art. 73 da CLT [Fonte 1].')
+# caminho real da CLT: o validador v3 dos multiagentes reconhece "art. 73 da CLT" pelo arquivo da fonte
 FONTE = dict(fonte='legislacao', unidade='clt-artigo-73-teste', artigo_ref='Art. 73',
-             caminho_relativo='fixtures/clt.md', conteudo=TEXTO, similaridade=0.9,
+             caminho_relativo='codigos/consolidacao-das-leis-do-trabalho-clt-del-5452-1943.md', conteudo=TEXTO, similaridade=0.9,
              source='https://example.org/fonte-ficticia', date='2026-01-01')
 DIAGNOSTICO = dict(quantidade_artigos=2, cache_reutilizado=True,
                   corpus_sha256='a' * 64, dimensao=2,
@@ -192,7 +193,7 @@ class TestMultiagentesModoLocal(unittest.TestCase):
                 return [[1.0, 0.0] if 'noturno' in texto else [0.0, 1.0] for texto in textos]
 
         artigo = dict(artigo_id='clt-artigo-73-teste', identificador_artigo='Art. 73',
-                      caminho_relativo='fixtures/clt.md', texto_artigo_completo=TEXTO,
+                      caminho_relativo='codigos/consolidacao-das-leis-do-trabalho-clt-del-5452-1943.md', texto_artigo_completo=TEXTO,
                       caminho_hierarquico='CLT > Jornada', source='https://example.org/fonte-ficticia')
         with tempfile.TemporaryDirectory() as pasta:
             caminho = Path(pasta) / 'artigos.json'

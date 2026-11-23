@@ -100,7 +100,8 @@ class BuscaFake:
             'fonte': 'legislacao',
             'unidade': 'clt-artigo-73-teste',
             'artigo_ref': 'Art. 73',
-            'caminho_relativo': 'sintetico/clt.md',
+            # caminho real da CLT: o validador v3 reconhece "art. 73 da CLT" pelo arquivo da fonte (multiagentes-v3)
+            'caminho_relativo': 'codigos/consolidacao-das-leis-do-trabalho-clt-del-5452-1943.md',
             'conteudo': TEXTO_FONTE,
         }]
         self.erro = erro
