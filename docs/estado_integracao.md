@@ -1,13 +1,12 @@
 # Estado da integração (03_integracao)
 
-Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-22.
+Este é o documento de passagem para retomar o trabalho em outra sessão ou máquina. Atualizado em 2026-11-23.
 
 **Próximos passos, em ordem:**
-1. **Base de precedentes:** integrar como **terceira fonte** da busca. O notebook 06 de avaliação está pronto (ver a seção sobre ele). O que integrar:
-   - busca híbrida + reranker, com o conjunto do reranker vindo da **união** dos primeiros da busca semântica e da busca por palavras;
-   - cota inicial de 3 precedentes;
-   - citação pelo nome no prompt ("Súmula 338, I, do TST");
-   - dicionário de sinônimos jurídicos na pergunta ("13º salário" = "gratificação natalina").
+1. **Base de precedentes como terceira fonte:** o código está integrado e registrado no notebook `03_integracao/07_integracao_precedentes.ipynb`. Faltam:
+   - uma nova geração (v3.2), com 3 bases, para medir o efeito nas respostas, se a usuária pedir;
+   - medir nela os 4 alertas novos de precedentes e decidir se algum passa a bloquear;
+   - se as respostas melhorarem, tornar `configuracao_com_precedentes()` a configuração de produção.
 2. **Feito pela usuária, à parte:** juiz Gemma 3 27B nas respostas v3 e v3.1. Não rodar.
 3. **Testes num conjunto maior de perguntas, decididos pela usuária para depois:**
    - EC 141/2026 e regra 24 (jornada, repouso e domésticos);
@@ -22,6 +21,55 @@ Este é o documento de passagem para retomar o trabalho em outra sessão ou máq
 5. **Pendências de fonte, que dependem da usuária:**
    - livro oficial de súmulas e OJs do TST de 2026, ou a resolução dos cancelamentos, para confirmar os 22 enunciados em quarentena;
    - divisor 220 da LC 150, ligado às 44 horas.
+
+## Atualização de 2026-11-22 (noite): integração dos precedentes como terceira fonte (notebook 07)
+
+**Configuração:** a terceira fonte entra só com `configuracao_com_precedentes()` em `src/integracao/recuperacao.py`. A `Configuracao()` padrão continua com 2 fontes e não muda nada do que já foi medido.
+
+**O que foi feito, por arquivo:**
+- **Busca** (`recuperacao.py`):
+  - fonte `precedentes`, com busca semântica no `lex_precedentes` e busca por palavras no índice normalizado, sem stopwords e com IDF;
+  - na fonte de precedentes, o reranker recebe a **união** dos 10 primeiros de cada busca (`uniao_reranker`), e não os primeiros da fusão RRF;
+  - cota de 3 precedentes;
+  - a versão validada do `lex_precedentes` é carregada só quando essa fonte é pedida.
+- **Entrega:** o modelo recebe o **registro inteiro** (`texto_precedente`): nome de citação, título, enunciado sem as notas de origem, situação "afetado sem tese" e alerta de vigência, quando houver. `geracao.fonte_para_prompt` leva `nome_citacao`, `tipo_precedente`, `situacao` e `alerta_vigencia`.
+- **Prompt v3:**
+  - tipo de fonte "precedente do TST (súmula, orientação jurisprudencial ou tema de recurso repetitivo)" e campo "Precedente";
+  - **regra 25:** citar o precedente pelo nome; não confundir lei, precedente e decisão; avisar quando houver alerta de vigência; tema sem tese não é regra;
+  - o v1 continua idêntico.
+- **Validador v3** (`guardrails._norma_nas_fontes`): passa a considerar também o `nome_citacao` da fonte. Sem isso, toda citação correta de súmula seria bloqueada, porque o texto do enunciado não traz "Súmula 338". `geracao.revisar` repassa esse nome.
+- **Sinônimos jurídicos** (`src/integracao/sinonimos.py`):
+  - 14 grupos, como "13º salário" = "gratificação natalina", "hora extra" = "serviço suplementar", "DSR" = "repouso semanal remunerado" e "FGTS" = "fundo de garantia";
+  - o grupo ('rescisão indireta', 'justa causa do empregador') foi retirado em 2026-11-23: "justa causa" puxava decisões sobre justa causa do empregado (ver abaixo);
+  - a pergunta original é mantida e os equivalentes vão entre parênteses;
+  - "13º" sozinho conta, mas "13 de maio", "Lei 13.467", "art. 13º" e "13ª Região" não contam.
+- **Testes:** `tests/test_integracao_precedentes.py`, com 20 testes. A integração toda tem 119 testes, e todos passam.
+
+**Resultado no banco** (7 perguntas do advogado, busca completa com 3 fontes):
+- **7 de 7 precedentes entregues ao modelo:** 5 em 1º lugar, a Súmula 60 em 3º e a Súmula 45 em 3º.
+- **Súmula 60:** voltou pela união no reranker.
+- **Súmula 45:** voltou pelos sinônimos. A pergunta dizia só "13º"; a súmula fala em "gratificação natalina".
+- **Tempo:** cerca de 17 s por pergunta na CPU.
+
+**Notebook 07** (`notebooks/03_integracao/07_integracao_precedentes.ipynb`, gerado por `scripts/criar_notebook_integracao_07.py`):
+- documenta os arquivos de `src/integracao/` que mudaram, o fluxo com 3 bases e a chave de ativação;
+- repete a busca nas 7 perguntas do advogado e grava `reports/integracao/precedentes/entrega_especialista.csv` (só identificadores);
+- mostra o que o modelo recebe (exemplo fictício com a Súmula 338) e roda os 119 testes da integração;
+- seção 7: os 4 alertas novos do validador; seção 8: o efeito dos sinônimos nas outras duas bases.
+
+**Alertas novos do validador v3 para precedentes** (2026-11-23, `src/integracao/guardrails.py`, todos informativos):
+- `precedente_fonte_trocada`: súmula, OJ ou tema citado com uma [Fonte N] que não o contém, quando outra fonte de precedente entregue o contém;
+- `tema_sem_tese_como_regra`: tema afetado e ainda sem tese citado sem dizer que a questão está pendente;
+- `alerta_vigencia_omitido`: precedente com alerta de vigência citado sem avisar que pode ter mudado;
+- `precedente_cancelado`: súmula, OJ ou tema cancelado, suspenso, superado ou em quarentena citado sem dizer isso. Usa o catálogo versionado `src/integracao/situacao_precedentes.json`, gerado por `scripts/gerar_catalogo_situacao_precedentes.py`, porque `data/processed/` não vai para o Git. Súmula vinculante e citações de STF, STJ ou TRT não contam; OJ sem série só conta se todas as OJs daquele número estão inativas;
+- `geracao.revisar` passa ao validador também a `situacao` e o `alerta_vigencia` das fontes;
+- **nas respostas v1, v3 e v3.1, nenhum bloqueio mudou** (34, 8 e 13). O alerta de cancelado aparece em 1, 3 e 3 respostas: as Súmulas 450, 452 e 366, em quarentena, citadas de memória sem aviso (`reports/integracao/precedentes/alertas_precedentes_respostas.csv`).
+
+**Efeito dos sinônimos nas outras duas bases** (`scripts/avaliar_sinonimos_recuperacao.py`, cerca de 30 min na CPU; gabaritos e configuração final do notebook 01 da integração):
+- 1ª rodada, com 15 grupos: legislação igual; na jurisprudência, a `juris_011` perdeu a decisão certa (4º → fora dos 10) por causa de "justa causa do empregador". Resultado guardado em `reports/integracao/precedentes/sinonimos_*_15_grupos.csv`;
+- 2ª rodada, com 14 grupos (a que fica no código): legislação igual (Hit@1 0,875, Hit@3 1,00, MRR 0,927); jurisprudência melhora um pouco (Hit@3 0,176 → 0,235, MRR 0,130 → 0,135; a `juris_011` sobe para 3º);
+- com 3 bases, legislação e jurisprudência têm os mesmos números que com 2 bases. O tempo sobe de cerca de 14 s para 24 s por pergunta;
+- só 4 das 33 perguntas ganham sinônimos: a medição mostra que nada piora, mas não mede ganho. O conjunto maior fica para depois.
 
 ## Atualização de 2026-11-22 (noite): avaliação da base de precedentes (notebook 06) e quadros de dados
 
@@ -331,6 +379,7 @@ Também foi implementado o [BuscadorLocal](buscador_local.md): leitura do JSON o
 | Juiz (Gemma 3 27B) | `src/integracao/juiz.py`, `scripts/*juiz*`, `reports/integracao/juiz/*_27b*.csv` | validado com advogado revisor (25 respostas): concorda em 10 de 25, brando diante do especialista; faltam critérios novos detectáveis por regra |
 | Avaliação e diagnóstico (notebook 04) | `notebooks/03_integracao/04_avaliacao.ipynb`, `scripts/criar_notebook_integracao_04.py`, `scripts/importar_revisao_juiz.py` | concluída com juiz 27B, validação com especialista e prioridades de correção |
 | Correções (notebook 06) | `notebooks/03_integracao/06_correcoes.ipynb`, `src/integracao/prompt_juridico.py` (v3, regras 16 a 24), `src/integracao/guardrails.py` (validador v3) | concluída a medição de v3 e v3.1 no validador. Faltam o juiz 27B (feito pela usuária) e os critérios novos do juiz |
+| Precedentes como terceira fonte (notebook 07) | `notebooks/03_integracao/07_integracao_precedentes.ipynb`, `src/integracao/recuperacao.py`, `src/integracao/sinonimos.py`, `src/integracao/prompt_juridico.py` (regra 25), `src/integracao/guardrails.py` | código integrado; busca entrega 7 de 7 precedentes do gabarito. Falta a geração v3.2 para medir as respostas |
 | Legislação versionada (EC 141/2026) | `VERSOES_LEGISLACAO` em `src/integracao/recuperacao.py`, `scripts/atualizar_legislacao_*.py` | concluída: versão `ec141_2026_notas` é o padrão da busca, e a `original` está preservada |
 | Base de precedentes do TST | `notebooks/05_docs_precedentes/`, `src/precedentes/`, schema `lex_precedentes` | notebooks 00 a 06 prontos; versão `bdf048e6…` validada e avaliada (gabarito A: 5 de 7 em 1º; gabarito B: Hit@3 0,53). Falta a integração como terceira fonte. Os notebooks não estão commitados |
 | Comparação RAG × LLM (notebook 05) | `notebooks/03_integracao/05_comparacao_rag_llm.ipynb`, `scripts/comparacao_rag_basico.py`, `reports/integracao/comparacao/` | concluída com 5 configurações; falta repetir básico + decisões × híbrido em mais perguntas |

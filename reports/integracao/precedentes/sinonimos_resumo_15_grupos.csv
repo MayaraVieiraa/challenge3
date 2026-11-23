@@ -1,0 +1,7 @@
+configuracao,fonte,hit@1,hit@3,hit@5,hit@10,mrr@10,cobertura@3,cobertura@5,segundos,perguntas
+"2 bases, com sinônimos",jurisprudencia,0.059,0.176,0.176,0.235,0.116,0.038,0.038,16.614,17
+"2 bases, com sinônimos",legislacao,0.875,1.0,1.0,1.0,0.927,,,17.869,16
+"2 bases, sem sinônimos",jurisprudencia,0.059,0.176,0.235,0.294,0.13,0.038,0.038,17.51,17
+"2 bases, sem sinônimos",legislacao,0.875,1.0,1.0,1.0,0.927,,,14.772,16
+3 bases (com precedentes),jurisprudencia,0.059,0.176,0.176,0.235,0.116,0.038,0.038,24.886,17
+3 bases (com precedentes),legislacao,0.875,1.0,1.0,1.0,0.927,,,26.019,16

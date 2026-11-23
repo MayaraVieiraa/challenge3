@@ -11,6 +11,12 @@ Fluxo por pergunta:
 
 A busca lexical usa visões materializadas no schema próprio `lex_integracao`, com índices GIN; as tabelas
 de legislação (`lex_clt`) e de jurisprudência (`lex_jurisprudencia`) não são alteradas.
+
+Terceira fonte (opcional): precedentes do TST (súmulas, OJs e temas), schema `lex_precedentes` (notebooks
+05_docs_precedentes). Entra só quando a configuração pede (`configuracao_com_precedentes()`), para não mudar os
+resultados já medidos com duas fontes. Na fonte de precedentes, a busca por palavras usa o índice normalizado e sem
+stopwords da própria base, o reranker recebe a UNIÃO dos primeiros de cada busca (a fusão RRF sozinha perdia a
+Súmula 60, notebook 06 de precedentes) e o modelo recebe o registro inteiro, com nome de citação, situação e alerta.
 """
 from __future__ import annotations
 
@@ -42,6 +48,7 @@ REVISAO = '5617a9f61b028005a4858fdac845db406aefb181'
 RERANKER = 'BAAI/bge-reranker-v2-m3'
 RRF_K = 60
 FONTES = ('legislacao', 'jurisprudencia')
+FONTES_COM_PRECEDENTES = ('legislacao', 'jurisprudencia', 'precedentes')
 
 DDL_LEXICO = """
 CREATE SCHEMA IF NOT EXISTS lex_integracao;
@@ -82,7 +89,37 @@ class Configuracao:
     reranker_max_length: int | None = 256    # tokens lidos por par pergunta–trecho (None = valor do carregamento)
     lexical_modo: str = 'idf'            # 'idf', 'ts_rank' ou 'ts_rank_cd' (primeira versão)
     lexical_poda: float = 0.20           # descarta lexemas presentes em mais dessa fração dos chunks (modo idf)
+    # Fontes em que o reranker recebe a união dos `cota_por_fonte` primeiros de cada busca (semântica e por palavras),
+    # e não os primeiros da fusão RRF. Avaliação de precedentes: a fusão deixava de fora precedente que a semântica
+    # punha em 3º.
+    uniao_reranker: tuple = ()
+    expandir_sinonimos: bool = False     # acrescenta sinônimos jurídicos à pergunta (src/integracao/sinonimos.py)
     extras: dict = field(default_factory=dict)
+
+
+def configuracao_com_precedentes(**alteracoes):
+    """Configuração recomendada com a terceira fonte (notebook 06 de precedentes): 3 artigos, 3 decisões e
+    3 precedentes; reranker sobre a união das buscas na fonte de precedentes; sinônimos jurídicos na pergunta."""
+    base = dict(fontes=FONTES_COM_PRECEDENTES, entrega_por_fonte={'legislacao': 3, 'jurisprudencia': 3, 'precedentes': 3},
+                top_k=10, uniao_reranker=('precedentes',), expandir_sinonimos=True)
+    base.update(alteracoes)
+    return Configuracao(**base)
+
+
+def selecionar_uniao(semantica, lexical, n, escores):
+    """Candidatos da união dos n primeiros de cada lista, na ordem da fusão RRF (escores de `rrf`)."""
+    manter = set(semantica[:n]) | set(lexical[:n])
+    return sorted(manter, key=lambda c: (-escores.get(c, 0.0), c))
+
+
+def texto_precedente(dados):
+    """Texto entregue ao modelo para um precedente: nome, título, enunciado (sem as notas de origem) e alertas."""
+    partes = [f"{dados['nome_citacao']} — {dados['titulo']}", dados.get('texto_busca') or dados.get('texto') or '']
+    if dados.get('situacao') == 'afetado_sem_tese':
+        partes.append('[Situação: tema afetado, ainda sem tese fixada pelo TST.]')
+    if dados.get('alerta_vigencia'):
+        partes.append(f"[Alerta de vigência: {dados['alerta_vigencia']}]")
+    return '\n'.join(p for p in partes if p)
 
 
 class Recuperador:
@@ -98,6 +135,7 @@ class Recuperador:
         self.versao_legislacao = versao_legislacao
         self.legislacao_d, self.legislacao_a = VERSOES_LEGISLACAO[versao_legislacao]
         self.dataset_jurisprudencia = self._dataset_jurisprudencia()
+        self._dataset_prec = None   # carregado só quando a configuração pede a fonte de precedentes
         self._df = {}   # frequência de documentos por (fonte, lexema), usada no IDF da busca lexical
         self.encoder = SentenceTransformer(MODELO, revision=REVISAO, device=device, local_files_only=True)
         self.encoder.max_seq_length = 8192
@@ -154,11 +192,27 @@ class Recuperador:
             sql = ('SELECT chunk_id FROM lex_clt.chunk_embeddings WHERE dataset_id=%s '
                    'ORDER BY embedding <=> %s, row_index LIMIT %s')
             parametros = (self.legislacao_d, vetor, k)
+        elif fonte == 'precedentes':
+            sql = ('SELECT chunk_id FROM lex_precedentes.embeddings WHERE dataset_id=%s '
+                   'ORDER BY embedding <=> %s, chunk_id LIMIT %s')
+            parametros = (self.dataset_precedentes, vetor, k)
         else:
             sql = ('SELECT chunk_id FROM lex_jurisprudencia.embeddings WHERE dataset_id=%s '
                    'ORDER BY embedding <=> %s, chunk_id LIMIT %s')
             parametros = (self.dataset_jurisprudencia, vetor, k)
         return [r[0] for r in self.conexao.execute(sql, parametros).fetchall()]
+
+    @property
+    def dataset_precedentes(self):
+        """Versão validada de `lex_precedentes` (e índice de palavras pronto), carregada na primeira consulta."""
+        if self._dataset_prec is None:
+            from src.precedentes import indexacao as ix
+            linhas = self.conexao.execute("SELECT dataset_id FROM lex_precedentes.datasets WHERE estado='validado'").fetchall()
+            if len(linhas) != 1:
+                raise ValueError(f'Esperado um dataset de precedentes validado; encontrados {len(linhas)}.')
+            self._dataset_prec = linhas[0][0]
+            ix.preparar_lexico(self.conexao, self._dataset_prec)
+        return self._dataset_prec
 
     def _frequencia(self, fonte, lexema):
         """Número de chunks da fonte que contêm o lexema; lexema=None dá o total de chunks (cache em memória)."""
@@ -181,6 +235,10 @@ class Recuperador:
         e é a pior: favorece chunks curtos com termos genéricos (ver notebook 01, seção 10).
         """
         import math
+        if fonte == 'precedentes':
+            # índice próprio: texto normalizado, sem stopwords e com peso IDF (src/precedentes/normalizacao.py)
+            from src.precedentes import indexacao as ix
+            return [c for _, c, _ in ix.busca_lexical(self.conexao, self.dataset_precedentes, pergunta, k)]
         lexemas = self.conexao.execute(
             "SELECT tsvector_to_array(to_tsvector('portuguese', %s))", (pergunta,)).fetchone()[0] or []
         if modo == 'idf':
@@ -214,9 +272,21 @@ class Recuperador:
         ordem, escores = rrf(listas)
         return [dict(fonte=fonte, chunk_id=c, rrf=escores[c]) for c in ordem]
 
+    def candidatos_fonte(self, fonte, pergunta, config, vetor=None):
+        """Candidatos de uma fonte para o reranker: os primeiros da fusão RRF ou, nas fontes de `uniao_reranker`,
+        a união dos primeiros de cada busca (semântica e por palavras)."""
+        if fonte not in config.uniao_reranker:
+            return self.buscar_fonte(fonte, pergunta, config, vetor)[:config.cota_por_fonte]
+        sem = self.semantica(fonte, vetor if vetor is not None else self.vetor(pergunta), config.candidatos_por_busca) \
+            if config.usar_semantica else []
+        lex = self.lexical(fonte, pergunta, config.candidatos_por_busca, config.lexical_modo, config.lexical_poda) \
+            if config.usar_lexical else []
+        _, escores = rrf([l for l in (sem, lex) if l])
+        return [dict(fonte=fonte, chunk_id=c, rrf=escores[c]) for c in selecionar_uniao(sem, lex, config.cota_por_fonte, escores)]
+
     # --- conteúdo e entrega -----------------------------------------------------------------------------
     def conteudo(self, candidatos):
-        por_fonte = {f: [c['chunk_id'] for c in candidatos if c['fonte'] == f] for f in FONTES}
+        por_fonte = {f: [c['chunk_id'] for c in candidatos if c['fonte'] == f] for f in FONTES_COM_PRECEDENTES}
         dados = {}
         if por_fonte['legislacao']:
             for cid, art, texto, meta in self.conexao.execute(
@@ -228,7 +298,19 @@ class Recuperador:
                     'SELECT chunk_id, registro_id, texto, metadata FROM lex_jurisprudencia.embeddings '
                     'WHERE dataset_id=%s AND chunk_id = ANY(%s)', (self.dataset_jurisprudencia, por_fonte['jurisprudencia'])).fetchall():
                 dados[('jurisprudencia', cid)] = dict(texto=texto, unidade=reg, metadata=meta)
+        if por_fonte['precedentes']:
+            for cid, reg, texto, meta in self.conexao.execute(
+                    'SELECT chunk_id, registro_id, texto, metadata FROM lex_precedentes.embeddings '
+                    'WHERE dataset_id=%s AND chunk_id = ANY(%s)', (self.dataset_precedentes, por_fonte['precedentes'])).fetchall():
+                dados[('precedentes', cid)] = dict(texto=texto, unidade=reg, metadata=meta)
         return [dict(c, **dados[(c['fonte'], c['chunk_id'])]) for c in candidatos]
+
+    def precedentes(self, registro_ids):
+        """Registros inteiros dos precedentes (unidade entregue ao modelo)."""
+        linhas = self.conexao.execute(
+            'SELECT registro_id, dados FROM lex_precedentes.registros WHERE dataset_id=%s AND registro_id = ANY(%s)',
+            (self.dataset_precedentes, list(registro_ids))).fetchall()
+        return {r: d for r, d in linhas}
 
     def artigos(self, article_ids):
         linhas = self.conexao.execute(
@@ -240,10 +322,13 @@ class Recuperador:
         """Retorna (unidades entregues, diagnóstico). Unidade = artigo (legislação) ou decisão (jurisprudência)."""
         config = config or Configuracao()
         inicio = time.monotonic()
+        if config.expandir_sinonimos:
+            from src.integracao.sinonimos import expandir
+            pergunta = expandir(pergunta)
         vetor = self.vetor(pergunta) if config.usar_semantica else None
         candidatos = []
         for fonte in config.fontes:
-            candidatos += self.buscar_fonte(fonte, pergunta, config, vetor)[:config.cota_por_fonte]
+            candidatos += self.candidatos_fonte(fonte, pergunta, config, vetor)
         candidatos = self.conteudo(candidatos)
         if config.usar_reranker and self.reranker is not None and candidatos:
             self.reranker.max_length = config.reranker_max_length or self._max_length_original
@@ -271,15 +356,25 @@ class Recuperador:
         else:
             entregues = unidades[:config.top_k]
         artigos = self.artigos([u['unidade'] for u in entregues if u['fonte'] == 'legislacao'])
+        registros = self.precedentes([u['unidade'] for u in entregues if u['fonte'] == 'precedentes']) \
+            if any(u['fonte'] == 'precedentes' for u in entregues) else {}
         for u in entregues:
             if u['fonte'] == 'legislacao':
                 a = artigos.get(u['unidade'])
                 u['texto'] = a['texto'] if a else u['chunks'][0]['texto']
                 u['metadata'] = a['metadata'] if a else u['chunks'][0]['metadata']
+            elif u['fonte'] == 'precedentes':
+                d = registros[u['unidade']]
+                u['texto'] = texto_precedente(d)
+                u['metadata'] = dict(nome_citacao=d['nome_citacao'], tipo=d['tipo'], titulo=d['titulo'],
+                                     situacao=d['situacao'], alerta_vigencia=d.get('alerta_vigencia'),
+                                     item_encontrado=(u['chunks'][0].get('metadata') or {}).get('item'),
+                                     data_referencia=(d.get('fonte') or {}).get('data_referencia'))
             else:
                 u['texto'] = u['chunks'][0]['texto']
                 u['metadata'] = u['chunks'][0]['metadata']
         diagnostico = dict(segundos=time.monotonic() - inicio, candidatos=len(candidatos), unidades=len(unidades),
+                           pergunta_busca=pergunta,
                            ranking_unidades=[(u['fonte'], u['unidade']) for u in unidades],
                            ranking_por_fonte={f: [(u['fonte'], u['unidade']) for u in lista] for f, lista in por_fonte.items()},
                            com_cotas=bool(config.entrega_por_fonte),

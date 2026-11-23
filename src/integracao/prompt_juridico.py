@@ -65,6 +65,7 @@ REGRAS:
 """
 
 # --- Versão 3 (2026-11-22): regras acrescentadas a partir do diagnóstico do advogado revisor (notebook 04, seção 8).
+# Regra 25 (precedentes do TST como terceira fonte) acrescentada depois da geração v3.1 no Kaggle.
 # Regra 24 (notas de vigência, EC 141/2026) acrescentada depois de enviada a geração v3 ao Kaggle
 # (lexia-geracao-qwen3-v3): aqueles pedidos usam as regras 16 a 23; o hash de cada pedido registra o prompt usado.
 # O SYSTEM_PROMPT_LEGAL acima continua sem alteração: os pedidos antigos e o notebook 05 conferem o hash dele.
@@ -101,6 +102,13 @@ REGRAS ADICIONAIS DE CITAÇÃO E DE PRECISÃO:
     Constituição ou por uma emenda, a regra nova prevalece: apresente-a primeiro, citando a
     norma indicada na nota (por exemplo, "art. 7º, XV, da CF, com a redação da EC 141/2026")
     e a mesma [Fonte N]. Não responda apenas pelo texto antigo da lei.
+25. Fontes do tipo "precedente do TST" (súmula, orientação jurisprudencial ou tema de recurso
+    repetitivo) trazem o entendimento consolidado do tribunal. Cite-as pelo nome do campo
+    "Precedente" (por exemplo, "Súmula 338, I, do TST" ou "Tema 58 de IRR do TST") junto da
+    [Fonte N]. Não confunda as três espécies de fonte: a lei diz a regra; o precedente diz como
+    o TST a interpreta e aplica; a decisão judicial mostra como um caso foi julgado. Se a fonte
+    trouxer "Alerta de vigência", avise que o enunciado pode ter sido alterado. Um tema "ainda
+    sem tese fixada" indica questão pendente no TST: não o apresente como regra.
 """
 SYSTEM_PROMPT_LEGAL_V3 = SYSTEM_PROMPT_LEGAL + REGRAS_V3
 VERSOES_PROMPT = ('v1', 'v3')
@@ -124,8 +132,11 @@ def build_rag_prompt(query, retrieved_chunks, versao='v1', data_atual=None):
         if not isinstance(text, str) or not text.strip():
             raise ValueError(f'A fonte {index} não contém texto válido.')
         tipo = {'legislacao': 'legislação', 'jurisprudencia': 'decisão judicial'}.get(chunk.get('fonte')) if v3 else None
+        if v3 and chunk.get('fonte') == 'precedentes':
+            tipo = f"precedente do TST ({chunk.get('tipo_precedente') or 'precedente'})"
         metadata_fields = [
             ('Tipo de fonte', tipo),
+            ('Precedente', chunk.get('nome_citacao') if v3 else None),
             ('Norma', chunk.get('norma') or chunk.get('title') or chunk.get('nome_arquivo') or chunk.get('caminho_relativo')),
             ('Dispositivo', chunk.get('artigo_ref') or chunk.get('identificador_dispositivo')),
             ('Contexto hierárquico', chunk.get('contexto') or chunk.get('caminho_hierarquico')),

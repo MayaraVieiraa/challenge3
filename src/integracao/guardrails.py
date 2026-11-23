@@ -33,6 +33,13 @@ Validador v3 (verificar_saida(..., versao='v3'), a partir do diagnóstico do adv
   citacao_em_lote         mais de duas fontes numa frase (informativo)
   metadado_interno        status de vigência, caminho ou nome de arquivo das fontes na resposta (informativo)
   abertura_categorica     abre com "sim"/"não" e depois condiciona a resposta (informativo)
+  Precedentes do TST (fontes com tipo 'precedentes', notebook 07 da integração; todos informativos):
+  precedente_fonte_trocada    súmula, OJ ou tema citado com uma [Fonte N] que não o contém, quando outra fonte
+                              de precedente entregue o contém
+  tema_sem_tese_como_regra    tema afetado e ainda sem tese citado sem dizer que a questão está pendente
+  alerta_vigencia_omitido     precedente com alerta de vigência citado sem avisar que pode ter mudado
+  precedente_cancelado        súmula, OJ ou tema cancelado, suspenso ou superado citado sem dizer isso
+                              (catálogo versionado em src/integracao/situacao_precedentes.json)
 Bloqueantes (reprovam a resposta): ver BLOQUEANTES (v1) e BLOQUEANTES_V3; os demais alertas são informativos.
 As regras são heurísticas e auditáveis; não substituem revisão humana nem certificam correção jurídica.
 """
@@ -295,7 +302,8 @@ _NUMERO_NORMA = r'(?:n[º°o.]*\s*)?'
 def _norma_nas_fontes(tipo, numero, fontes):
     for fonte in fontes:
         caminho = _sem_acento(str(fonte.get('caminho') or ''))
-        base = _sem_acento(_sem_pontos(' '.join(str(fonte.get(c) or '') for c in ('texto', 'contexto'))))
+        # nome_citacao: fontes de precedente trazem "Súmula 338 do TST" no nome, não no texto do enunciado
+        base = _sem_acento(_sem_pontos(' '.join(str(fonte.get(c) or '') for c in ('texto', 'contexto', 'nome_citacao'))))
         if tipo == 'lei':
             # Pelo caminho da fonte de legislação ("lei-8036-1990.md") ou pelo número junto de uma palavra de norma.
             if re.search(rf'-{numero}-', caminho) or re.search(
@@ -360,6 +368,124 @@ def alertas_v3(texto, fontes, lista_frases, juridicas):
         abertura = _sem_acento(lista_frases[0])
         if re.match(r'\W*(sim|nao)\b', abertura) and CONTRAPESO.search(_sem_acento(' '.join(lista_frases[1:]))):
             alertas.append(dict(codigo='abertura_categorica', detalhe='Abre com sim/não e depois condiciona a resposta.'))
+    alertas.extend(alertas_precedentes(texto, fontes, lista_frases))
+    return alertas
+
+
+# --- Precedentes do TST como terceira fonte (notebook 07 da integração) -----------------------------------------
+_CATALOGO_PRECEDENTES = None
+# A resposta já avisa que o precedente não vale mais, ou que o tema está pendente, ou que pode ter mudado.
+AVISO_INATIVO = _rx(r'cancelad', r'cancelamento', r'superad', r'revogad', r'suspens', r'nao (esta )?mais (em vigor|vigente|aplicavel)')
+AVISO_PENDENTE = _rx(r'pendente', r'sem tese', r'ainda nao (ha|foi|tem|fixou|definiu|decidiu)', r'aguarda',
+                     r'em (julgamento|discussao|analise)', r'nao (ha|existe) (ainda )?tese', r'afetad', r'indefinid',
+                     r'nao foi (fixada|definida)', r'ainda sera (julgad|decidid|definid)')
+AVISO_VIGENCIA = _rx(r'alterad', r'cancelad', r'vigencia', r'revisad', r'revist', r'desatualizad', r'modificad',
+                     r'pode ter (sido|mudado)', r'superad', r'nao (esta )?mais em vigor')
+SUMULA_CITADA = re.compile(r's[úu]mula(?P<vinc>\s+vinculante)?\s*(?:n[º°o.]*\s*)?(?P<num>\d{1,3})(?![\d.,]*\d)(?P<resto>[^.;\n]{0,40})',
+                           re.IGNORECASE)
+OJ_CITADA = re.compile(r'(?:\bOJ|orienta[çc][ãa]o\s+jurisprudencial)\s*(?:n[º°o.]*\s*)?(?P<num>\d{1,3})(?![\d.,]*\d)(?P<resto>[^.;\n]{0,45})',
+                       re.IGNORECASE)
+TEMA_CITADO = re.compile(r'\btema\s*(?:n[º°o.]*\s*)?(?P<num>\d{1,4})(?![\d.,]*\d)(?P<resto>[^.;\n]{0,40})', re.IGNORECASE)
+OUTRO_TRIBUNAL = re.compile(r'\b(STF|STJ|TRT|TSE|Supremo|repercuss[ãa]o geral)\b', re.IGNORECASE)
+NOMES_SITUACAO = {'cancelada': 'cancelado', 'suspensa': 'suspenso', 'tese_superada': 'com tese superada',
+                  'cancelamento_noticiado': 'com cancelamento noticiado (fonte não oficial)'}
+
+
+def catalogo_precedentes():
+    """Situação das súmulas, OJs e temas do TST (src/integracao/situacao_precedentes.json, versionado)."""
+    global _CATALOGO_PRECEDENTES
+    if _CATALOGO_PRECEDENTES is None:
+        import json
+        from pathlib import Path
+        _CATALOGO_PRECEDENTES = json.loads((Path(__file__).with_name('situacao_precedentes.json')).read_text(encoding='utf-8'))
+    return _CATALOGO_PRECEDENTES
+
+
+def _serie_oj(resto):
+    r = _sem_acento(resto)
+    if re.search(r'transit', r):
+        return 'SBDI-1 (transitória)'
+    if re.search(r'\bs\.?b?\.?di-?\s*2\b|\bsdi-?ii\b', r):
+        return 'SBDI-2'
+    if re.search(r'\bs\.?b?\.?di-?\s*1\b|\bsdi-?i\b', r):
+        return 'SBDI-1'
+    if re.search(r'\bsdc\b', r):
+        return 'SDC'
+    if re.search(r'pleno|orgao especial', r):
+        return 'Tribunal Pleno/Órgão Especial'
+    return None
+
+
+def precedentes_inativos_citados(texto):
+    """[(rótulo, situação)] dos precedentes do TST citados no texto que estão cancelados, suspensos ou superados.
+
+    Súmula vinculante e citações seguidas de STF, STJ ou TRT não contam (outra numeração). OJ sem série só conta
+    quando todas as OJs com esse número estão inativas. Tema só conta se o trecho falar em IRR, repetitivo ou TST.
+    """
+    cat, achados = catalogo_precedentes(), []
+    for m in SUMULA_CITADA.finditer(texto or ''):
+        if m.group('vinc') or OUTRO_TRIBUNAL.search(m.group('resto')):
+            continue
+        situacao = cat['sumulas'].get(m.group('num').lstrip('0'))
+        if situacao:
+            achados.append((m.start(), m.end(), f"Súmula {m.group('num')} do TST", situacao))
+    for m in OJ_CITADA.finditer(texto or ''):
+        series = cat['ojs'].get(m.group('num').lstrip('0'))
+        if not series or OUTRO_TRIBUNAL.search(m.group('resto')):
+            continue
+        serie = _serie_oj(m.group('resto'))
+        situacoes = [series[serie]] if serie in series else ([] if serie else list(series.values()))
+        if situacoes and all(s in NOMES_SITUACAO for s in situacoes):
+            achados.append((m.start(), m.end(), f"OJ {m.group('num')}" + (f' da {serie}' if serie else ''), situacoes[0]))
+    for m in TEMA_CITADO.finditer(texto or ''):
+        situacao = cat['temas_irr'].get(m.group('num').lstrip('0'))
+        if situacao and re.search(r'IRR|repetitiv|TST', m.group('resto'), re.IGNORECASE):
+            achados.append((m.start(), m.end(), f"Tema {m.group('num')} de IRR do TST", situacao))
+    return achados
+
+
+def alertas_precedentes(texto, fontes, lista_frases):
+    """Alertas informativos sobre precedentes do TST (fontes com tipo 'precedentes').
+
+    precedente_fonte_trocada   súmula, OJ ou tema citado com [Fonte N] que não o contém, embora outra fonte
+                               de precedente entregue o contenha
+    tema_sem_tese_como_regra   cita um tema afetado e ainda sem tese sem dizer que a questão está pendente
+    alerta_vigencia_omitido    cita um precedente com alerta de vigência sem avisar que ele pode ter mudado
+    precedente_cancelado       cita súmula, OJ ou tema cancelado, suspenso, superado ou com cancelamento noticiado
+                               (quarentena) sem dizer isso
+    """
+    alertas, texto_sa = [], _sem_acento(texto or '')
+    prec = {i + 1: f for i, f in enumerate(fontes) if f.get('tipo') == 'precedentes'}
+    for frase in lista_frases:
+        citadas = sorted({int(n) for n in CITACAO.findall(frase) if 1 <= int(n) <= len(fontes)})
+        if not citadas or not prec:
+            continue
+        for tipo, numero in sorted(normas_citadas(frase)):
+            if tipo == 'lei' or any(_norma_nas_fontes(tipo, numero, [fontes[n - 1]]) for n in citadas):
+                continue
+            certas = [n for n, f in prec.items() if _norma_nas_fontes(tipo, numero, [f])]
+            if certas:
+                alertas.append(dict(codigo='precedente_fonte_trocada',
+                                    detalhe=f'{tipo} {numero} citada com [Fonte {", ".join(map(str, citadas))}]; '
+                                            f'está na [Fonte {", ".join(map(str, certas))}]', frase=frase.strip()[:200]))
+    citadas_texto = {int(n) for n in CITACAO.findall(texto or '')}
+    for n, f in prec.items():
+        if n not in citadas_texto:
+            continue
+        nome = f.get('nome_citacao') or f'Fonte {n}'
+        if f.get('situacao') == 'afetado_sem_tese' and not AVISO_PENDENTE.search(texto_sa):
+            alertas.append(dict(codigo='tema_sem_tese_como_regra',
+                                detalhe=f'{nome} [Fonte {n}] ainda não tem tese fixada, e a resposta não diz isso'))
+        if f.get('alerta_vigencia') and not AVISO_VIGENCIA.search(texto_sa):
+            alertas.append(dict(codigo='alerta_vigencia_omitido',
+                                detalhe=f'{nome} [Fonte {n}] tem alerta de vigência, e a resposta não avisa'))
+    vistos = set()
+    for inicio, fim, rotulo, situacao in precedentes_inativos_citados(texto):
+        janela = _sem_acento((texto or '')[max(0, inicio - 120):fim + 120])
+        if not AVISO_INATIVO.search(janela) and rotulo not in vistos:
+            vistos.add(rotulo)
+            alertas.append(dict(codigo='precedente_cancelado',
+                                detalhe=f'{rotulo} está {NOMES_SITUACAO[situacao]}, e a resposta não diz isso'))
     return alertas
 
 
