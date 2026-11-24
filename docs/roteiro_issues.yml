@@ -196,7 +196,7 @@ semanas:
         requisitos: [RF06, RNF04]
         itens:
           - texto: Análise exploratória do corpus jurídico
-            feito: avaliacao/avaliacao/notebooks/01_legislacao/02_eda_legislacao.ipynb, avaliacao/avaliacao/notebooks/02_jurisprudencia/02_eda_jurisprudencia.ipynb
+            feito: avaliacao/notebooks/01_legislacao/02_eda_legislacao.ipynb, avaliacao/notebooks/02_jurisprudencia/02_eda_jurisprudencia.ipynb
           - texto: Análise exploratória do acervo de documentos processuais (tipos, desbalanceamento, vocabulário, qualidade)
           - texto: Rótulo-ouro do conjunto de teste (≥20% com dupla anotação e kappa de Cohen)
           - texto: Cerca de 50 perguntas com a fonte esperada — já há legislação (avaliacao/dados/legislacao) e jurisprudência; completar e unificar
