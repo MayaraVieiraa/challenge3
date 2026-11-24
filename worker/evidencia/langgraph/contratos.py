@@ -4,7 +4,9 @@ from __future__ import annotations
 import re
 
 
-VERSAO_PROMPTS = 'multiagentes-v2'
+# multiagentes-v3 (2026-11-23): analista com o prompt v3 (regras 16 a 25 e data atual), 3 bases na busca e
+# revisão automática pelo validador v3. multiagentes-v2: prompt v1 e 2 bases.
+VERSAO_PROMPTS = 'multiagentes-v3'
 MAX_RESPOSTA = 12000
 MAX_PROBLEMAS = 20
 MAX_TEXTO_FEEDBACK = 2000

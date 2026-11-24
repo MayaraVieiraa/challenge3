@@ -1,0 +1,19 @@
+pergunta_id,bloqueantes,normas_faltantes,encontradas,nao_encontradas,fontes_complementares,tokens
+q09_p1_JUS-009,norma_fora_das_fontes,Lei 13486;art. 99 da CLT,art. 99 da CLT,Lei 13486,398b62c8f7f13f52985f98ed24f2ab7fced713434613163fb652266a5fe173d6,10790
+q09_p1_JUS-018,norma_fora_das_fontes,Lei 8036,Lei 8036,,ccec13baac39877f55666d1761f44e75937127fc58d1d33fa6fd75ce898fd155,13509
+q09_p1_JUS-027,sem_marcacao_fonte,,,,,8640
+q09_p1_JUS-028,dispositivo_inconsistente,,,,,8967
+q09_p1_JUS-034,dispositivo_inconsistente,,,,,10688
+q09_p1_JUS-045,dispositivo_inconsistente,,,,,9149
+q09_p1_JUS-046,norma_fora_das_fontes,Lei 6615,,Lei 6615,,11060
+q09_p2_FAQ09,norma_fora_das_fontes,Lei 9876,,Lei 9876,,10037
+q09_p2_FAQ23,norma_fora_das_fontes,art. 487 da CLT,art. 487 da CLT,,264e9676bfdfd58374f1eec13e368c2ac2085a5cf7333e2d6ec94875bc122c91,10233
+q09_p2_FAQ25,norma_fora_das_fontes,Lei 8036,Lei 8036,,ccec13baac39877f55666d1761f44e75937127fc58d1d33fa6fd75ce898fd155,11152
+q09_p2_FAQ30,citacao_inexistente,,,,,12302
+q09_p2_FAQ33,dispositivo_inconsistente,,,,,10562
+q09_p2_FAQ34,norma_fora_das_fontes,art. 7 da Constituição Federal,art. 7 da Constituição Federal,,4fdd677e889c2b7f0a9ab05b5087c806b17a5423839afb017f3e7f0117fe81be,10354
+q09_p2_FAQ40,sem_marcacao_fonte,,,,,9377
+q09_p2_FAQ44,sem_marcacao_fonte,,,,,9589
+q09_p2_FAQ47,norma_fora_das_fontes,Lei 13709,,Lei 13709,,11668
+q_dev_03,citacao_inexistente;norma_fora_das_fontes,Lei 11367,,Lei 11367,,9509
+juris_003,citacao_inexistente,,,,,8855

@@ -1,0 +1,83 @@
+{
+  "atualizacao": "ec141_2026_notas",
+  "versao_base": "ec141_2026",
+  "notas": {
+    "LC 150/2015, art. 2º": "[Nota de vigência: o limite semanal deste artigo segue o art. 7º, XIII, da CF, na redação da Emenda Constitucional nº 141, de 2026, que se aplica aos empregados domésticos pelo § 1º do art. 7º da CF. A redução é progressiva (art. 6º da EC 141/2026): até 15/12/2026, 44 horas semanais; a partir de 16/12/2026, no máximo 42 horas semanais; a partir de 16/12/2027, 40 horas semanais. O limite de 8 horas diárias continua, e a redução não pode diminuir o salário, inclusive os pisos salariais (art. 2º da EC 141/2026).]",
+    "Lei 605/1949, art. 1º": "[Nota de vigência: a partir de 16/12/2026, o art. 7º, XV, da CF, na redação da Emenda Constitucional nº 141, de 2026 (art. 10, I, da emenda), assegura repouso semanal remunerado de 2 (dois) dias, um dos quais preferencialmente aos domingos; desde essa data, o mínimo de 24 horas consecutivas deste artigo fica superado pela regra constitucional. Convenção ou acordo coletivo pode estabelecer regime compensatório que assegure, na média, 2 dias de repouso no mês, com pelo menos 1 dia dentro de cada semana de trabalho (art. 7º, § 2º, da CF). A EC 141 não alterou os demais dispositivos desta Lei, que continuam aplicáveis no que forem compatíveis com a nova regra.]",
+    "LC 150/2015, art. 16": "[Nota de vigência: a partir de 16/12/2026, o art. 7º, XV, da CF, na redação da Emenda Constitucional nº 141, de 2026 (art. 10, I, da emenda), assegura repouso semanal remunerado de 2 (dois) dias, um dos quais preferencialmente aos domingos, também aos empregados domésticos (§ 1º do art. 7º da CF); desde essa data, o mínimo de 24 horas consecutivas deste artigo fica superado pela regra constitucional. Convenção ou acordo coletivo pode estabelecer regime compensatório que assegure, na média, 2 dias de repouso no mês, com pelo menos 1 dia dentro de cada semana de trabalho (art. 7º, § 2º, da CF). O descanso remunerado em feriados não foi alterado pela EC 141.]",
+    "CLT, art. 67": "[Nota de vigência: a partir de 16/12/2026, o art. 7º, XV, da CF, na redação da Emenda Constitucional nº 141, de 2026 (art. 10, I, da emenda), assegura repouso semanal remunerado de 2 (dois) dias, um dos quais preferencialmente aos domingos; desde essa data, o descanso semanal de 24 horas consecutivas deste artigo fica superado pela regra constitucional. Convenção ou acordo coletivo pode estabelecer regime compensatório que assegure, na média, 2 dias de repouso no mês, com pelo menos 1 dia dentro de cada semana de trabalho (art. 7º, § 2º, da CF), inclusive para os regimes diferenciados de trabalho. A escala de revezamento do parágrafo único deste artigo não foi alterada pela EC 141.]",
+    "CLT, art. 385": "[Nota de vigência: a partir de 16/12/2026, o art. 7º, XV, da CF, na redação da Emenda Constitucional nº 141, de 2026 (art. 10, I, da emenda), assegura a todos os trabalhadores repouso semanal remunerado de 2 (dois) dias, um dos quais preferencialmente aos domingos; desde essa data, o descanso semanal de 24 horas consecutivas deste artigo fica superado pela regra constitucional. Convenção ou acordo coletivo pode estabelecer regime compensatório que assegure, na média, 2 dias de repouso no mês, com pelo menos 1 dia dentro de cada semana de trabalho (art. 7º, § 2º, da CF).]"
+  },
+  "versoes": {
+    "D_paragrafo_completo": {
+      "dataset_id": "dca7b51d5efa82bb000a427de92bd92aab4d162f9a7881a4d0ff9cad948692e5",
+      "base_dataset_id": "2f1ab3f092e990cdf549adb0e825381dffd66aa0f5b1f7b3c4d557c3b2015299",
+      "trechos": 10983,
+      "ja_existia": false,
+      "com_nota": [
+        {
+          "artigo": "leis-complementares/2015/lcp-150-2015.md Art. 2º",
+          "chunk_antigo": "5cbe9be4cab14891fb06187945c32aa7f398fcb0473d7832c944d4d1b61586f3",
+          "chunk_novo": "73a3c8ae36212c9a20bbfdf78917eb04531ac3b3be7f5ecc0f9212b4350f7cf0"
+        },
+        {
+          "artigo": "leis/1949/lei-605-1949.md Art. 1º",
+          "chunk_antigo": "c3c7da62410e9e26e5a5bfe8f5a2a860164f5026a042ca5d25bb90b1f6407cf0",
+          "chunk_novo": "bca3d7d23687f86ced68eebf2023965c8e15298db33861654a134171d0913d7d"
+        },
+        {
+          "artigo": "leis-complementares/2015/lcp-150-2015.md Art. 16",
+          "chunk_antigo": "8b7473eeecec8e10fc29c85ecbb5ddb8651a00bbb6060017eba0c01031e2bca1",
+          "chunk_novo": "3c3a8f4b8a38eb4b9c06a9db6dd2fb643f32033c8367ed9e73324f706a42cb28"
+        },
+        {
+          "artigo": "codigos/consolidacao-das-leis-do-trabalho-clt-del-5452-1943.md Art. 67",
+          "chunk_antigo": "e2150025f82b0c60d0cd8fef61309111112db5afd35cfc788db99e90fc28ce14",
+          "chunk_novo": "150e09c62d221eec6642ef9e257ca1aa0ccbe74fdc1712d3a1d9f8b5217f3b6c"
+        },
+        {
+          "artigo": "codigos/consolidacao-das-leis-do-trabalho-clt-del-5452-1943.md Art. 385",
+          "chunk_antigo": "70fb406281e05179e2b97a468fac9488c21e30eeb7d6b57df3aed3f5c9aa33f6",
+          "chunk_novo": "a43ccfd104a8b7ab406cac934804384600009530fa91c33b6f306cf5bd6660f7"
+        }
+      ],
+      "textos_sha256_ordem": "332ed2928b7f2a40a08724647c97466e6bfb25ffeb1f9f03133b7a08b569ae6a",
+      "vetores_sha256_ordem": "cde9360b6fe94d3ff8609d4ab569de0d347a549fbc78583dbe928cf40cb7f987"
+    },
+    "A_artigo": {
+      "dataset_id": "d61d07a50919f1f423b26726d22085519b17fb1429f858bbef12dd969179c62d",
+      "base_dataset_id": "4cbd00716aff870627506f32993a01c8e9300915a7d6b2bf2b07f0456a793bcb",
+      "trechos": 5294,
+      "ja_existia": false,
+      "com_nota": [
+        {
+          "artigo": "leis-complementares/2015/lcp-150-2015.md Art. 2º",
+          "chunk_antigo": "008853c9bdc960104362e210938e4fff83d36767fec9e85244b070bee2815758",
+          "chunk_novo": "6d53c6b159d0e20cf7749448a35c554a95afd3a2bf83bfd80726a649860bfb7a"
+        },
+        {
+          "artigo": "leis/1949/lei-605-1949.md Art. 1º",
+          "chunk_antigo": "a0982d34c04a199085bed17e5fd8db5b41db462f87e25ec91193b603768da929",
+          "chunk_novo": "2ffdec97e9f8e4313724b11cc5e421496002db4310e19fe6d0f5f3dde4f875dd"
+        },
+        {
+          "artigo": "leis-complementares/2015/lcp-150-2015.md Art. 16",
+          "chunk_antigo": "650eb3a954f7b88c9ecbf50775ca0455e5128661583eeb86a41b1300723adc1b",
+          "chunk_novo": "744a37780a8feddc380ac2ff7a65e2690072e3419fa57f8dda67e1c44bd37be0"
+        },
+        {
+          "artigo": "codigos/consolidacao-das-leis-do-trabalho-clt-del-5452-1943.md Art. 67",
+          "chunk_antigo": "91f9b1151eeae85b7cf6c5a321b4f11d639faf703805c6548bdb91b8435f45c6",
+          "chunk_novo": "bc457d445c19139b8dd66a82c0d8a144921fcb5665f907a5af131100512933ce"
+        },
+        {
+          "artigo": "codigos/consolidacao-das-leis-do-trabalho-clt-del-5452-1943.md Art. 385",
+          "chunk_antigo": "3b34e7701950031e62769d7d4872dd10076f92d709adf7da1a44608e4a0e79ea",
+          "chunk_novo": "4bc88b44a603c956ceedda09f78129b6b005bd9b96c9239c317aca38e72e340b"
+        }
+      ],
+      "textos_sha256_ordem": "a04e761e34220610787b00b3f2cc07e08a1854d5b04f538f1309a0baa885b557",
+      "vetores_sha256_ordem": "2a748f7877c0b54a23143a11ffdd3977ad0502d1289507e61f501dbd482c2df7"
+    }
+  }
+}

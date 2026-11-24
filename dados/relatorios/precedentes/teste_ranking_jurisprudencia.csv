@@ -1,0 +1,6 @@
+pergunta_id,precedente,semelhanca_sumula,semelhanca_1o_acordao,semelhanca_3o_documento,posicao_entre_chunks,posicao_entre_documentos,entregue_com_cota_3,total_chunks,total_documentos,texto_sumula
+juris_004,"Súmula 338, I, do TST",0.579,0.729,0.721,8985,3370,False,303257,20000,provisório (digitado de memória)
+q09_p2_FAQ32,Súmula 276 do TST,0.58,0.626,0.587,8,8,False,303257,20000,provisório (digitado de memória)
+juris_013,"Súmula 378, II, do TST",0.572,0.68,0.658,1980,864,False,303257,20000,provisório (digitado de memória)
+juris_019,"Súmula 6, VIII, do TST",0.554,0.735,0.719,3260,1459,False,303257,20000,provisório (digitado de memória)
+q09_p1_JUS-001,Súmula 60 do TST,0.612,0.706,0.702,359,158,False,303257,20000,provisório (digitado de memória)

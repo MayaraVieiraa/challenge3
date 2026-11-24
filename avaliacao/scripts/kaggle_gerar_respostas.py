@@ -96,7 +96,15 @@ arquivo = glob.glob('/kaggle/input/**/pedidos.jsonl', recursive=True)[0]
 pedidos = [json.loads(l) for l in open(arquivo, encoding='utf-8') if l.strip()]
 modelos = sorted({p['modelo'] for p in pedidos if p.get('precisa_llm')})
 for m in modelos:
-    sh(f'ollama pull {m}')
+    for tentativa in range(5):   # o registro do Ollama às vezes responde 503 no fim do download; tenta de novo
+        try:
+            sh(f'ollama pull {m}')
+            break
+        except subprocess.CalledProcessError:
+            if tentativa == 4:
+                raise
+            print(f'falha ao baixar {m}; nova tentativa em {30 * (tentativa + 1)} s', flush=True)
+            time.sleep(30 * (tentativa + 1))
 print(chamar('/api/version'), flush=True)
 
 feitos = set()

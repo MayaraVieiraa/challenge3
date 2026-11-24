@@ -1,0 +1,9 @@
+tipo,situacao,registros
+orientacao_jurisprudencial,cancelada,308
+orientacao_jurisprudencial,vigente,401
+sumula,cancelada,138
+sumula,suspensa,2
+sumula,vigente,323
+tema_repetitivo,afetado_sem_tese,98
+tema_repetitivo,tese_fixada,221
+tema_repetitivo,tese_superada,2

@@ -144,6 +144,13 @@ class TestFerramentas(unittest.TestCase):
         busca.fechar()
         self.assertIsNone(busca._recuperador)
 
+    def test_intercalar_por_fonte(self):
+        from worker.evidencia.langgraph.ferramentas import intercalar_por_fonte
+        fontes = [dict(fonte='legislacao', unidade=f'l{i}') for i in range(3)] +                  [dict(fonte='jurisprudencia', unidade=f'j{i}') for i in range(3)] +                  [dict(fonte='precedentes', unidade=f'p{i}') for i in range(2)]
+        self.assertEqual([f['unidade'] for f in intercalar_por_fonte(fontes)],
+                         ['l0', 'j0', 'p0', 'l1', 'j1', 'p1', 'l2', 'j2'])
+        self.assertEqual(intercalar_por_fonte([]), [])
+
     def test_busca_real_lazy_cotas_adaptacao_e_fechamento(self):
         from unittest.mock import Mock
 
@@ -166,7 +173,10 @@ class TestFerramentas(unittest.TestCase):
             conexao.assert_called_once_with(Path('/tmp/projeto/.env.pgvector.local'))
             recurso.preparar_lexico.assert_not_called()
             config = recurso.buscar.call_args.args[1]
-            self.assertEqual(config.entrega_por_fonte, {'legislacao': 3, 'jurisprudencia': 3})
+            self.assertEqual(config.fontes, ('legislacao', 'jurisprudencia', 'precedentes'))
+            self.assertEqual(config.entrega_por_fonte, {'legislacao': 3, 'jurisprudencia': 3, 'precedentes': 3})
+            self.assertEqual(config.uniao_reranker, ('precedentes',))
+            self.assertTrue(config.expandir_sinonimos)
             self.assertEqual(config.lexical_modo, 'idf')
             self.assertEqual(config.reranker_max_length, 256)
             busca.fechar()

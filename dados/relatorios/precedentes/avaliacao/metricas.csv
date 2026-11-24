@@ -1,0 +1,9 @@
+busca,Hit@1,Hit@3,Hit@5,MRR@10,n,gabarito
+semântica,0.429,0.857,0.857,0.595,7.0,A especialista
+por palavras,0.429,0.429,0.429,0.444,7.0,A especialista
+híbrida,0.571,0.714,0.714,0.619,7.0,A especialista
+híbrida + reranker,0.714,0.714,0.714,0.714,7.0,A especialista
+semântica,0.293,0.46,0.547,0.399,300.0,B prata
+por palavras,0.167,0.303,0.367,0.247,300.0,B prata
+híbrida,0.267,0.433,0.487,0.372,300.0,B prata
+híbrida + reranker,0.327,0.533,0.597,0.442,300.0,B prata

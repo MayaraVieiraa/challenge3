@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT))
 import pandas as pd
 
 from worker.evidencia.indices.pgvector_store import load_database_url
-from worker.evidencia.recuperador import Recuperador, Configuracao
+from worker.evidencia.recuperador import Recuperador, configuracao_duas_bases
 from worker.evidencia.context_window import ContextWindowExceeded
 from worker.evidencia.explicador import montar_pedido, MODELO_GERACAO, OPCOES_GERACAO
 from worker.evidencia.guardas import verificar_entrada
@@ -84,8 +84,9 @@ def main():
     print(f'{len(feitos)} pedidos já prontos; faltam {len(perguntas)}.', flush=True)
     if not perguntas:
         return
-    recuperador = Recuperador(load_database_url(ROOT / '.env.pgvector.local'), device='cpu', carregar_reranker=True)
-    config = Configuracao(entrega_por_fonte=COTAS, top_k=10)
+    recuperador = Recuperador(load_database_url(ROOT / '.env.pgvector.local'), device='cpu',
+                              configuracao=configuracao_duas_bases(), carregar_reranker=True)
+    config = configuracao_duas_bases(entrega_por_fonte=COTAS, top_k=10)   # geração v1: 2 bases
     with arquivo.open('a', encoding='utf-8', newline='\n') as saida:
         for i, q in enumerate(perguntas, 1):
             inicio = time.monotonic()

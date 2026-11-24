@@ -1,0 +1,8 @@
+pergunta,precedente,semântica,por palavras,híbrida,híbrida + reranker,item certo (reranker),1º (reranker)
+juris_004,"Súmula 338 do TST, I",1.0,1.0,1.0,1.0,False,Súmula 338 do TST
+q09_p2_FAQ32,Súmula 276 do TST,2.0,33.0,3.0,1.0,,Súmula 276 do TST
+juris_013,"Súmula 378 do TST, II",3.0,1.0,1.0,1.0,True,Súmula 378 do TST
+juris_019,"Súmula 6 do TST, VIII",1.0,9.0,1.0,1.0,False,Súmula 6 do TST
+juris_017,Tema 58 de IRR do TST,1.0,1.0,1.0,1.0,,Tema 58 de IRR do TST
+q09_p1_JUS-001,"Súmula 60 do TST, II",3.0,,21.0,,False,Tema 92 de IRR do TST
+q09_p2_FAQ26,Súmula 45 do TST,,,,,,OJ 17 da SBDI-1 do TST

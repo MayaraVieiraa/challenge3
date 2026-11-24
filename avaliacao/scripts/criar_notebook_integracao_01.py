@@ -48,7 +48,8 @@ ROOT = next(p for p in (Path.cwd(), *Path.cwd().parents) if (p / 'worker/evidenc
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from worker.evidencia.indices.pgvector_store import load_database_url
-from worker.evidencia.recuperador import Recuperador, Configuracao, LEGISLACAO_D, LEGISLACAO_A
+from worker.evidencia.recuperador import (Recuperador, Configuracao, configuracao_duas_bases,
+                                          LEGISLACAO_D, LEGISLACAO_A)
 from avaliacao import recuperacao as av
 
 RELATORIOS = ROOT / 'dados/relatorios/integracao/recuperacao'
@@ -77,7 +78,7 @@ Uma pergunta, as duas fontes e o resultado final após fusão e reranking. Para 
 ''')
 code('int01_exemplo', r'''
 pergunta = 'Qual é o adicional devido pelo trabalho noturno urbano?'
-entregues, diagnostico = recuperador.buscar(pergunta, Configuracao(top_k=6))
+entregues, diagnostico = recuperador.buscar(pergunta, configuracao_duas_bases(top_k=6))
 linhas = []
 for i, u in enumerate(entregues, 1):
     m = u['metadata']
@@ -128,11 +129,11 @@ if EXECUTAR_AVALIACAO or not arquivo.exists():
     partes = []
     for nome, opcoes in configs.items():
         for fonte, gab in (('legislacao', gab_leg), ('jurisprudencia', gab_jur)):
-            cfg = Configuracao(fontes=(fonte,), top_k=10, **opcoes)
+            cfg = configuracao_duas_bases(fontes=(fonte,), top_k=10, **opcoes)
             partes.append(av.avaliar(recuperador, gab, cfg, f'{nome} | {fonte} sozinha'))
             print('concluído:', nome, fonte, flush=True)
     for nome in ('hibrida_rrf', 'hibrida_reranker'):
-        cfg = Configuracao(top_k=10, **configs[nome])
+        cfg = configuracao_duas_bases(top_k=10, **configs[nome])
         partes.append(av.avaliar(recuperador, gab_leg + gab_jur, cfg, f'{nome} | integrada'))
         print('concluído:', nome, 'integrada', flush=True)
     resultados = pd.concat(partes, ignore_index=True)
