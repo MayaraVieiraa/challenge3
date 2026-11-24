@@ -1,0 +1,1720 @@
+{
+ "descricao": "Situação dos precedentes do TST para o validador v3 (alerta precedente_cancelado). sumulas e temas_irr: só os inativos; ojs: todas, por número e série. cancelamento_noticiado = quarentena (cancelamento integral noticiado em fonte não oficial).",
+ "origem": "data/processed/precedentes/precedentes_tst.jsonl",
+ "origem_sha256": "2884779dbbd4cf4b657e6f4a8405872c45cceef21e38429d215c2776f109591b",
+ "registros": 1493,
+ "sumulas": {
+  "2": "cancelada",
+  "3": "cancelada",
+  "4": "cancelada",
+  "5": "cancelada",
+  "11": "cancelada",
+  "17": "cancelada",
+  "20": "cancelada",
+  "21": "cancelada",
+  "22": "cancelada",
+  "26": "cancelada",
+  "31": "cancelada",
+  "34": "cancelada",
+  "35": "cancelada",
+  "37": "cancelada",
+  "38": "cancelada",
+  "40": "cancelada",
+  "41": "cancelada",
+  "42": "cancelada",
+  "49": "cancelada",
+  "56": "cancelada",
+  "57": "cancelada",
+  "59": "cancelada",
+  "64": "cancelada",
+  "66": "cancelada",
+  "68": "cancelada",
+  "75": "cancelada",
+  "76": "cancelada",
+  "78": "cancelada",
+  "79": "cancelada",
+  "88": "cancelada",
+  "90": "cancelamento_noticiado",
+  "94": "cancelada",
+  "95": "cancelada",
+  "103": "cancelada",
+  "104": "cancelada",
+  "105": "cancelada",
+  "106": "cancelada",
+  "107": "cancelada",
+  "108": "cancelada",
+  "111": "cancelada",
+  "114": "cancelamento_noticiado",
+  "116": "cancelada",
+  "120": "cancelada",
+  "121": "cancelada",
+  "123": "cancelada",
+  "130": "cancelada",
+  "131": "cancelada",
+  "133": "cancelada",
+  "134": "cancelada",
+  "135": "cancelada",
+  "136": "cancelada",
+  "137": "cancelada",
+  "141": "cancelada",
+  "142": "cancelada",
+  "144": "cancelada",
+  "145": "cancelada",
+  "147": "cancelada",
+  "150": "cancelada",
+  "151": "cancelada",
+  "152": "cancelamento_noticiado",
+  "154": "cancelada",
+  "162": "cancelada",
+  "164": "cancelada",
+  "165": "cancelada",
+  "166": "cancelada",
+  "167": "cancelada",
+  "168": "cancelada",
+  "169": "cancelada",
+  "174": "cancelada",
+  "175": "cancelada",
+  "176": "cancelada",
+  "177": "cancelada",
+  "179": "cancelada",
+  "180": "cancelada",
+  "181": "cancelada",
+  "183": "cancelada",
+  "185": "cancelada",
+  "191": "cancelada",
+  "193": "cancelada",
+  "194": "cancelada",
+  "195": "cancelada",
+  "196": "cancelada",
+  "198": "cancelada",
+  "204": "cancelada",
+  "205": "cancelada",
+  "207": "cancelada",
+  "208": "cancelada",
+  "209": "cancelada",
+  "210": "cancelada",
+  "213": "cancelada",
+  "215": "cancelada",
+  "216": "cancelada",
+  "220": "cancelada",
+  "222": "cancelada",
+  "223": "cancelada",
+  "224": "cancelada",
+  "227": "cancelada",
+  "228": "suspensa",
+  "231": "cancelada",
+  "232": "cancelada",
+  "233": "cancelada",
+  "234": "cancelada",
+  "235": "cancelada",
+  "236": "cancelada",
+  "237": "cancelada",
+  "238": "cancelada",
+  "249": "cancelada",
+  "250": "cancelada",
+  "251": "cancelada",
+  "252": "cancelada",
+  "255": "cancelada",
+  "256": "cancelada",
+  "260": "cancelada",
+  "267": "cancelada",
+  "268": "cancelamento_noticiado",
+  "270": "cancelada",
+  "271": "cancelada",
+  "272": "cancelada",
+  "273": "cancelada",
+  "274": "cancelada",
+  "277": "suspensa",
+  "280": "cancelada",
+  "281": "cancelada",
+  "284": "cancelada",
+  "285": "cancelada",
+  "290": "cancelada",
+  "292": "cancelada",
+  "294": "cancelamento_noticiado",
+  "295": "cancelada",
+  "302": "cancelada",
+  "306": "cancelada",
+  "310": "cancelada",
+  "316": "cancelada",
+  "317": "cancelada",
+  "320": "cancelamento_noticiado",
+  "321": "cancelada",
+  "323": "cancelada",
+  "324": "cancelada",
+  "325": "cancelada",
+  "334": "cancelada",
+  "335": "cancelada",
+  "343": "cancelada",
+  "349": "cancelada",
+  "352": "cancelada",
+  "359": "cancelada",
+  "366": "cancelamento_noticiado",
+  "375": "cancelamento_noticiado",
+  "377": "cancelamento_noticiado",
+  "423": "cancelamento_noticiado",
+  "429": "cancelamento_noticiado",
+  "434": "cancelada",
+  "437": "cancelamento_noticiado",
+  "444": "cancelamento_noticiado",
+  "449": "cancelamento_noticiado",
+  "450": "cancelamento_noticiado",
+  "452": "cancelamento_noticiado"
+ },
+ "ojs": {
+  "1": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "cancelada"
+  },
+  "2": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "3": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "4": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "cancelada",
+   "SBDI-2": "vigente",
+   "SDC": "cancelada"
+  },
+  "5": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "6": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "cancelada"
+  },
+  "7": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "8": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "cancelada",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "9": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "10": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "11": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "12": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "cancelada"
+  },
+  "13": {
+   "Tribunal Pleno/Órgão Especial": "vigente",
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "cancelada"
+  },
+  "14": {
+   "SBDI-1": "cancelamento_noticiado",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "cancelada"
+  },
+  "15": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "16": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "cancelamento_noticiado"
+  },
+  "17": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "18": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "19": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "20": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "21": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "cancelada"
+  },
+  "22": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "cancelada",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "23": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "24": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "cancelada"
+  },
+  "25": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "26": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "27": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "28": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "29": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "30": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "31": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "32": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "33": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "cancelada"
+  },
+  "34": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "35": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "36": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "vigente"
+  },
+  "37": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada",
+   "SDC": "cancelada"
+  },
+  "38": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente",
+   "SDC": "vigente"
+  },
+  "39": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "40": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "41": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "42": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "43": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "44": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "45": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "46": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "47": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "48": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "49": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "50": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "51": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "52": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "53": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "54": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "55": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "56": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "57": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "58": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "59": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "60": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "61": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "62": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "63": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "64": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "65": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "66": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "67": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "68": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "69": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "70": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "71": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "72": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "73": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "74": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "75": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "76": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "77": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "78": {
+   "SBDI-1": "cancelada",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "79": {
+   "SBDI-1": "vigente",
+   "SBDI-1 (transitória)": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "80": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "81": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "82": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "83": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "84": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "85": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "86": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "87": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "88": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "89": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "90": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "91": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "92": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "93": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "94": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "95": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "96": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "97": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "98": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "99": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "100": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "101": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "102": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "103": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "104": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "105": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "106": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "107": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "108": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "109": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "110": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "111": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "112": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "113": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "114": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "115": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "116": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "117": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "118": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "119": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "120": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "121": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "122": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "123": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "124": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "125": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "126": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "127": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "128": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "129": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "130": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "131": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "132": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "133": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "134": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "135": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "136": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "137": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "138": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "139": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "140": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "141": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "142": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "143": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "144": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "145": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "146": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "147": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "cancelada"
+  },
+  "148": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "149": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "150": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "151": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "152": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "153": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "154": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "155": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "cancelada"
+  },
+  "156": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "157": {
+   "SBDI-1": "cancelada",
+   "SBDI-2": "vigente"
+  },
+  "158": {
+   "SBDI-1": "vigente",
+   "SBDI-2": "vigente"
+  },
+  "159": {
+   "SBDI-1": "vigente"
+  },
+  "160": {
+   "SBDI-1": "vigente"
+  },
+  "161": {
+   "SBDI-1": "cancelada"
+  },
+  "162": {
+   "SBDI-1": "vigente"
+  },
+  "163": {
+   "SBDI-1": "cancelada"
+  },
+  "164": {
+   "SBDI-1": "vigente"
+  },
+  "165": {
+   "SBDI-1": "vigente"
+  },
+  "166": {
+   "SBDI-1": "cancelada"
+  },
+  "167": {
+   "SBDI-1": "cancelada"
+  },
+  "168": {
+   "SBDI-1": "cancelada"
+  },
+  "169": {
+   "SBDI-1": "cancelada"
+  },
+  "170": {
+   "SBDI-1": "cancelada"
+  },
+  "171": {
+   "SBDI-1": "vigente"
+  },
+  "172": {
+   "SBDI-1": "vigente"
+  },
+  "173": {
+   "SBDI-1": "vigente"
+  },
+  "174": {
+   "SBDI-1": "cancelada"
+  },
+  "175": {
+   "SBDI-1": "vigente"
+  },
+  "176": {
+   "SBDI-1": "cancelada"
+  },
+  "177": {
+   "SBDI-1": "cancelada"
+  },
+  "178": {
+   "SBDI-1": "vigente"
+  },
+  "179": {
+   "SBDI-1": "cancelada"
+  },
+  "180": {
+   "SBDI-1": "cancelada"
+  },
+  "181": {
+   "SBDI-1": "vigente"
+  },
+  "182": {
+   "SBDI-1": "cancelada"
+  },
+  "183": {
+   "SBDI-1": "cancelada"
+  },
+  "184": {
+   "SBDI-1": "cancelada"
+  },
+  "185": {
+   "SBDI-1": "vigente"
+  },
+  "186": {
+   "SBDI-1": "cancelada"
+  },
+  "187": {
+   "SBDI-1": "cancelada"
+  },
+  "188": {
+   "SBDI-1": "vigente"
+  },
+  "189": {
+   "SBDI-1": "cancelada"
+  },
+  "190": {
+   "SBDI-1": "cancelada"
+  },
+  "191": {
+   "SBDI-1": "vigente"
+  },
+  "192": {
+   "SBDI-1": "vigente"
+  },
+  "193": {
+   "SBDI-1": "cancelada"
+  },
+  "194": {
+   "SBDI-1": "cancelada"
+  },
+  "195": {
+   "SBDI-1": "vigente"
+  },
+  "196": {
+   "SBDI-1": "cancelada"
+  },
+  "197": {
+   "SBDI-1": "cancelada"
+  },
+  "198": {
+   "SBDI-1": "vigente"
+  },
+  "199": {
+   "SBDI-1": "vigente"
+  },
+  "200": {
+   "SBDI-1": "vigente"
+  },
+  "201": {
+   "SBDI-1": "cancelada"
+  },
+  "202": {
+   "SBDI-1": "cancelada"
+  },
+  "203": {
+   "SBDI-1": "cancelada"
+  },
+  "204": {
+   "SBDI-1": "cancelada"
+  },
+  "205": {
+   "SBDI-1": "cancelada"
+  },
+  "206": {
+   "SBDI-1": "vigente"
+  },
+  "207": {
+   "SBDI-1": "vigente"
+  },
+  "208": {
+   "SBDI-1": "vigente"
+  },
+  "209": {
+   "SBDI-1": "cancelada"
+  },
+  "210": {
+   "SBDI-1": "cancelada"
+  },
+  "211": {
+   "SBDI-1": "cancelada"
+  },
+  "212": {
+   "SBDI-1": "cancelada"
+  },
+  "213": {
+   "SBDI-1": "vigente"
+  },
+  "214": {
+   "SBDI-1": "cancelada"
+  },
+  "215": {
+   "SBDI-1": "cancelada"
+  },
+  "216": {
+   "SBDI-1": "vigente"
+  },
+  "217": {
+   "SBDI-1": "vigente"
+  },
+  "218": {
+   "SBDI-1": "cancelada"
+  },
+  "219": {
+   "SBDI-1": "vigente"
+  },
+  "220": {
+   "SBDI-1": "cancelada"
+  },
+  "221": {
+   "SBDI-1": "cancelada"
+  },
+  "222": {
+   "SBDI-1": "cancelada"
+  },
+  "223": {
+   "SBDI-1": "cancelada"
+  },
+  "224": {
+   "SBDI-1": "vigente"
+  },
+  "225": {
+   "SBDI-1": "vigente"
+  },
+  "226": {
+   "SBDI-1": "vigente"
+  },
+  "227": {
+   "SBDI-1": "cancelada"
+  },
+  "228": {
+   "SBDI-1": "cancelada"
+  },
+  "229": {
+   "SBDI-1": "cancelada"
+  },
+  "230": {
+   "SBDI-1": "cancelada"
+  },
+  "231": {
+   "SBDI-1": "cancelada"
+  },
+  "232": {
+   "SBDI-1": "vigente"
+  },
+  "233": {
+   "SBDI-1": "vigente"
+  },
+  "234": {
+   "SBDI-1": "cancelada"
+  },
+  "235": {
+   "SBDI-1": "vigente"
+  },
+  "236": {
+   "SBDI-1": "cancelada"
+  },
+  "237": {
+   "SBDI-1": "vigente"
+  },
+  "238": {
+   "SBDI-1": "vigente"
+  },
+  "239": {
+   "SBDI-1": "cancelada"
+  },
+  "240": {
+   "SBDI-1": "cancelada"
+  },
+  "241": {
+   "SBDI-1": "cancelada"
+  },
+  "242": {
+   "SBDI-1": "vigente"
+  },
+  "243": {
+   "SBDI-1": "vigente"
+  },
+  "244": {
+   "SBDI-1": "vigente"
+  },
+  "245": {
+   "SBDI-1": "vigente"
+  },
+  "246": {
+   "SBDI-1": "cancelada"
+  },
+  "247": {
+   "SBDI-1": "vigente"
+  },
+  "248": {
+   "SBDI-1": "cancelada"
+  },
+  "249": {
+   "SBDI-1": "cancelada"
+  },
+  "250": {
+   "SBDI-1": "cancelada"
+  },
+  "251": {
+   "SBDI-1": "vigente"
+  },
+  "252": {
+   "SBDI-1": "cancelada"
+  },
+  "253": {
+   "SBDI-1": "vigente"
+  },
+  "254": {
+   "SBDI-1": "cancelada"
+  },
+  "255": {
+   "SBDI-1": "vigente"
+  },
+  "256": {
+   "SBDI-1": "vigente"
+  },
+  "257": {
+   "SBDI-1": "vigente"
+  },
+  "258": {
+   "SBDI-1": "cancelada"
+  },
+  "259": {
+   "SBDI-1": "vigente"
+  },
+  "260": {
+   "SBDI-1": "vigente"
+  },
+  "261": {
+   "SBDI-1": "vigente"
+  },
+  "262": {
+   "SBDI-1": "vigente"
+  },
+  "263": {
+   "SBDI-1": "cancelada"
+  },
+  "264": {
+   "SBDI-1": "vigente"
+  },
+  "265": {
+   "SBDI-1": "cancelada"
+  },
+  "266": {
+   "SBDI-1": "cancelada"
+  },
+  "267": {
+   "SBDI-1": "cancelada"
+  },
+  "268": {
+   "SBDI-1": "vigente"
+  },
+  "269": {
+   "SBDI-1": "vigente"
+  },
+  "270": {
+   "SBDI-1": "vigente"
+  },
+  "271": {
+   "SBDI-1": "vigente"
+  },
+  "272": {
+   "SBDI-1": "vigente"
+  },
+  "273": {
+   "SBDI-1": "cancelada"
+  },
+  "274": {
+   "SBDI-1": "vigente"
+  },
+  "275": {
+   "SBDI-1": "vigente"
+  },
+  "276": {
+   "SBDI-1": "vigente"
+  },
+  "277": {
+   "SBDI-1": "vigente"
+  },
+  "278": {
+   "SBDI-1": "vigente"
+  },
+  "279": {
+   "SBDI-1": "cancelada"
+  },
+  "280": {
+   "SBDI-1": "cancelada"
+  },
+  "281": {
+   "SBDI-1": "cancelada"
+  },
+  "282": {
+   "SBDI-1": "vigente"
+  },
+  "283": {
+   "SBDI-1": "vigente"
+  },
+  "284": {
+   "SBDI-1": "cancelada"
+  },
+  "285": {
+   "SBDI-1": "cancelada"
+  },
+  "286": {
+   "SBDI-1": "vigente"
+  },
+  "287": {
+   "SBDI-1": "cancelada"
+  },
+  "288": {
+   "SBDI-1": "cancelada"
+  },
+  "289": {
+   "SBDI-1": "cancelada"
+  },
+  "290": {
+   "SBDI-1": "cancelada"
+  },
+  "291": {
+   "SBDI-1": "cancelada"
+  },
+  "292": {
+   "SBDI-1": "cancelada"
+  },
+  "293": {
+   "SBDI-1": "cancelada"
+  },
+  "294": {
+   "SBDI-1": "cancelada"
+  },
+  "295": {
+   "SBDI-1": "cancelada"
+  },
+  "296": {
+   "SBDI-1": "vigente"
+  },
+  "297": {
+   "SBDI-1": "vigente"
+  },
+  "298": {
+   "SBDI-1": "cancelada"
+  },
+  "299": {
+   "SBDI-1": "cancelada"
+  },
+  "300": {
+   "SBDI-1": "vigente"
+  },
+  "301": {
+   "SBDI-1": "cancelada"
+  },
+  "302": {
+   "SBDI-1": "vigente"
+  },
+  "303": {
+   "SBDI-1": "cancelada"
+  },
+  "304": {
+   "SBDI-1": "cancelada"
+  },
+  "305": {
+   "SBDI-1": "cancelada"
+  },
+  "306": {
+   "SBDI-1": "cancelada"
+  },
+  "307": {
+   "SBDI-1": "cancelada"
+  },
+  "308": {
+   "SBDI-1": "vigente"
+  },
+  "309": {
+   "SBDI-1": "cancelada"
+  },
+  "310": {
+   "SBDI-1": "vigente"
+  },
+  "311": {
+   "SBDI-1": "cancelada"
+  },
+  "312": {
+   "SBDI-1": "cancelada"
+  },
+  "313": {
+   "SBDI-1": "cancelada"
+  },
+  "314": {
+   "SBDI-1": "cancelada"
+  },
+  "315": {
+   "SBDI-1": "cancelada"
+  },
+  "316": {
+   "SBDI-1": "vigente"
+  },
+  "317": {
+   "SBDI-1": "cancelada"
+  },
+  "318": {
+   "SBDI-1": "vigente"
+  },
+  "319": {
+   "SBDI-1": "vigente"
+  },
+  "320": {
+   "SBDI-1": "cancelada"
+  },
+  "321": {
+   "SBDI-1": "vigente"
+  },
+  "322": {
+   "SBDI-1": "vigente"
+  },
+  "323": {
+   "SBDI-1": "vigente"
+  },
+  "324": {
+   "SBDI-1": "vigente"
+  },
+  "325": {
+   "SBDI-1": "vigente"
+  },
+  "326": {
+   "SBDI-1": "cancelada"
+  },
+  "327": {
+   "SBDI-1": "cancelada"
+  },
+  "328": {
+   "SBDI-1": "cancelada"
+  },
+  "329": {
+   "SBDI-1": "cancelada"
+  },
+  "330": {
+   "SBDI-1": "cancelada"
+  },
+  "331": {
+   "SBDI-1": "cancelada"
+  },
+  "332": {
+   "SBDI-1": "vigente"
+  },
+  "333": {
+   "SBDI-1": "cancelada"
+  },
+  "334": {
+   "SBDI-1": "vigente"
+  },
+  "335": {
+   "SBDI-1": "vigente"
+  },
+  "336": {
+   "SBDI-1": "vigente"
+  },
+  "337": {
+   "SBDI-1": "cancelada"
+  },
+  "338": {
+   "SBDI-1": "cancelada"
+  },
+  "339": {
+   "SBDI-1": "vigente"
+  },
+  "340": {
+   "SBDI-1": "cancelada"
+  },
+  "341": {
+   "SBDI-1": "vigente"
+  },
+  "342": {
+   "SBDI-1": "cancelada"
+  },
+  "343": {
+   "SBDI-1": "vigente"
+  },
+  "344": {
+   "SBDI-1": "vigente"
+  },
+  "345": {
+   "SBDI-1": "vigente"
+  },
+  "346": {
+   "SBDI-1": "vigente"
+  },
+  "347": {
+   "SBDI-1": "vigente"
+  },
+  "348": {
+   "SBDI-1": "vigente"
+  },
+  "349": {
+   "SBDI-1": "vigente"
+  },
+  "350": {
+   "SBDI-1": "vigente"
+  },
+  "351": {
+   "SBDI-1": "cancelada"
+  },
+  "352": {
+   "SBDI-1": "cancelada"
+  },
+  "353": {
+   "SBDI-1": "cancelada"
+  },
+  "354": {
+   "SBDI-1": "cancelada"
+  },
+  "355": {
+   "SBDI-1": "cancelamento_noticiado"
+  },
+  "356": {
+   "SBDI-1": "vigente"
+  },
+  "357": {
+   "SBDI-1": "cancelada"
+  },
+  "358": {
+   "SBDI-1": "vigente"
+  },
+  "359": {
+   "SBDI-1": "vigente"
+  },
+  "360": {
+   "SBDI-1": "vigente"
+  },
+  "361": {
+   "SBDI-1": "vigente"
+  },
+  "362": {
+   "SBDI-1": "vigente"
+  },
+  "363": {
+   "SBDI-1": "cancelada"
+  },
+  "364": {
+   "SBDI-1": "vigente"
+  },
+  "365": {
+   "SBDI-1": "vigente"
+  },
+  "366": {
+   "SBDI-1": "vigente"
+  },
+  "367": {
+   "SBDI-1": "vigente"
+  },
+  "368": {
+   "SBDI-1": "vigente"
+  },
+  "369": {
+   "SBDI-1": "vigente"
+  },
+  "370": {
+   "SBDI-1": "vigente"
+  },
+  "371": {
+   "SBDI-1": "vigente"
+  },
+  "372": {
+   "SBDI-1": "cancelada"
+  },
+  "373": {
+   "SBDI-1": "cancelada"
+  },
+  "374": {
+   "SBDI-1": "vigente"
+  },
+  "375": {
+   "SBDI-1": "vigente"
+  },
+  "376": {
+   "SBDI-1": "vigente"
+  },
+  "377": {
+   "SBDI-1": "cancelada"
+  },
+  "378": {
+   "SBDI-1": "vigente"
+  },
+  "379": {
+   "SBDI-1": "vigente"
+  },
+  "380": {
+   "SBDI-1": "cancelada"
+  },
+  "381": {
+   "SBDI-1": "cancelada"
+  },
+  "382": {
+   "SBDI-1": "vigente"
+  },
+  "383": {
+   "SBDI-1": "cancelamento_noticiado"
+  },
+  "384": {
+   "SBDI-1": "cancelada"
+  },
+  "385": {
+   "SBDI-1": "vigente"
+  },
+  "386": {
+   "SBDI-1": "cancelada"
+  },
+  "387": {
+   "SBDI-1": "cancelada"
+  },
+  "388": {
+   "SBDI-1": "vigente"
+  },
+  "389": {
+   "SBDI-1": "vigente"
+  },
+  "390": {
+   "SBDI-1": "cancelada"
+  },
+  "391": {
+   "SBDI-1": "vigente"
+  },
+  "392": {
+   "SBDI-1": "vigente"
+  },
+  "393": {
+   "SBDI-1": "vigente"
+  },
+  "394": {
+   "SBDI-1": "vigente"
+  },
+  "395": {
+   "SBDI-1": "vigente"
+  },
+  "396": {
+   "SBDI-1": "vigente"
+  },
+  "397": {
+   "SBDI-1": "vigente"
+  },
+  "398": {
+   "SBDI-1": "vigente"
+  },
+  "399": {
+   "SBDI-1": "vigente"
+  },
+  "400": {
+   "SBDI-1": "vigente"
+  },
+  "401": {
+   "SBDI-1": "vigente"
+  },
+  "402": {
+   "SBDI-1": "vigente"
+  },
+  "403": {
+   "SBDI-1": "vigente"
+  },
+  "404": {
+   "SBDI-1": "cancelada"
+  },
+  "405": {
+   "SBDI-1": "cancelada"
+  },
+  "406": {
+   "SBDI-1": "cancelada"
+  },
+  "407": {
+   "SBDI-1": "vigente"
+  },
+  "408": {
+   "SBDI-1": "vigente"
+  },
+  "409": {
+   "SBDI-1": "vigente"
+  },
+  "410": {
+   "SBDI-1": "vigente"
+  },
+  "411": {
+   "SBDI-1": "vigente"
+  },
+  "412": {
+   "SBDI-1": "vigente"
+  },
+  "413": {
+   "SBDI-1": "vigente"
+  },
+  "414": {
+   "SBDI-1": "cancelada"
+  },
+  "415": {
+   "SBDI-1": "vigente"
+  },
+  "416": {
+   "SBDI-1": "vigente"
+  },
+  "417": {
+   "SBDI-1": "vigente"
+  },
+  "418": {
+   "SBDI-1": "cancelamento_noticiado"
+  },
+  "419": {
+   "SBDI-1": "cancelada"
+  },
+  "420": {
+   "SBDI-1": "vigente"
+  },
+  "421": {
+   "SBDI-1": "vigente"
+  }
+ },
+ "temas_irr": {
+  "13": "tese_superada"
+ }
+}

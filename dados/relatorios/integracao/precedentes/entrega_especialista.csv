@@ -1,0 +1,8 @@
+pergunta,esperado,antes (base sozinha),agora (3 bases),entregue ao modelo,sinônimos acrescentados,fontes entregues,segundos
+juris_004,TST-SUM-338,1º,1º,True,"hora extra, serviço extraordinário, serviço suplementar, horas suplementares",3 legislacao + 3 jurisprudencia + 3 precedentes,24.6
+q09_p2_FAQ32,TST-SUM-276,1º,1º,True,—,3 legislacao + 3 jurisprudencia + 3 precedentes,23.6
+juris_013,TST-SUM-378,1º,1º,True,—,3 legislacao + 3 jurisprudencia + 3 precedentes,24.5
+juris_019,TST-SUM-6,1º,1º,True,—,3 legislacao + 3 jurisprudencia + 3 precedentes,25.5
+juris_017,TST-IRR-58,1º,1º,True,—,3 legislacao + 3 jurisprudencia + 3 precedentes,24.5
+q09_p1_JUS-001,TST-SUM-60,perdido,3º,True,"adicional noturno, hora noturna",3 legislacao + 3 jurisprudencia + 3 precedentes,33.4
+q09_p2_FAQ26,TST-SUM-45,perdido,3º,True,"13º salário, décimo terceiro salário, décimo terceiro, gratificação natalina, hora extra, serviço extraordinário, serviço suplementar, horas suplementares",3 legislacao + 3 jurisprudencia + 3 precedentes,27.5

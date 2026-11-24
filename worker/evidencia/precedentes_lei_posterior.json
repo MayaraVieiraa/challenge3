@@ -1,0 +1,177 @@
+{
+ "descricao": "Precedentes do TST anteriores a uma mudança da lei sobre o mesmo ponto (alerta de lei posterior). Entregue junto do precedente e conferido pelo validador v3. A confirmar pelo advogado revisor.",
+ "origem": "data/processed/precedentes/precedentes_tst.jsonl",
+ "origem_sha256": "2884779dbbd4cf4b657e6f4a8405872c45cceef21e38429d215c2776f109591b",
+ "clt_sha256": "59106e488eed2be8ff895024b11d747519ebf90320c7f19e919b36d7ec8c8494",
+ "precedentes": {
+  "TST-OJ-SDI1-322": {
+   "origem": "automatico_dispositivo",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 614, § 3º, da CLT"
+   ],
+   "motivo": null,
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 614, § 3º, da CLT. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-OJ-SDI1-410": {
+   "origem": "lista_manual",
+   "lei": "Emenda Constitucional 141/2026",
+   "vigencia_mudanca": "2026-12-16",
+   "dispositivos": [
+    "art. 7º, XV, da CF"
+   ],
+   "motivo": "trata do repouso concedido após o sétimo dia de trabalho; a partir de 16/12/2026, o repouso semanal é de 2 dias",
+   "alerta": "enunciado anterior à Emenda Constitucional 141/2026 (art. 7º, XV, da CF), com efeito a partir de 16/12/2026: trata do repouso concedido após o sétimo dia de trabalho; a partir de 16/12/2026, o repouso semanal é de 2 dias. Para fatos a partir de 16/12/2026, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-101": {
+   "origem": "lista_manual",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 457, § 2º, da CLT"
+   ],
+   "motivo": "diárias para viagem deixaram de integrar a remuneração",
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 457, § 2º, da CLT: diárias para viagem deixaram de integrar a remuneração. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-110": {
+   "origem": "lista_manual",
+   "lei": "Emenda Constitucional 141/2026",
+   "vigencia_mudanca": "2026-12-16",
+   "dispositivos": [
+    "art. 7º, XV, da CF"
+   ],
+   "motivo": "pressupõe o repouso semanal de 24 horas; a partir de 16/12/2026, o repouso semanal é de 2 dias",
+   "alerta": "enunciado anterior à Emenda Constitucional 141/2026 (art. 7º, XV, da CF), com efeito a partir de 16/12/2026: pressupõe o repouso semanal de 24 horas; a partir de 16/12/2026, o repouso semanal é de 2 dias. Para fatos a partir de 16/12/2026, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-219": {
+   "origem": "lista_manual",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 791-A da CLT"
+   ],
+   "motivo": "honorários advocatícios de sucumbência na Justiça do Trabalho",
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 791-A da CLT: honorários advocatícios de sucumbência na Justiça do Trabalho. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-241": {
+   "origem": "lista_manual",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 457, § 2º, da CLT"
+   ],
+   "motivo": "auxílio-alimentação, vedado o pagamento em dinheiro, deixou de integrar a remuneração",
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 457, § 2º, da CLT: auxílio-alimentação, vedado o pagamento em dinheiro, deixou de integrar a remuneração. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-329": {
+   "origem": "lista_manual",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 791-A da CLT"
+   ],
+   "motivo": "honorários advocatícios de sucumbência na Justiça do Trabalho",
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 791-A da CLT: honorários advocatícios de sucumbência na Justiça do Trabalho. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-331": {
+   "origem": "lista_manual",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 4º-A da Lei 6.019/1974",
+    "art. 5º-A da Lei 6.019/1974"
+   ],
+   "motivo": "terceirização de quaisquer atividades, inclusive a principal; o STF também a admitiu (ADPF 324 e Tema 725 de repercussão geral)",
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 4º-A da Lei 6.019/1974, art. 5º-A da Lei 6.019/1974: terceirização de quaisquer atividades, inclusive a principal; o STF também a admitiu (ADPF 324 e Tema 725 de repercussão geral). Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-372": {
+   "origem": "lista_manual",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 468, § 2º, da CLT"
+   ],
+   "motivo": "a reversão ao cargo efetivo não assegura a manutenção da gratificação de função, independentemente do tempo",
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 468, § 2º, da CLT: a reversão ao cargo efetivo não assegura a manutenção da gratificação de função, independentemente do tempo. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-442": {
+   "origem": "automatico_dispositivo",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 896, § 6º, da CLT"
+   ],
+   "motivo": null,
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 896, § 6º, da CLT. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-446": {
+   "origem": "automatico_dispositivo",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 71, § 4º, da CLT"
+   ],
+   "motivo": null,
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 71, § 4º, da CLT. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-458": {
+   "origem": "automatico_dispositivo",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 896, § 6º, da CLT"
+   ],
+   "motivo": null,
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 896, § 6º, da CLT. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-463": {
+   "origem": "lista_manual",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 790, § 3º, da CLT",
+    "art. 790, § 4º, da CLT"
+   ],
+   "motivo": "justiça gratuita: limite de renda e comprovação da insuficiência de recursos",
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 790, § 3º, da CLT, art. 790, § 4º, da CLT: justiça gratuita: limite de renda e comprovação da insuficiência de recursos. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-6": {
+   "origem": "lista_manual",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 461 da CLT"
+   ],
+   "motivo": "equiparação salarial: o art. 461 foi reescrito (tempo na função, mesmo estabelecimento, quadro de carreira sem homologação)",
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 461 da CLT: equiparação salarial: o art. 461 foi reescrito (tempo na função, mesmo estabelecimento, quadro de carreira sem homologação). Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  },
+  "TST-SUM-85": {
+   "origem": "lista_manual",
+   "lei": "Lei 13.467/2017 (Reforma Trabalhista)",
+   "vigencia_mudanca": "2017-11-11",
+   "dispositivos": [
+    "art. 59, § 5º, da CLT",
+    "art. 59, § 6º, da CLT",
+    "art. 59-B da CLT"
+   ],
+   "motivo": "compensação de jornada: banco de horas por acordo individual e compensação mensal tácita",
+   "alerta": "enunciado anterior à Lei 13.467/2017 (Reforma Trabalhista), em vigor desde 11/11/2017, que alterou art. 59, § 5º, da CLT, art. 59, § 6º, da CLT, art. 59-B da CLT: compensação de jornada: banco de horas por acordo individual e compensação mensal tácita. Para fatos a partir de 11/11/2017, vale a regra nova no que contrariar o enunciado.",
+   "confirmado_advogado": false
+  }
+ }
+}

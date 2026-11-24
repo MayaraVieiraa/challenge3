@@ -1,0 +1,40 @@
+{
+  "atualizacao": "ec141_2026_notas_divisor",
+  "versao_base": "ec141_2026_notas",
+  "decisao": "opção B (2026-11-23): nota que só informa; sem divisor para 42 horas",
+  "notas": {
+    "LC 150/2015, art. 2º, § 2º": "[Nota de vigência: a Emenda Constitucional nº 141, de 2026, reduz o limite semanal de trabalho do art. 7º, XIII, da CF, aplicável aos empregados domésticos pelo § 1º do art. 7º da CF: 44 horas semanais até 15/12/2026, 42 horas a partir de 16/12/2026 e 40 horas a partir de 16/12/2027. A emenda não alterou este divisor de 220 horas, que corresponde à jornada de 44 horas semanais. Para empregados sujeitos a 40 horas semanais, a Súmula 431 do TST aplica o divisor 200 (entendimento fixado para os empregados regidos pela CLT). Para 42 horas semanais, não há divisor fixado em lei ou súmula. Continua valendo a ressalva deste parágrafo: se o contrato estipular jornada mensal inferior, o divisor é diverso.]"
+  },
+  "versoes": {
+    "D_paragrafo_completo": {
+      "dataset_id": "96d0710a21cdf06ceb29a839cd295a1ba09a38b70a413477d57b108621cd4346",
+      "base_dataset_id": "dca7b51d5efa82bb000a427de92bd92aab4d162f9a7881a4d0ff9cad948692e5",
+      "trechos": 10983,
+      "ja_existia": true,
+      "com_nota": [
+        {
+          "artigo": "leis-complementares/2015/lcp-150-2015.md Art. 2º",
+          "chunk_antigo": "e6f1caa90268c0638a35b0d294b4fe660556fe5f265c182f6f15e676cbbe0c70",
+          "chunk_novo": "64709acaf5e47bb349a1f8a54fe83bcc96ea8567b481c5407a12bdfbc8ec5f13"
+        }
+      ],
+      "textos_sha256_ordem": "7d9db0513fa4b68198f6f91414ebeddd39eda7bf5f5aacea791d0697f91b19fe",
+      "vetores_sha256_ordem": "ad0bac5cf4605402c496b00b3414440573c5296d015321c5dcc31ac0788be629"
+    },
+    "A_artigo": {
+      "dataset_id": "fbb9073502063f5c3866e9343c0abf519d157afe822342fd11acc3957d6acb40",
+      "base_dataset_id": "d61d07a50919f1f423b26726d22085519b17fb1429f858bbef12dd969179c62d",
+      "trechos": 5294,
+      "ja_existia": true,
+      "com_nota": [
+        {
+          "artigo": "leis-complementares/2015/lcp-150-2015.md Art. 2º",
+          "chunk_antigo": "6d53c6b159d0e20cf7749448a35c554a95afd3a2bf83bfd80726a649860bfb7a",
+          "chunk_novo": "0febdb1141993fd3d5a8a0b860cf6e679bad40f4ae8d1bcecd22eb7b524a335c"
+        }
+      ],
+      "textos_sha256_ordem": "ca07e2e4bc236e41c2e125987b0648e0589287595e02b38e37d3e8692383571b",
+      "vetores_sha256_ordem": "15134bce29892e2eaad6d4917c18709089051b0d2cb454ae3022d3fcf6a7b313"
+    }
+  }
+}

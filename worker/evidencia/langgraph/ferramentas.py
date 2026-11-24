@@ -153,6 +153,27 @@ class BuscaSintetica:
         pass
 
 
+FONTES_BUSCA = ('legislacao', 'jurisprudencia', 'precedentes')
+
+
+def intercalar_por_fonte(fontes):
+    """Ordena as fontes alternando as bases (1º artigo, 1ª decisão, 1º precedente, 2º artigo...).
+
+    O orquestrador guarda as fontes em ordem até o orçamento de bytes (`max_bytes_fontes`). Na ordem da busca
+    (3 artigos, depois 3 decisões, depois 3 precedentes), os artigos ocupavam quase todo o orçamento e as outras
+    bases ficavam de fora. Intercaladas, cada base tem a sua melhor fonte antes da segunda de qualquer outra.
+    A ordem dentro de cada base é mantida.
+    """
+    grupos = {}
+    for fonte in fontes:
+        grupos.setdefault(fonte.get('fonte'), []).append(fonte)
+    ordem = [f for f in FONTES_BUSCA if f in grupos] + [f for f in grupos if f not in FONTES_BUSCA]
+    saida = []
+    for i in range(max((len(g) for g in grupos.values()), default=0)):
+        saida += [grupos[f][i] for f in ordem if i < len(grupos[f])]
+    return saida
+
+
 class BuscaReal:
     """Abre banco e modelos apenas quando uma busca for efetivamente solicitada."""
 
@@ -176,10 +197,14 @@ class BuscaReal:
         from worker.evidencia.explicador import fonte_para_prompt
         from worker.evidencia.recuperador import Configuracao
 
-        configuracao = Configuracao(entrega_por_fonte={'legislacao': 3, 'jurisprudencia': 3},
-                                   top_k=10, lexical_modo='idf', reranker_max_length=256)
+        # 3 bases, como a configuração padrão da integração (2026-11-23): 3 artigos, 3 decisões e 3 precedentes,
+        # união no reranker nos precedentes e sinônimos jurídicos. Antes, os multiagentes usavam só 2 bases.
+        configuracao = Configuracao(fontes=FONTES_BUSCA,
+                                    entrega_por_fonte={'legislacao': 3, 'jurisprudencia': 3, 'precedentes': 3},
+                                    top_k=10, lexical_modo='idf', reranker_max_length=256,
+                                    uniao_reranker=('precedentes',), expandir_sinonimos=True)
         unidades, _ = self._abrir().buscar(consulta, configuracao)
-        return [fonte_para_prompt(unidade) for unidade in unidades]
+        return intercalar_por_fonte([fonte_para_prompt(unidade) for unidade in unidades])
 
     def preparar_lexico(self):
         """Preparação explícita para banco já provisionado; não roda nas buscas."""

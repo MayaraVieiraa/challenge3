@@ -123,3 +123,15 @@ Desktop.ini
 
 # Respostas reais de avaliação permanecem apenas locais
 /avaliacao/dados/legislacao/feedback_pos_teste/**/respostas_reais_e_feedback.jsonl
+# Revisão humana (perguntas protegidas e trechos de decisões)
+/dados/output/revisao_humana/
+# Comparação do notebook 05 (perguntas protegidas e trechos de decisões)
+/dados/output/kaggle/comparacao/
+
+# Base de precedentes: PDFs originais do TST/STF/Senado (grandes; a auditoria registra hash e origem)
+/dados/raw/precedentes/*.pdf
+# Correções (notebook 06): geração e julgamento com o prompt v3
+/dados/output/kaggle/geracao_v3/
+/dados/output/kaggle/juiz_v3*/
+# Geração v3.1: prompt v3 com regra 24 e legislação atualizada (EC 141/2026)
+/dados/output/kaggle/geracao_v3_1/

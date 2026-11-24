@@ -1,0 +1,16 @@
+{
+  "arquivo": "data/processed/precedentes/chunks_precedentes.jsonl",
+  "sha256": "c6a0c5d2d9da0782cedbf658291aeff6de8f1509d089024a904fde2d3101e06a",
+  "trechos": 1268,
+  "registros": 1022,
+  "registros_jsonl_sha256": "2884779dbbd4cf4b657e6f4a8405872c45cceef21e38429d215c2776f109591b",
+  "limite_tokens": 220,
+  "tokenizador": "BAAI/bge-m3@5617a9f61b028005a4858fdac845db406aefb181",
+  "acima_do_limite": 12,
+  "regras": [
+    "um trecho por enunciado; por item em súmulas e OJs com itens; caput repetido em cada item",
+    "cabeçalho com nome de citação, título e item",
+    "divisão por frases acima do limite",
+    "só registros buscáveis"
+  ]
+}

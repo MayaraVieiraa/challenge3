@@ -1,0 +1,16 @@
+{
+  "base": "lex_precedentes",
+  "esquema": 1,
+  "modelo": "BAAI/bge-m3",
+  "revisao": "5617a9f61b028005a4858fdac845db406aefb181",
+  "dimensoes": 1024,
+  "normalizado": true,
+  "limite_tokens": 220,
+  "chunks": 1268,
+  "registros": 1493,
+  "chunks_jsonl_sha256": "c6a0c5d2d9da0782cedbf658291aeff6de8f1509d089024a904fde2d3101e06a",
+  "registros_jsonl_sha256": "2884779dbbd4cf4b657e6f4a8405872c45cceef21e38429d215c2776f109591b",
+  "textos_sha256_ordem": "ccf273e4b9d4a3e3ea975edefa48dc24a6f8c88469fe368d781641b1f4ee05a8",
+  "vetores_sha256_ordem": "7c784d7229381a442b491f01c98aea32f3170a8c2482c4d116b1c4f5bd936ea6",
+  "dataset_id": "bdf048e69083b43d1982b8ae772ec1a513c13f5b000d5003317d6d67413de51d"
+}

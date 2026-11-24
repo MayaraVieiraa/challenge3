@@ -2,3 +2,5 @@
 # Modo sintético usa biblioteca padrão, LangGraph e o servidor Ollama.
 # Para o banco real, instalar também docs/legado/requirements/requirements.txt.
 langgraph==1.2.22
+# estimativa de tokens da janela de contexto (src/integracao/context_window.py), usada pelo orquestrador desde multiagentes-v3
+tiktoken==0.14.0
